@@ -1,4 +1,4 @@
-require(['app','tube'],function(app){
+require(['app','S2Tube', 'tubeJSON'],function(app, S2Tube, tubeJSON){
   'use strict';
   var dummyAjax = function() {
   };
@@ -10,7 +10,7 @@ require(['app','tube'],function(app){
   describe('Tube', function(){
     describe('Loading an S2 Tube',function(){
       it('fails', function(){
-        expect(app).toBe('Hello from Yeoman!');
+
       });
 
     });

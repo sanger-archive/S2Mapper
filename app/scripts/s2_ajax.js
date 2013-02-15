@@ -1,4 +1,4 @@
-define(['config', 's2_resource'], function (config, S2Resource) {
+define(['config'], function (config ) {
   'use strict';
 
   var actionMethods = {
@@ -22,7 +22,7 @@ define(['config', 's2_resource'], function (config, S2Resource) {
   }
 
   return {
-    send: config.ajaxDummy || ajaxSend
+    send: config.ajaxStub || ajaxSend
   };
 
 });
