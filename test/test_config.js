@@ -1,8 +1,7 @@
-define(['json/tube'], function(tubeJSON) {
+define([], function() {
   'use strict';
 
   return {
-    apiUrl:    'json/',
-    ajaxStub:  function(){return tubeJSON;}
+    apiUrl:  '' // NOT USED IN TESTING
   };
 });
