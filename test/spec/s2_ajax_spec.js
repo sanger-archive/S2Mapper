@@ -1,4 +1,4 @@
-require(['scripts/s2_ajax','json/dna_only_extraction', 'config'], function(S2Ajax, testJSON, config){
+require(['mapper/s2_ajax','json/dna_only_extraction', 'config'], function(S2Ajax, testJSON, config){
   'use strict';
 
   config.testJSON = testJSON.stage1;

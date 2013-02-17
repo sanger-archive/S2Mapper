@@ -1,19 +1,18 @@
-require(['app','S2Tube', 'tubeJSON'],function(app, S2Tube, tubeJSON){
+require(['scripts/s2_tube', 'json/dna_only_extraction'],function(S2Tube, testJSON){
   'use strict';
-  var dummyAjax = function() {
-  };
 
-  beforeEach(function(){
-    //Dumy Ajax function
-  });
+  config.testJSON = testJSON.stage1;
 
-  describe('Tube', function(){
-    describe('Loading an S2 Tube',function(){
-      it('fails', function(){
+  describe('S2 Tube', function(){
+    var tube = new S2Tube('11111111-2222-3333-4444-555555555555');
 
-      });
+    it('has a rawJson attribute', function(){
+      expect(tube.rawJson).toBeDefined();
+    });
 
+    it('rawJson matches the JSON returned by S2',function(){
     });
 
   });
+
 });
