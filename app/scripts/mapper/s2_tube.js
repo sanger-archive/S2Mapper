@@ -1,10 +1,17 @@
-define(['mapper/s2_ajax'], function(S2Ajax){
+// The constructor is designed to be passed as a callback to an
+// Ajax promise.
+define([], function(){
   'use strict';
 
-  return function(uuid){
-    var s2_ajax = new S2Ajax;
+  return function(tube){
+  return function(response){
 
-    return s2_ajax.send('read', '/tubes/' + uuid);
+    tube.rawJson = response.responseText;
+    tube.resourceType = 'tube';
+
+    return tube;
   };
 
-})
+  };
+
+});
