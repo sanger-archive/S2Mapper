@@ -37,7 +37,16 @@ define([],function(){
       "actions": {
         "create":  "/actions/tube_rack_transfer"
       }
+    },
+    "searches": {
+      "actions": {
+        "create": "http://localhost:9292/searches",
+        "read": "http://localhost:9292/searches",
+        "first": "http://localhost:9292/searches/page=1",
+        "last": "http://localhost:9292/searches/page=-1"
+      }
     }
+
   };
 
   var stage1 = {

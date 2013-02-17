@@ -12,6 +12,6 @@ require.config({
     }
 });
  
-require(['spec/s2_ajax_spec'], function(app) {
+require(['spec/s2_ajax_spec'], function() {
   // use app here
 });

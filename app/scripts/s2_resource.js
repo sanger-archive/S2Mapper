@@ -1,7 +1,13 @@
 define([], function (s2) {
   "use strict";
-  var S2resource;
-  S2resource = function (type, node) {
+
+  // S2Resource is a fatory function returning the matching resource type
+  // from a jquery response callback. E.g. Tube, Spin Column or Search
+  // .done(S2Resource)
+  var S2Resource = function (response){
+  };
+
+  var S2Resource = function (type, node) {
     var action;
     if (!node.uuid) {
       delete (this);
