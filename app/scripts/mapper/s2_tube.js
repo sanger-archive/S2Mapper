@@ -13,6 +13,9 @@ define(['mapper/s2_ajax'], function(S2Ajax){
       var tubeResource     = Object.create(null);
       tubeResource.rawJson = rawJson;
 
+      // The resourceType is the first and only attribute of the rawJson
+      tubeResource.resourceType = Object.keys(rawJson)[0];
+
       for (var action in rawJson.tube.actions) {
         tubeResource[action] = function (sendData) {
           return new TubePromise(uuid, action,  data);

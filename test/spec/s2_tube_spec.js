@@ -17,11 +17,15 @@ require(['config', 'mapper/s2_tube', 'json/dna_only_extraction'],function(config
       expect(s2_tube.rawJson).toBe(rawTubeJSON);
     });
 
-    debugger;
     for (var action in rawTubeJSON.tube.actions){
       it('has a '+action+' action method matching the raw JSON action attribute.', function(){
         expect(s2_tube[action]).toBeDefined();
       });
     }
+
+    it("has a resourceType attribute of 'tube'", function(){
+      expect(s2_tube.resourceType).toBe('tube');
+    });
+
   });
 });
