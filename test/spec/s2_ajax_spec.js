@@ -10,7 +10,7 @@ require(['mapper/s2_ajax','json/dna_only_extraction', 'config'], function(S2Ajax
     var tube;
     s2_ajax.send(
         'read',
-        '/tubes/11111111-2222-3333-4444-555555555555').
+        '/11111111-2222-3333-4444-555555555555').
           done(function(response){
           tube = response.responseText;
         });
@@ -21,7 +21,7 @@ require(['mapper/s2_ajax','json/dna_only_extraction', 'config'], function(S2Ajax
 
     it('matches data directly from JSON file', function(){
       // send uuid or barcode to grab resources
-      expect(tube).toEqual(config.testJSON["/tubes/11111111-2222-3333-4444-555555555555"]);
+      expect(tube).toEqual(config.testJSON["/11111111-2222-3333-4444-555555555555"]);
     });
 
   });
