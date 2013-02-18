@@ -13,6 +13,7 @@ require.config({
     }
 });
  
-require(['spec/s2_ajax_spec', 'spec/s2_tube_spec.js'], function() {
+require(['spec/s2_ajax_spec', 'spec/s2_tube_spec', 'spec/s2_spin_column_spec'], function() {
+  require();
   // use app here
 });

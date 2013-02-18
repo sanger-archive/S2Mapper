@@ -1,14 +1,16 @@
-require(['config', 'mapper/s2_tube', 'json/dna_only_extraction'],function(config,S2Tube, testJSON){
+require(['config', 'json/dna_only_extraction', 'mapper/s2_resource'],function(config, testJSON, S2Resource){
   'use strict';
 
-  config.testJSON = testJSON.stage1;
+  config.testJSON = testJSON;
 
   describe('S2 Tube', function(){
-    var rawTubeJSON = config.testJSON['/11111111-2222-3333-4444-555555555555'];
+    config.currentStage = 'stage1';
+
+    var rawTubeJSON = config.getTestJson()['/11111111-2222-3333-4444-555555555555'];
 
     var s2_tube;
 
-    var tubePromise = new S2Tube('11111111-2222-3333-4444-555555555555');
+    var tubePromise = new S2Resource('11111111-2222-3333-4444-555555555555');
 
     // .done() sets a tube through a side effect
     tubePromise.done(function(s2tube){ s2_tube = s2tube; });
@@ -28,4 +30,5 @@ require(['config', 'mapper/s2_tube', 'json/dna_only_extraction'],function(config
     });
 
   });
+
 });
