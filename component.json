@@ -1,0 +1,9 @@
+{
+  "name": "S2Mapper",
+  "version": "0.0.0",
+  "dependencies": {
+    "requirejs": "~2.1.4",
+    "requirejs-domready": "~2.0.1",
+    "jquery": "~1.9.1"
+  }
+}
