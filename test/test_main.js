@@ -4,7 +4,6 @@ require.config({
 
   paths: {
       jquery: 'components/jquery',
-      d3: 'components/d3',
       domReady: 'components/requirejs-domready/domReady',
       mapper: 'scripts/mapper',
       config: 'test_config',
