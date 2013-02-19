@@ -1,4 +1,4 @@
-require(['config', 'mapper/s2_tube', 'json/dna_only_extraction'],function(config,S2Tube, testJSON){
+define(['config', 'mapper/s2_tube', 'json/dna_only_extraction'],function(config,S2Tube, testJSON){
   'use strict';
 
   config.testJSON = testJSON.stage1;
@@ -17,7 +17,6 @@ require(['config', 'mapper/s2_tube', 'json/dna_only_extraction'],function(config
       expect(s2_tube.rawJson).toBe(rawTubeJSON);
     });
 
-    debugger;
     for (var action in rawTubeJSON.tube.actions){
       it('has a '+action+' action method matching the raw JSON action attribute.', function(){
         expect(s2_tube[action]).toBeDefined();

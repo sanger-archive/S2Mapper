@@ -3,16 +3,15 @@ require.config({
     },
 
   paths: {
-      hm: 'vendor/hm',
-      esprima: 'vendor/esprima',
-      jquery: 'vendor/jquery.min',
+      jquery: 'components/jquery',
+      d3: 'components/d3',
+      domReady: 'components/requirejs-domready/domReady',
       mapper: 'scripts/mapper',
       config: 'test_config',
       spec: 'spec',
-      json: 'json'
-    }
+      json: 'json',
+    },
+
+//    urlArgs: "bust=" + (new Date()).getTime(),
 });
  
-require(['spec/s2_ajax_spec', 'spec/s2_tube_spec.js'], function() {
-  // use app here
-});
