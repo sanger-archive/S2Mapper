@@ -180,7 +180,6 @@ define([],function(){
   });
 
   return {
-    root: root,
     stage1: stage1,
     stage2: stage2
   };
