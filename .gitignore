@@ -2,3 +2,5 @@ temp
 dist
 .sass-cache/**
 .editorconfig
+app/components/**
+components/**
