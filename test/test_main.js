@@ -3,8 +3,6 @@ require.config({
     },
 
   paths: {
-      jquery: 'components/jquery',
-      d3: 'components/d3',
       domReady: 'components/requirejs-domready/domReady',
       mapper: 'scripts/mapper',
       config: 'test_config',
@@ -13,4 +11,7 @@ require.config({
     },
 
 });
- 
+
+require(['domReady!', 'spec/s2_ajax_spec', 'spec/s2_tube_spec'], function() {
+  window.setTimeout(runJasmineTests, 1000);
+});
