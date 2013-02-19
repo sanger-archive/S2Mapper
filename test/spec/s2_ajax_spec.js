@@ -1,12 +1,13 @@
-require(['mapper/s2_ajax','json/dna_only_extraction', 'config'], function(S2Ajax, testJSON, config){
+require(['config','json/dna_only_extraction', 'mapper/s2_ajax'], function(config, testJSON, S2Ajax){
   'use strict';
 
-  config.testJSON = testJSON.stage1;
+  config.testJSON = testJSON;
 
   var s2_ajax = new S2Ajax();
 
 
   describe('Mocked s2_ajax object', function(){
+    config.currentStage = 'stage1';
     var tube;
     s2_ajax.send(
         'read',
@@ -21,12 +22,14 @@ require(['mapper/s2_ajax','json/dna_only_extraction', 'config'], function(S2Ajax
 
     it('matches data directly from JSON file', function(){
       // send uuid or barcode to grab resources
-      expect(tube).toEqual(config.testJSON["/11111111-2222-3333-4444-555555555555"]);
+      expect(tube).toEqual(config.getTestJson()["/11111111-2222-3333-4444-555555555555"]);
     });
 
   });
 
   describe('S2 Root', function(){
+    config.currentStage = 'stage1';
+
     // We can only access the response object through a side effect.
     var s2root;
 

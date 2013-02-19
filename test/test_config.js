@@ -4,6 +4,12 @@ define([], function() {
   var config = {
     apiUrl:  '', // NOT USED IN TESTING
 
+    currentStage: 'stage1',
+
+    getTestJson: function(){
+      return config.testJSON[config.currentStage];
+    },
+
     // Dummy out the ajax call returned by S2Ajax to test from file.
     // Returns a Deferred instead of jqXHR.
     dummyAjax: function(options){
@@ -23,7 +29,7 @@ define([], function() {
         url:           '/something/other',
         'status':      200,
         responseTime:  750,
-        responseText:  config.testJSON[requestOptions.url]
+        responseText:  config.getTestJson()[requestOptions.url]
       });
     }
   };

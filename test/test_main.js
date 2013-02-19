@@ -12,6 +12,5 @@ require.config({
       json: 'json',
     },
 
-//    urlArgs: "bust=" + (new Date()).getTime(),
 });
  
