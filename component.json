@@ -1,7 +1,7 @@
 {
   "author": "Sanger",
   "name": "S2Mapper",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "ignore": [
   	".*",
   	".*/",
