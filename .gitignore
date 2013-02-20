@@ -4,3 +4,4 @@ dist
 .editorconfig
 app/components/**
 components/**
+*.orig
