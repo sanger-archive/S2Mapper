@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang=en>
+  <head>
+    <title>Jasmine Spec Runner</title>
+
+    <link rel="stylesheet" href="lib/jasmine-1.2.0/jasmine.css">
+    <script src="lib/jasmine-1.2.0/jasmine.js"></script>
+    <script src="lib/jasmine-1.2.0/jasmine-html.js"></script>
+    <script src="/components/jquery/jquery.min.js"></script>
+
+    <script>
+      if (window.phantom)
+        document.write('<script src="runner/headless_requirejs.js"><\/script>');
+      else
+        document.write('<script src="runner/html_requirejs.js"><\/script>');
+    </script>
+
+    <script data-main="<% print  ((grunt.config('isDev')) ? 'dev_main.js' : 'test_main.js') %>" src="/components/requirejs/require.js"></script>
+  </head>
+  <body></body>
+</html>

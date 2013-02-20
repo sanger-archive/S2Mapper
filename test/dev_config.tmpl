@@ -1,0 +1,11 @@
+// Change workflowJSON dependency and currentStage to reflect the world you
+// want to live in...
+define(['test_config','json/<% print (grunt.config("workflow") || 'dna_only_extraction') %>'], function(test_config, workflowJSON) {
+  'use strict';
+
+  return $.extend(test_config, {
+    currentStage: '<% print (grunt.config("stage") || 'stage1') %>',
+    testJSON: workflowJSON
+  });
+
+});
