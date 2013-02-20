@@ -1,7 +1,7 @@
 {
   "author": "Sanger",
   "name": "S2Mapper",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "ignore": [
   	".*",
   	".*/",
@@ -13,6 +13,12 @@
   	"app/scripts/*.*",
   	"app/scripts/vendor/"
   ],
-  "dependencies": {},
+
+  "dependencies": {
+    "jquery": "~1.9.1",
+    "requirejs": "~2.1.4",
+    "requirejs-domready": "~2.0.1"
+  },
+
   "devDependencies": {}
 }
