@@ -10,11 +10,14 @@ define(['mapper/s2_ajax'], function (S2Ajax) {
     s2_ajax.send((sendAction || 'read'), '/' + uuid, data).
       done(function(response){
       var rawJson      = response.responseText;
+
       var resource     = Object.create(null);
       resource.rawJson = rawJson;
 
       // The resourceType is the first and only attribute of the rawJson
       resource.resourceType = Object.keys(rawJson)[0];
+
+      // Throw up if rawJson[resourceType].uuid is not equal to uuid
 
       // Add the JSON's actions as functions on the Resource object
       for (var action in rawJson[resource.resourceType].actions) {

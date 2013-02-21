@@ -29,6 +29,7 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
       expect(s2_tube.resourceType).toBe('tube');
     });
 
+
   });
 
 });
