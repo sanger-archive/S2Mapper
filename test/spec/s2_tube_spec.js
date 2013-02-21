@@ -1,7 +1,7 @@
-require(['config', 'json/dna_only_extraction', 'mapper/s2_resource'],function(config, testJSON, S2Resource){
+define(['config', 'mapper/s2_resource'],function(config, S2Resource){
   'use strict';
 
-  config.testJSON = testJSON;
+  config.setTestJson('dna_only_extraction');
 
   describe('S2 Tube', function(){
     config.currentStage = 'stage1';
@@ -28,6 +28,7 @@ require(['config', 'json/dna_only_extraction', 'mapper/s2_resource'],function(co
     it("has a resourceType attribute of 'tube'", function(){
       expect(s2_tube.resourceType).toBe('tube');
     });
+
 
   });
 
