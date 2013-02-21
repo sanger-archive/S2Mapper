@@ -1,7 +1,7 @@
-require(['config','json/dna_only_extraction', 'mapper/s2_ajax'], function(config, testJSON, S2Ajax){
+define(['config', 'mapper/s2_ajax'], function(config, S2Ajax){
   'use strict';
 
-  config.testJSON = testJSON;
+  config.setTestJson('dna_only_extraction');
 
   var s2_ajax = new S2Ajax();
 

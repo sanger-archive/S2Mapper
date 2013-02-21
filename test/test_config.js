@@ -1,10 +1,16 @@
-define([], function() {
+define(['json/dna_only_extraction'], function(dnaJson) {
   'use strict';
 
   var config = {
     apiUrl:  '', // NOT USED IN TESTING
 
     currentStage: 'stage1',
+
+    setTestJson: function(workflow){
+      // Fixme Not working ideally yet still having to require
+      // the package on module load.
+      config.testJSON = require('json/'+workflow);
+    },
 
     getTestJson: function(){
       return config.testJSON[config.currentStage];
