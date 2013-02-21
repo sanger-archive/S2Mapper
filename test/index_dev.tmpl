@@ -15,7 +15,7 @@
         document.write('<script src="runner/html_requirejs.js"><\/script>');
     </script>
 
-    <script data-main="dev_main.js" src="/components/requirejs/require.js"></script>
+    <script data-main="<% print  ((grunt.config('isDev')) ? 'dev_main.js' : 'test_main.js') %>" src="/components/requirejs/require.js"></script>
   </head>
   <body></body>
 </html>

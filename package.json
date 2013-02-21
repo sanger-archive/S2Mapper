@@ -1,7 +1,15 @@
 {
-  "author": "",
-  "name": "",
-  "version": "0.0.0",
-  "dependencies": {},
-  "devDependencies": {}
+    "author":         "TB10",
+    "name":           "S2Mapper",
+    "version":        "0.0.1",
+    "dependencies":   {
+
+    },
+    "devDependencies":{
+
+        "grunt-cp": "~0.1.0",
+        "wrench":   "~1.4.4",
+        "requirejs":"~2.1.4"
+
+    }
 }
