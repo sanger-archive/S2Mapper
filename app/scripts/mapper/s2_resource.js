@@ -14,13 +14,23 @@ define(['mapper/s2_ajax'], function (S2Ajax) {
       var resource     = Object.create(null);
       resource.rawJson = rawJson;
 
-      // The resourceType is the first and only attribute of the rawJson
+      // The resourceType is the first and only attribute of the
+      // returned json.
       resource.resourceType = Object.keys(rawJson)[0];
 
-      // Throw up if rawJson[resourceType].uuid is not equal to uuid
 
-      // Add the JSON's actions as functions on the Resource object
+      // Add the JSON's actions as functions on the Resource object.
+      // These function close over the resource's uuid as provide to the
+      // original resorcePromise constructor.
+      var match_uuid = new RegExp('\\/'+rawJson.tube.uuid);
+
       for (var action in rawJson[resource.resourceType].actions) {
+        // Check that resource UUID's match up
+        if (!match_uuid.exec(rawJson.tube.actions[action])) throw {
+          name:     'Resource Validaion',
+          message:  "Resource UUIDs don't match up."
+        };
+
         resource[action] = function (sendData) {
           return new ResourcePromise(uuid, action,  data);
         };
