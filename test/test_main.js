@@ -12,6 +12,6 @@ require.config({
 
 });
 
-require(['domReady!', 'spec/s2_ajax_spec', 'spec/s2_tube_spec'], function() {
+require(['domReady!', 'spec/s2_ajax_spec', 'spec/s2_resource_spec'], function() {
   window.setTimeout(runJasmineTests, 100);
 });
