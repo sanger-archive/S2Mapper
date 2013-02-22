@@ -3,38 +3,42 @@ define(['mapper/s2_ajax'], function (S2Ajax) {
 
   var s2_ajax = new S2Ajax();
 
+  function addActionsTo(resource){
+    var resourceJson    = resource.rawJson[resource.resourceType];
+    var match_uuid      = new RegExp('\\/'+resourceJson.uuid);
+    var resourceActions = resourceJson.actions;
+
+    for (var action in resourceActions) {
+      // Check that resource UUID's match up
+      if (!match_uuid.exec(resourceActions[action])) throw {
+        name:     'Resource Validaion',
+        message:  "Resource UUIDs don't match up."
+      };
+
+      // These function close over the resource's uuid as provided to the
+      // original resorcePromise constructor.
+      resource[action] = function (sendData) {
+        return new ResourcePromise(uuid, action,  data);
+      };
+    }
+  }
+
   // Constructor function
   var ResourcePromise = function(uuid, sendAction, data){
     var resourceDeferred = $.Deferred();
 
-    s2_ajax.send((sendAction || 'read'), '/' + uuid, data).
-      done(function(response){
-      var rawJson      = response.responseText;
+    s2_ajax.send(
+      sendAction || 'read',
+      '/'+uuid,
+      data
+    ).done(function(response){
+      var rawJson           = response.responseText;
+      var resource          = Object.create(null);
 
-      var resource     = Object.create(null);
-      resource.rawJson = rawJson;
-
-      // The resourceType is the first and only attribute of the
-      // returned json.
+      resource.rawJson      = rawJson;
       resource.resourceType = Object.keys(rawJson)[0];
 
-
-      // Add the JSON's actions as functions on the Resource object.
-      // These function close over the resource's uuid as provide to the
-      // original resorcePromise constructor.
-      var match_uuid = new RegExp('\\/'+rawJson.tube.uuid);
-
-      for (var action in rawJson[resource.resourceType].actions) {
-        // Check that resource UUID's match up
-        if (!match_uuid.exec(rawJson.tube.actions[action])) throw {
-          name:     'Resource Validaion',
-          message:  "Resource UUIDs don't match up."
-        };
-
-        resource[action] = function (sendData) {
-          return new ResourcePromise(uuid, action,  data);
-        };
-      }
+      addActionsTo(resource);
 
       resourceDeferred.resolve(resource);
     });
