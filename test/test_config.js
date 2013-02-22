@@ -12,14 +12,15 @@ define(['json/dna_only_extraction'], function(dnaJson) {
       config.testJSON = require('json/'+workflow);
     },
 
-    getTestJson: function(){
+    getTestJson : function(){
       return config.testJSON[config.currentStage];
     },
 
     cpResource: function(original_uuid, new_uuid){
-      var resourceJsonClone   = JSON.parse(JSON.stringify(getTestJson()[original_uuid]))
+      var resourceJsonClone   = JSON.parse(JSON.stringify(
+	config.getTestJson()["/" + original_uuid]));
       resourceJsonClone.uuid  = new_uuid;
-      getTestJson()[new_uuid] = resourceJsonClone;
+      config.getTestJson()["/" + new_uuid] = resourceJsonClone;
     },
 
     // Dummy out the ajax call returned by S2Ajax to test from file.
