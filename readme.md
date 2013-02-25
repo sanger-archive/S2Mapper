@@ -19,7 +19,7 @@ bower install git@github.com:sanger/S2Mapper.git
 
 Resources
 ---------
-A plain S2 resouce has the following structure:-
+A plain S2 resouce typically has the following structure:-
 ```javascript
 {
   resourceType: 'tube',
@@ -75,3 +75,5 @@ batch function.
 tube.batch(); 
 // => Batch Promise
 ```
+
+Both Order and Batch are S2 Resources but with some specialiation.
