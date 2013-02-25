@@ -4,12 +4,12 @@ S2 Mapper
 S2 Mapper is a wrapper for an S2 LIMS (Laboritory Information Management
 System) compatible API.
 
-(S2)[https://github.com/sanger/lims-api] is a backend LIMS server sending and receiving JSON.
+[S2](https://github.com/sanger/lims-api) is a backend LIMS server sending and receiving JSON.
 
 
 Installation
 ------------
-S2Mapper is a (Bower)[https://github.com/twitter/bower] module.  It
+S2Mapper is a [Bower](https://github.com/twitter/bower) module.  It
 hasn't yet been registered with the central Bower repository but can be
 installed with:-
 
