@@ -1,4 +1,4 @@
-define(['mapper/s2_plain_resource', 'mapper/s2_ajax'], function (PlainResource, S2Ajax) {
+define(['mapper/s2_base_resource', 'mapper/s2_ajax'], function (BaseResource, S2Ajax) {
   "use strict";
 
   var s2_ajax = new S2Ajax();
@@ -12,7 +12,7 @@ define(['mapper/s2_plain_resource', 'mapper/s2_ajax'], function (PlainResource, 
       '/'+uuid,
       data
     ).done(function(response){
-      var resource = PlainResource.create(response.responseText);
+      var resource = BaseResource.create(response.responseText);
       resourceDeferred.resolve(resource);
     });
 

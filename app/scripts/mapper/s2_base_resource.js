@@ -1,12 +1,14 @@
 define(['mapper/class'], function(Class){
   'use strict';
-  var PlainResource = new Class;
+  var BaseResource = new Class;
 
-  PlainResource.extend({
+  BaseResource.extend({
     create: function(rawJson){
-      var resource = new this;
-      resource.rawJson = rawJson;
+      var resource          = new this;
+      resource.rawJson      = rawJson;
 
+      // This assumes that there is only one key and it's always the
+      // resourceType.
       resource.resourceType = Object.keys(rawJson)[0];
       resource.addActionsTo();
 
@@ -14,7 +16,7 @@ define(['mapper/class'], function(Class){
     }
   });
 
-  PlainResource.include({
+  BaseResource.include({
     addActionsTo: function (resource){
       var resourceJson    = this.rawJson[this.resourceType];
       var match_uuid      = new RegExp('\\/'+resourceJson.uuid);
@@ -36,5 +38,5 @@ define(['mapper/class'], function(Class){
     }
   });
 
-  return PlainResource;
+  return BaseResource;
 });
