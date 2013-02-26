@@ -1,5 +1,8 @@
 define(['mapper/class'], function(Class){
   'use strict';
+
+  // BaseResource is intended to be an abstract class used by concrete
+  // resource types such as tube, order and spin column.
   var BaseResource = new Class;
 
   BaseResource.extend({
@@ -13,6 +16,18 @@ define(['mapper/class'], function(Class){
       resource.addActionsTo();
 
       return resource;
+    },
+
+    findByEan13Barcode: function(ean13){
+      if (this.resourceType === undefined) throw {
+        name:     'Unknown ResourceType',
+        message:  'resourceType not set for this class'
+      }
+
+
+
+      return 'TUBEPROMISE';
+
     }
   });
 
