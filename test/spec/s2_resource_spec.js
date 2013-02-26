@@ -3,7 +3,7 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
 
   // We use an empty object for test results so that we can use a
   // string as a pointer to a returned value.
-  var results = {};
+  var results;
 
   function assignResultTo(target){
     return function(source){ 
@@ -15,12 +15,13 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
   config.setTestJson('dna_only_extraction');
 
   describe('S2 Resource mapping a tube:-', function(){
-    config.currentStage = 'stage1';
-    var rawTubeJSON     = config.getTestJson()['/11111111-2222-3333-4444-555555555555'];
-    var resourcePromise = new S2Resource('11111111-2222-3333-4444-555555555555');
+      results = {};
 
-    // .done() sets a tube through a side effect
-    resourcePromise.done(assignResultTo('tube'));
+      config.currentStage = 'stage1';
+      var rawTubeJSON     = config.getTestJson()['/11111111-2222-3333-4444-555555555555'];
+      var resourcePromise = new S2Resource('11111111-2222-3333-4444-555555555555');
+      resourcePromise.done(assignResultTo('tube'));
+
 
     it('has a rawJson attribute that matches the JSON returned by S2.',function(){
       expect(results.tube.rawJson).toBe(rawTubeJSON);
@@ -50,7 +51,28 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
       })
     });
 
+    // it("returns it's current batch when .batch() is called", function(){
+    //   expect(results.tube.getBatch()).toBeDefined();
+    // });
+  });
 
+  describe("S2Resource mapping a order",function(){
+    beforeEach(function(){
+      config.currentStage = 'stage1';
+      (new S2Resource("11111111-2222-3333-4444-999999999999")).done(assignResultTo('order'));
+    });
+
+    it("makes OrderResources when the resource is an order",function(){
+      // expect(results.tube instanceof TubeLikeResource).toBe(true);
+      expect(results.order).toBeDefined();
+    });
+
+  });
+
+  describe("Searcing for a Resource by EAN13 barcode", function(){
+    it("Takes an EAN13 barcode and returns the corresponding resource", function(){
+      // expect(typeof S2 Resource.findByEan13Barcode('2345678901234')).toBe('tube');
+    });
   });
 
 });
