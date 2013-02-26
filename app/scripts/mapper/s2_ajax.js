@@ -1,4 +1,4 @@
-define(['config'], function (config) {
+define (['config'], function (config) {
   'use strict';
 
   // actionMethods maps the ajax request type to RESTful CRUD operations,
@@ -8,31 +8,30 @@ define(['config'], function (config) {
   //   Upate  to HTTP PUT
   //   Delete to HTTP DELETE
   var actionMethods = {
-    search:  'POST',    // This a POST because we are creating a search object
-    first:   'GET',
-    create:  'POST',
-    read:    'GET',     // Read maps to GET
-    last:    'GET',
-    update:  'PUT',     // Update maps to PUT
-    delete:  'DELETE',  // Update maps to PUT
+    search:'POST', // This a POST because we are creating a search object
+    first: 'GET',
+    create:'POST',
+    read:  'GET', // Read maps to GET
+    last:  'GET',
+    update:'PUT', // Update maps to PUT
+    delete:'DELETE', // Update maps to PUT
   };
 
 
-  return function(){
+  return function () {
     // This is an injection of ajax behaviour to allow us to
     // unit test from file.
-    var ajax = (config.dummyAjax || $.ajax);
 
     // Returns an jqXHR promise or a dummy
     // passing back to the mathcing presenter, callbacks are added there.
-    this.send = function(action, actionPath, data) {
+    this.send = function (action, actionPath, data) {
 
-      return ajax({
-        type:         actionMethods[action],
-        url:          config.apiUrl + (actionPath || ''),
-        contentType:  "json",
-        dataType:     "json",
-        data:         data
+      return config.ajax ({
+        type:       actionMethods[action],
+        url:        config.apiUrl + (actionPath || ''),
+        contentType:"json",
+        dataType:   "json",
+        data:       data
       });
     };
 
