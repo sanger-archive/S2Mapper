@@ -69,10 +69,5 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
 
   });
 
-  describe("Searcing for a Resource by EAN13 barcode", function(){
-    it("Takes an EAN13 barcode and returns the corresponding resource", function(){
-      // expect(typeof S2 Resource.findByEan13Barcode('2345678901234')).toBe('tube');
-    });
-  });
 
 });

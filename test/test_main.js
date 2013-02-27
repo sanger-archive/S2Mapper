@@ -1,4 +1,4 @@
-require.config ({
+require.config({
   shim: {
   },
   paths:{
@@ -11,6 +11,6 @@ require.config ({
   }
 });
 
-require (['domReady!', 'spec/s2_ajax_spec'], function () {
-  window.setTimeout (runJasmineTests, 100);
+require(['domReady!', 'spec/s2_ajax_spec', 'spec/s2_resource_spec', 'spec/s2_base_resource_spec', 'spec/s2_tube_resource_spec'], function() {
+  window.setTimeout(runJasmineTests, 100);
 });
