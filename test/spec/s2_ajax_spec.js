@@ -25,20 +25,70 @@ define (['config', 'mapper/s2_resource', 'text!json/rna_manual_extraction.json',
     }
   };
 
-  //append the tests that should return the correct data at each stage/step
-  $.each (config.testJSON, function (stageno, stage) {
-    if (jasmineTests[stageno]) {
-      describe (stage.description, function () {
-        $.each (stage.steps, function (stepno, step) {
-          if (jasmineTests[stageno][stepno]) {
-            var actual = jasmineTests[stageno][stepno] (),
-              expected = config.testJSON[stageno].steps[stepno].response;
-            it ('Matches stage ' + stageno + ', step ' + stepno + ' of JSON file', function () {
-              expect (expected).toEqual (actual);
-            });
-          }
-        })
-      });
-    }
-  })
+  config.setTestJson('dna_only_extraction');
+
+  var s2_ajax = new S2Ajax();
+
+
+  describe('Mocked s2_ajax object', function(){
+    config.currentStage = 'stage1';
+    var tube;
+    s2_ajax.send(
+        'read',
+        '/11111111-2222-3333-4444-555555555555').
+          done(function(response){
+          tube = response.responseText;
+        });
+
+    it('returns an S2Resource object', function(){
+      expect(tube).toBeDefined();
+    });
+
+    it('matches data directly from JSON file', function(){
+      // send uuid or barcode to grab resources
+      expect(tube).toEqual(config.getTestJson()["/11111111-2222-3333-4444-555555555555"]);
+    });
+
+  });
+
+  describe('S2 Root', function(){
+    config.currentStage = 'stage1';
+
+    // We can only access the response object through a side effect.
+    var s2root;
+
+    s2_ajax.send('read').done(function(response){
+      s2root = response.responseText;
+    });
+
+    it('returns an object', function(){
+      expect(s2root).toBeDefined();
+    });
+
+    it('returns an object containing searches', function(){
+      expect(s2root.searches).toBeDefined();
+
+    });
+  });
+
+
+
+  // *** Marked as WIP.  Probably moved out to another file ***
+  //
+  // //append the tests that should return the correct data at each stage/step
+  // $.each (config.testJSON, function (stageno, stage) {
+  //   if (jasmineTests[stageno]) {
+  //     describe (stage.description, function () {
+  //       $.each (stage.steps, function (stepno, step) {
+  //         if (jasmineTests[stageno][stepno]) {
+  //           var actual = jasmineTests[stageno][stepno] (),
+  //             expected = config.testJSON[stageno].steps[stepno].response;
+  //           it ('Matches stage ' + stageno + ', step ' + stepno + ' of JSON file', function () {
+  //             expect (expected).toEqual (actual);
+  //           });
+  //         }
+  //       })
+  //     });
+  //   }
+  // })
 });

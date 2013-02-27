@@ -1,12 +1,18 @@
-define ([], function () {
+define(['json/dna_only_extraction'], function(dnaJson) {
   'use strict';
 
   var config = {
     apiUrl:'', // NOT USED IN TESTING
 
-    currentStage:1,
+    currentStage: 'stage1',
 
-    getTestJson:function () {
+    setTestJson: function(workflow){
+      // Fixme Not working ideally yet still having to require
+      // the package on module load.
+      config.testJSON = require('json/'+workflow);
+    },
+
+    getTestJson: function(){
       return config.testJSON[config.currentStage];
     },
 
@@ -32,11 +38,11 @@ define ([], function () {
       // We resolve the Deferred object before return so any callbacks added
       // with .done() are called as soon as they're added, which should solve 
       // testing latency issues.
-      return $.Deferred ().resolve ({
-        url:         '/something/other',
-        'status':    200,
-        responseTime:750,
-        responseText:config.getTestJson ()[requestOptions.url]
+      return $.Deferred().resolve({
+        url:           '/something/other',
+        'status':      200,
+        responseTime:  750,
+        responseText:  config.getTestJson()[requestOptions.url]
       });
     }
   };
