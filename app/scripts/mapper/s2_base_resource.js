@@ -1,5 +1,5 @@
 define(['require'], function(require){
-  // 'use strict';
+  'use strict';
 
   // BaseResource is intended to be an abstract class used by concrete
   // resource types such as tube, order and spin column.
@@ -7,13 +7,13 @@ define(['require'], function(require){
 
   $.extend(BaseResource, {
     create: function(rawJson){
-      var resource          = this;
+      var resource          = Object.create(null);
       resource.rawJson      = rawJson;
 
       // This assumes that there is only one key and it's always the
       // resourceType.
       resource.resourceType = Object.keys(rawJson)[0];
-      this.addActions();
+      this.addActions(resource);
 
       return resource;
     },
@@ -27,9 +27,8 @@ define(['require'], function(require){
       return 'TUBEPROMISE';
     },
 
-    addActions: function (){
-      var resource = this;
-      var resourceJson    = resource.rawJson[this.resourceType];
+    addActions: function (resource){
+      var resourceJson    = resource.rawJson[resource.resourceType];
       var match_uuid      = new RegExp('\\/'+resourceJson.uuid);
       var resourceActions = resourceJson.actions;
 
@@ -44,7 +43,8 @@ define(['require'], function(require){
         // original resorcePromise constructor.
         resource[action] = function (sendData) {
           if (action === 'delete') debugger;
-          return new require('mapper/s2_resource')(resource.rawJson.uuid, action,  sendData);
+          var ResourceFactory = require('mapper/s2_resource');
+          return ResourceFactory(resource.rawJson.uuid, action,  sendData);
         };
       }
     }

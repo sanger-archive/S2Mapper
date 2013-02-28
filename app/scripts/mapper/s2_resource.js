@@ -19,8 +19,12 @@ define(['mapper/s2_tube_resource', 'mapper/s2_order_resource',  'mapper/s2_ajax'
       '/'+uuid,
       data
     ).done(function(response){
+      // TODO[sd9] Not sure is this test is actually needed...
+      // Check and remove.
+      // if (response.responseText === undefined) return;
       var resourceType = Object.keys(response.responseText)[0];
-      var resource = resourceClass[resourceType].create(response.responseText);
+      var resClass = resourceClass[resourceType];
+      var resource = resClass.create(response.responseText);
       resourceDeferred.resolve(resource);
     });
 

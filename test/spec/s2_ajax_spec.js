@@ -1,44 +1,43 @@
 define (['config', 'mapper/s2_resource', 'text!json/rna_manual_extraction.json', 'mapper/s2_ajax'], function (config, S2Resource, testJSON, S2Ajax) {
   'use strict';
   //load appropriate JSON for this workflow
-  config.testJSON = $.parseJSON (testJSON);
+  // config.testJSON = $.parseJSON (testJSON);
   var s2ajax = new S2Ajax;
   //set up the tests with regard to the
-  var jasmineTests;
-  jasmineTests = {
-    1:{
-      1:function () {
-        //create the S2.findByEan13Barcode to prevent page failing
-        var S2Tube = {
-          findByEan13Barcode:function (barcode) {
-            return s2ajax.send ('read', '/searches', {data:barcode});
-          }
-        };
-        return S2Tube.findByEan13Barcode ('XX333333K').done (function (returnedResource) {
-          return returnedResource;
-        })
-      },
-      2:function () {
-        //this will obviously pass, we are returning the JSON it's checking against!!
-        return config.testJSON[1].steps[2].response;
-      }
-    }
-  };
+  // var jasmineTests;
+  // jasmineTests = {
+  //   1:{
+  //     1:function () {
+  //       //create the S2.findByEan13Barcode to prevent page failing
+  //       var S2Tube = {
+  //         findByEan13Barcode:function (barcode) {
+  //           return s2ajax.send ('read', '/searches', {data:barcode});
+  //         }
+  //       };
+  //       return S2Tube.findByEan13Barcode ('XX333333K').done (function (returnedResource) {
+  //         return returnedResource;
+  //       })
+  //     },
+  //     2:function () {
+  //       //this will obviously pass, we are returning the JSON it's checking against!!
+  //       return config.testJSON[1].steps[2].response;
+  //     }
+  //   }
+  // };
 
-  config.setTestJson('dna_only_extraction');
-
-  var s2_ajax = new S2Ajax();
-
-
-  describe('Mocked s2_ajax object', function(){
-    config.currentStage = 'stage1';
+  describe('Mocked s2ajax object', function(){
     var tube;
-    s2_ajax.send(
+
+    beforeEach(function(){
+      config.setTestJson('dna_only_extraction');
+      config.currentStage = 'stage1';
+
+      s2ajax.send(
         'read',
         '/11111111-2222-3333-4444-555555555555').
-          done(function(response){
-          tube = response.responseText;
-        });
+        done(function(response){ tube = response.responseText; });
+
+    });
 
     it('returns an S2Resource object', function(){
       expect(tube).toBeDefined();
@@ -52,14 +51,16 @@ define (['config', 'mapper/s2_resource', 'text!json/rna_manual_extraction.json',
   });
 
   describe('S2 Root', function(){
-    config.currentStage = 'stage1';
 
     // We can only access the response object through a side effect.
     var s2root;
-
-    s2_ajax.send('read').done(function(response){
-      s2root = response.responseText;
+    beforeEach(function(){
+      config.currentStage = 'stage1';
+      s2ajax.send('read').done(function(response){
+        s2root = response.responseText;
+      });
     });
+
 
     it('returns an object', function(){
       expect(s2root).toBeDefined();
