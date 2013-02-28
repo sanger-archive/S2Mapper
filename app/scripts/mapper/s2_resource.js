@@ -1,18 +1,26 @@
-define(['mapper/s2_base_resource', 'mapper/s2_ajax'], function (BaseResource, S2Ajax) {
+define(['mapper/s2_tube_resource', 'mapper/s2_order_resource',  'mapper/s2_ajax'], function (TubeResource, OrderResource, S2Ajax) {
   "use strict";
 
   var s2_ajax = new S2Ajax();
 
+  var resourceClass = {
+    tube:   TubeResource,
+    order:  OrderResource
+  };
+
   // Constructor function
   var ResourcePromise = function(uuid, sendAction, data){
     var resourceDeferred = $.Deferred();
+
+    console.log('action ' +(sendAction || 'read'));
 
     s2_ajax.send(
       sendAction || 'read',
       '/'+uuid,
       data
     ).done(function(response){
-      var resource = BaseResource.create(response.responseText);
+      var resourceType = Object.keys(response.responseText)[0];
+      var resource = resourceClass[resourceType].create(response.responseText);
       resourceDeferred.resolve(resource);
     });
 

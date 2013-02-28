@@ -1,15 +1,12 @@
-define(['mapper/class', 'mapper/s2_base_resource'], function(Class, BaseResource){
+define(['mapper/s2_base_resource'], function(BaseResource){
   'use strict';
 
-  var TubeResource = new Class(BaseResource);
+  var TubeResource = Object.create(BaseResource);
+  TubeResource.resourceType = 'tube';
 
-  TubeResource.extend({
-    resourceType: 'tube',
-    extended: function(){
-      console.log('tube extended');
-    }
+  $.extend(TubeResource, {
+    getBatch: function(){}
   });
-
 
   return TubeResource;
 });
