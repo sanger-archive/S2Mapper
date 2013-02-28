@@ -14,7 +14,7 @@ define (['config'], function (config) {
     read:  'GET', // Read maps to GET
     last:  'GET',
     update:'PUT', // Update maps to PUT
-    delete:'DELETE', // Update maps to PUT
+    'delete':'DELETE', // Update maps to PUT
   };
 
 

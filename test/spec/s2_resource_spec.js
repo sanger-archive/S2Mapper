@@ -33,10 +33,6 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
       });
     }
 
-    it("has a resourceType attribute of 'tube'", function(){
-      expect(results.tube.resourceType).toBe('tube');
-    });
-
     describe("the exceptions it can throw:-", function() {
       function loadingABadTube () {
         config.currentStage = 'badResources';
@@ -44,16 +40,14 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
       }
 
       it("throws if the resources UUID doesn't match for all of the resource's action uuids", function() {
+
         expect(loadingABadTube).toThrow({
-          name:     'Resource Validaion',
+          name:     "Resource Validaion",
           message:  "Resource UUIDs don't match up."
         });
       })
     });
 
-    // it("returns it's current batch when .batch() is called", function(){
-    //   expect(results.tube.getBatch()).toBeDefined();
-    // });
   });
 
   describe("S2Resource mapping a order",function(){

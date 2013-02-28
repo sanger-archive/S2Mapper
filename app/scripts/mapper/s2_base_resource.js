@@ -1,19 +1,19 @@
-define(['mapper/class'], function(Class){
+define(['require'], function(require){
   'use strict';
 
   // BaseResource is intended to be an abstract class used by concrete
   // resource types such as tube, order and spin column.
-  var BaseResource = new Class;
+  var BaseResource = Object.create(null);
 
-  BaseResource.extend({
+  $.extend(BaseResource, {
     create: function(rawJson){
-      var resource          = new this;
+      var resource          = Object.create(null);
       resource.rawJson      = rawJson;
 
       // This assumes that there is only one key and it's always the
       // resourceType.
       resource.resourceType = Object.keys(rawJson)[0];
-      resource.addActionsTo();
+      this.addActions(resource);
 
       return resource;
     },
@@ -24,16 +24,11 @@ define(['mapper/class'], function(Class){
         message:  'resourceType not set for this class'
       }
 
-
-
       return 'TUBEPROMISE';
+    },
 
-    }
-  });
-
-  BaseResource.include({
-    addActionsTo: function (resource){
-      var resourceJson    = this.rawJson[this.resourceType];
+    addActions: function (resource){
+      var resourceJson    = resource.rawJson[resource.resourceType];
       var match_uuid      = new RegExp('\\/'+resourceJson.uuid);
       var resourceActions = resourceJson.actions;
 
@@ -46,8 +41,10 @@ define(['mapper/class'], function(Class){
 
         // These function close over the resource's uuid as provided to the
         // original resorcePromise constructor.
-        this[action] = function (sendData) {
-          return new ResourcePromise(uuid, action,  data);
+        resource[action] = function (sendData) {
+          if (action === 'delete') debugger;
+          var ResourceFactory = require('mapper/s2_resource');
+          return ResourceFactory(resource.rawJson.uuid, action,  sendData);
         };
       }
     }
