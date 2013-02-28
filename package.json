@@ -1,7 +1,13 @@
 {
-  "author": "",
-  "name": "",
-  "version": "0.0.0",
-  "dependencies": {},
-  "devDependencies": {}
+    "author": "WTSI PSD",
+    "name": "S2Mapper",
+    "version": "0.0.1",
+    "dependencies": {},
+    "devDependencies": {
+        "yeoman": "0.9.6",
+        "bower": "0.3.2"
+    },
+    "scripts": {
+        "test": "node_modules/.bin/bower install && node_modules/.bin/yeoman test --force"
+    }
 }
