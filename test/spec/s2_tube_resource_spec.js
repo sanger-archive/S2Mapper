@@ -25,20 +25,37 @@ define(['config','mapper/s2_resource', 'mapper/s2_tube_resource'], function(conf
 
     });
 
+    describe("finding active orders which contain the batch", function(){
+      it("returns an array of Orders when .orders() is called")
+    });
 
     // This batch behaviour should move to a module to be shared by other item
     // type resources such as spin column and plate.
-    describe("calling .getBatch() on a tube", function(){
+    xdescribe("calling .batch() on a tube", function(){
 
-      describe("when the resource is in a batch",function(){
+      describe("when the tube is not in a batch", function(){
         beforeEach(function(){
           new S2Resource('11111111-2222-3333-4444-555555555555').done(assignResultTo('tube'));
+          results.tube.batch().done(assignResultTo('batch'));
+        });
+
+        it("returns a new batch resource that is not persisted against S2", function(){
+          expect(results.batch.new_resource).toBe(false);
+        });
+      });
+
+      describe("when the tube is in a batch",function(){
+        beforeEach(function(){
+          new S2Resource('11111111-2222-3333-4444-555555555555').done(assignResultTo('tube'));
+          results.tube.batch().done(assignResultTo('batch'));
         });
 
         it("returns a batchPromise which resolves with a batch.", function(){
-          expect(results.tube.getBatch().done).toBeDefined();
+          expect(results.batch).toBeDefined();
         });
+
       });
+
 
     });
 
