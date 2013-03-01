@@ -1,4 +1,4 @@
-define(['mapper/s2_base_resource', 'mapper/s2_batch_resource'], function(BaseResource, BatchResource){
+define(['mapper/s2_base_resource', 'mapper/s2_batch_resource', 'mapper/s2_search_resource'], function(BaseResource, BatchResource, SearchResource){
   'use strict';
 
   var TubeResource = Object.create(BaseResource);
@@ -11,16 +11,24 @@ define(['mapper/s2_base_resource', 'mapper/s2_batch_resource'], function(BaseRes
       // if order.item has a batch uuid return it
       // else create new batch object
       return $.Deferred();
+    },
+
+    order: function(){
+      // Search for Order from tube uuid.
+      SearchResource.create({
+      });
     }
   };
 
-  $.extend(TubeResource, {
-    create: function(rawJson){
-      var baseResource = BaseResource.create(rawJson);
+  var classMethods = {
+    create: function(options){
+      var baseResource = BaseResource.create(options);
       $.extend(baseResource, instanceMethods);
       return baseResource;
     }
-  });
+  };
+
+  $.extend(TubeResource, classMethods);
 
   return TubeResource;
 });

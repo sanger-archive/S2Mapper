@@ -1,4 +1,4 @@
-define(['mapper/s2_tube_resource', 'mapper/s2_order_resource',  'mapper/s2_ajax'], function (TubeResource, OrderResource, S2Ajax) {
+define([ 'mapper/s2_tube_resource', 'mapper/s2_order_resource', 'mapper/s2_ajax' ], function (TubeResource, OrderResource, S2Ajax) {
   "use strict";
 
   var s2_ajax = new S2Ajax();
@@ -14,15 +14,15 @@ define(['mapper/s2_tube_resource', 'mapper/s2_order_resource',  'mapper/s2_ajax'
 
     s2_ajax.send(
       sendAction || 'read',
-      '/'+uuid,
+      '/' + (uuid || ''),
       data
     ).done(function(response){
-      // TODO[sd9] Not sure is this test is actually needed...
-      // Check and remove.
-      // if (response.responseText === undefined) return;
       var resourceType = Object.keys(response.responseText)[0];
       var resClass = resourceClass[resourceType];
-      var resource = resClass.create(response.responseText);
+      var resource = resClass.create({
+        rawJson: response.responseText
+      });
+
       resourceDeferred.resolve(resource);
     });
 

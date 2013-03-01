@@ -6,7 +6,8 @@ define(['require'], function(require){
   var BaseResource = Object.create(null);
 
   $.extend(BaseResource, {
-    create: function(rawJson){
+    create: function(options){
+      var rawJson           = options.rawJson;
       var resource          = Object.create(null);
       resource.rawJson      = rawJson;
 

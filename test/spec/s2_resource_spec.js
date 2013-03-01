@@ -1,3 +1,5 @@
+// TODO[sd9] Rename this to s2_resource_factory.
+// Rename needs to be coordinated with pipeline applications.
 define(['config', 'mapper/s2_resource'],function(config, S2Resource){
   'use strict';
 
@@ -14,7 +16,8 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
 
   config.setTestJson('dna_only_extraction');
 
-  describe('S2 Resource mapping a tube:-', function(){
+  describe('S2Resource:-', function(){
+    describe('Mapping a tube,', function(){
       results = {};
 
       config.currentStage = 'stage1';
@@ -23,45 +26,46 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
       resourcePromise.done(assignResultTo('tube'));
 
 
-    it('has a rawJson attribute that matches the JSON returned by S2.',function(){
-      expect(results.tube.rawJson).toBe(rawTubeJSON);
-    });
-
-    for (var action in rawTubeJSON.tube.actions){
-      it('has a '+action+' action method matching the raw JSON action attribute.', function(){
-        expect(results.tube[action]).toBeDefined();
+      it('has a rawJson attribute that matches the JSON returned by S2.',function(){
+        expect(results.tube.rawJson).toBe(rawTubeJSON);
       });
-    }
 
-    describe("the exceptions it can throw:-", function() {
-      function loadingABadTube () {
-        config.currentStage = 'badResources';
-        var tubePromise     = new S2Resource('11111111-2222-3333-4444-555555555555');
+      for (var action in rawTubeJSON.tube.actions){
+        it('has a '+action+' action method matching the raw JSON action attribute.', function(){
+          expect(results.tube[action]).toBeDefined();
+        });
       }
 
-      it("throws if the resources UUID doesn't match for all of the resource's action uuids", function() {
+      describe("the exceptions it can throw:-", function() {
+        function loadingABadTube () {
+          config.currentStage = 'badResources';
+          var tubePromise     = new S2Resource('11111111-2222-3333-4444-555555555555');
+        }
 
-        expect(loadingABadTube).toThrow({
-          name:     "Resource Validaion",
-          message:  "Resource UUIDs don't match up."
-        });
-      })
+        it("throws if the resources UUID doesn't match for all of the resource's action uuids.", function() {
+
+          expect(loadingABadTube).toThrow({
+            name:     "Resource Validaion",
+            message:  "Resource UUIDs don't match up."
+          });
+        })
+      });
+
+    });
+
+    describe("Mapping an order,",function(){
+      beforeEach(function(){
+        config.currentStage = 'stage1';
+        (new S2Resource("11111111-2222-3333-4444-999999999999")).done(assignResultTo('order'));
+      });
+
+      it("makes OrderResources when the resource is an order.",function(){
+        // expect(results.tube instanceof TubeLikeResource).toBe(true);
+        expect(results.order).toBeDefined();
+      });
+
     });
 
   });
-
-  describe("S2Resource mapping a order",function(){
-    beforeEach(function(){
-      config.currentStage = 'stage1';
-      (new S2Resource("11111111-2222-3333-4444-999999999999")).done(assignResultTo('order'));
-    });
-
-    it("makes OrderResources when the resource is an order",function(){
-      // expect(results.tube instanceof TubeLikeResource).toBe(true);
-      expect(results.order).toBeDefined();
-    });
-
-  });
-
 
 });
