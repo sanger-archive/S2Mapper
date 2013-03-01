@@ -12,8 +12,6 @@ define(['mapper/s2_tube_resource', 'mapper/s2_order_resource',  'mapper/s2_ajax'
   var ResourcePromise = function(uuid, sendAction, data){
     var resourceDeferred = $.Deferred();
 
-    console.log('action ' +(sendAction || 'read'));
-
     s2_ajax.send(
       sendAction || 'read',
       '/'+uuid,
