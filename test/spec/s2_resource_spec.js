@@ -36,14 +36,13 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
         });
       }
 
-      describe("the exceptions it can throw:-", function() {
+      xdescribe("the exceptions it can throw:-", function() {
         function loadingABadTube () {
           config.currentStage = 'badResources';
           var tubePromise     = new S2Resource('11111111-2222-3333-4444-555555555555');
         }
 
         it("throws if the resources UUID doesn't match for all of the resource's action uuids.", function() {
-
           expect(loadingABadTube).toThrow({
             name:     "Resource Validaion",
             message:  "Resource UUIDs don't match up."

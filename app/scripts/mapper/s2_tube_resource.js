@@ -1,4 +1,4 @@
-define(['mapper/s2_base_resource', 'mapper/s2_batch_resource', 'mapper/s2_search_resource'], function(BaseResource, BatchResource, SearchResource){
+define(['mapper/s2_base_resource', 'mapper/s2_batch_resource'], function(BaseResource, BatchResource ){
   'use strict';
 
   var TubeResource = Object.create(BaseResource);
@@ -15,8 +15,8 @@ define(['mapper/s2_base_resource', 'mapper/s2_batch_resource', 'mapper/s2_search
 
     order: function(){
       // Search for Order from tube uuid.
-      SearchResource.create({
-      });
+      // SearchResource.create({
+      // });
     }
   };
 
