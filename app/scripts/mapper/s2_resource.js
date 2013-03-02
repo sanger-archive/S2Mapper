@@ -9,7 +9,7 @@ define([ 'mapper/s2_tube_resource', 'mapper/s2_order_resource', 'mapper/s2_ajax'
   };
 
   // Constructor function
-  var ResourcePromise = function(uuid, sendAction, data){
+  var ResourcePromise = function(options){
 
     var resourceProcessor = function(response){
       var resourceType = Object.keys(response.responseText)[0];
@@ -24,9 +24,9 @@ define([ 'mapper/s2_tube_resource', 'mapper/s2_order_resource', 'mapper/s2_ajax'
     var resourceDeferred = $.Deferred();
 
     s2ajax.send(
-      sendAction || 'read',
-      '/' + (uuid || ''),
-      data
+      options.sendAction || 'read',
+      '/' + (options.uuid || ''),
+      options.data
     ).done(resourceProcessor);
 
     // Calling promise makes the defferd object readonly

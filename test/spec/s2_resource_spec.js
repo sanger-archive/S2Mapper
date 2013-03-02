@@ -8,7 +8,7 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
   var results;
 
   function assignResultTo(target){
-    return function(source){ 
+    return function(source){
       // Assignment through side effect; simultates callback.
       results[target] = source;
     }
@@ -22,7 +22,7 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
 
       config.currentStage = 'stage1';
       var rawTubeJSON     = config.getTestJson()['/11111111-2222-3333-4444-555555555555'];
-      var resourcePromise = new S2Resource('11111111-2222-3333-4444-555555555555');
+      var resourcePromise = new S2Resource({uuid: '11111111-2222-3333-4444-555555555555' });
       resourcePromise.done(assignResultTo('tube'));
 
 
@@ -39,7 +39,7 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
       xdescribe("the exceptions it can throw:-", function() {
         function loadingABadTube () {
           config.currentStage = 'badResources';
-          var tubePromise     = new S2Resource('11111111-2222-3333-4444-555555555555');
+          var tubePromise     = new S2Resource({uuid: '11111111-2222-3333-4444-555555555555'});
         }
 
         it("throws if the resources UUID doesn't match for all of the resource's action uuids.", function() {
@@ -55,7 +55,7 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
     describe("Mapping an order,",function(){
       beforeEach(function(){
         config.currentStage = 'stage1';
-        (new S2Resource("11111111-2222-3333-4444-999999999999")).done(assignResultTo('order'));
+        (new S2Resource({uuid: "11111111-2222-3333-4444-999999999999"})).done(assignResultTo('order'));
       });
 
       it("makes OrderResources when the resource is an order.",function(){
