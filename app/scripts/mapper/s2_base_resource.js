@@ -30,26 +30,22 @@ define(['require'], function(require){
 
     addActions: function (resource){
       var resourceJson    = resource.rawJson[resource.resourceType];
-      // var match_uuid      = new RegExp('\\/'+resourceJson.uuid);
       var resourceActions = resourceJson.actions;
 
+      // N.B. Remeber to generate the new action function inside a another
+      // function or else it will close over the last value of the action and
+      // url of the for loop.
       for (var action in resourceActions) {
-        // Check that resource UUID's match up
-        // if (!match_uuid.exec(resourceActions[action])) throw {
-        //   name:     'Resource Validaion',
-        //   message:  "Resource UUIDs don't match up."
-        // };
-
-        // These function close over the resource's uuid as provided to the
-        // original resorcePromise constructor.
-        resource[action] = function (sendData) {
-          var ResourceFactory = require('mapper/s2_resource');
-          return ResourceFactory({
-            url:         resourceActions[action],
-            sendAction:  action,
-            data:        sendData
-          });
-        };
+        resource[action] = (function(action, actionUrl){
+          return function (sendData) {
+            var ResourceFactory = require('mapper/s2_resource');
+            return ResourceFactory({
+                     url:  actionUrl,
+              sendAction:  action,
+                    data:  sendData
+            });
+          };
+        })(action, resourceActions[action]);
       }
     }
   });
