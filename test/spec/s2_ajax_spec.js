@@ -1,4 +1,4 @@
-define (['config', 'mapper/s2_resource', 'text!json/rna_manual_extraction.json', 'mapper/s2_ajax'], function (config, S2Resource, testJSON, S2Ajax) {
+define (['config', 'mapper/s2_resource', 'text!json/dna_and_rna_manual_extraction.json', 'mapper/s2_ajax'], function (config, S2Resource, testJSON, S2Ajax) {
   'use strict';
   //load appropriate JSON for this workflow
   // config.testJSON = $.parseJSON (testJSON);
@@ -46,7 +46,7 @@ define (['config', 'mapper/s2_resource', 'text!json/rna_manual_extraction.json',
 
       it('matches data directly from JSON file', function(){
         // send uuid or barcode to grab resources
-        expect(tube).toEqual(config.getTestJson()["/11111111-2222-3333-4444-555555555555"]);
+        expect(tube).toEqual(config.getTestJson("/11111111-2222-3333-4444-555555555555"));
       });
 
     });

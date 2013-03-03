@@ -21,7 +21,7 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
       results = {};
 
       config.currentStage = 'stage1';
-      var rawTubeJSON     = config.getTestJson()['/11111111-2222-3333-4444-555555555555'];
+      var rawTubeJSON     = config.getTestJson('/11111111-2222-3333-4444-555555555555');
       var resourcePromise = new S2Resource({uuid: '11111111-2222-3333-4444-555555555555' });
       resourcePromise.done(assignResultTo('tube'));
 

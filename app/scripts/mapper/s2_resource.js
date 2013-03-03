@@ -1,9 +1,14 @@
-define([ 'mapper/s2_tube_resource', 'mapper/s2_order_resource', 'mapper/s2_ajax' ], function (TubeResource, OrderResource, S2Ajax) {
+define([
+       'mapper/s2_base_resource',
+       'mapper/s2_tube_resource',
+       'mapper/s2_order_resource',
+       'mapper/s2_ajax'
+], function (BaseResource, TubeResource, OrderResource, S2Ajax) {
   "use strict";
 
   var s2ajax = new S2Ajax();
 
-  var resourceClass = {
+  var resourceClasses = {
     tube:   TubeResource,
     order:  OrderResource
   };
@@ -12,9 +17,9 @@ define([ 'mapper/s2_tube_resource', 'mapper/s2_order_resource', 'mapper/s2_ajax'
   var ResourcePromise = function(options){
 
     var resourceProcessor = function(response){
-      var resourceType = Object.keys(response.responseText)[0];
-      var resClass     = resourceClass[resourceType];
-      var resource     = resClass.create({
+      var resourceType  = Object.keys(response.responseText)[0];
+      var resourceClass = resourceClasses[resourceType] || BaseResource;
+      var resource      = resourceClass.create({
         rawJson: response.responseText
       });
 
@@ -23,9 +28,11 @@ define([ 'mapper/s2_tube_resource', 'mapper/s2_order_resource', 'mapper/s2_ajax'
 
     var resourceDeferred = $.Deferred();
 
+    var url = options.uuid? ('/'+options.uuid) : options.url;
+
     s2ajax.send(
       options.sendAction || 'read',
-      '/' + (options.uuid || ''),
+      url,
       options.data
     ).done(resourceProcessor);
 

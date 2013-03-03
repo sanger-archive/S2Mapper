@@ -1,23 +1,21 @@
 define([
-  'mapper/s2_ajax',
-  'mapper/s2_base_resource',
-  'mapper/s2_searches_resource'
-], function(S2Ajax, BaseResource, SearchesResource){
+       'mapper/s2_ajax',
+       'mapper/s2_base_resource',
+       'mapper/s2_root_resource'
+], function(S2Ajax, BaseResource, RootResource){
   'use strict';
 
   var s2_ajax = new S2Ajax();
-  var resourceClass = {
-    searches: SearchesResource
-  };
+
   var processResources = function(response){
     var rawJson  = response.responseText;
     var processedResources = {};
 
     for (var resource in rawJson){
-      var resourceJson = {};
+      var resourceJson       = {};
       resourceJson[resource] = rawJson[resource];
-      var resClass = resourceClass[resource] || BaseResource;
-      processedResources[resource] = resClass.create({
+
+      processedResources[resource] = BaseResource.create({
         rawJson: resourceJson
       });
     }

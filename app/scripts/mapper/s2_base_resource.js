@@ -44,7 +44,11 @@ define(['require'], function(require){
         // original resorcePromise constructor.
         resource[action] = function (sendData) {
           var ResourceFactory = require('mapper/s2_resource');
-          return ResourceFactory(resource.rawJson.uuid, action,  sendData);
+          return ResourceFactory({
+            url:         resourceActions[action],
+            sendAction:  action,
+            data:        sendData
+          });
         };
       }
     }
