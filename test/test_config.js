@@ -1,4 +1,6 @@
-define(['json/dna_only_extraction'], function(dnaJson) {
+define([
+       'json/dna_only_extraction'
+], function(dnaJson) {
   'use strict';
 
   var config = {
@@ -17,12 +19,13 @@ define(['json/dna_only_extraction'], function(dnaJson) {
       var resultFromJson = config.testJSON[config.currentStage][path];
 
       if (resultFromJson === undefined)
-        throw "Path: '"+path+"' not found in test JSON for stage: "+config.currentStage;
+        throw "Path: '"+path+"' not found in test JSON for stage: "
+        +config.currentStage;
 
       return resultFromJson;
     },
 
-    cpResource:function (original_uuid, new_uuid) {
+    cpResource: function (original_uuid, new_uuid) {
       var resourceJsonClone = JSON.parse (JSON.stringify (
         config.getTestJson ()["/" + original_uuid]));
         resourceJsonClone.uuid = new_uuid;

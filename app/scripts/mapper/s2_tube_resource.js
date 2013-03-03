@@ -16,6 +16,7 @@ define(['mapper/s2_base_resource', 'mapper/s2_batch_resource'], function(BaseRes
     order: function(){
       // Search for Order from tube uuid.
       // SearchResource.create({
+      throw "NOT YET IMPLEMENTED";
       // });
     }
   };

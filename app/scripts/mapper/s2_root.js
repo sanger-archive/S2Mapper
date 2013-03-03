@@ -1,8 +1,7 @@
 define([
        'mapper/s2_ajax',
-       'mapper/s2_base_resource',
-       'mapper/s2_root_resource'
-], function(S2Ajax, BaseResource, RootResource){
+       'mapper/s2_base_resource'
+], function(S2Ajax, BaseResource){
   'use strict';
 
   var s2_ajax = new S2Ajax();
