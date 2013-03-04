@@ -21,6 +21,17 @@ define(['mapper/s2_base_resource', 'mapper/s2_batch_resource'], function(BaseRes
     }
   };
 
+  var tubeSearchProcessor = function(resultDeferred){
+    return function(response){
+      var tubesJson = response.responseText.tubes;
+
+      // We _should_ only see one result for an EAN13 search...
+      var tube = Tube.instantiate({rawJson: tubesJson[0]});
+
+      return resultDeferred.resolve(tube);
+    };
+  };
+
   var classMethods = {
     instantiate: function(options){
       var baseResource = BaseResource.instantiate(options);
@@ -28,11 +39,29 @@ define(['mapper/s2_base_resource', 'mapper/s2_batch_resource'], function(BaseRes
       return baseResource;
     },
 
-    findByEan13Barcode: function(){
-      var tubeDeferred = $.Deferred();
+    findByEan13Barcode: function(ean13){
+      var tubesDeferred = $.Deferred();
+
+      this.root.searches.create({
+        "search":  {
+          "description":  "search for barcoded tube",
+          "model":        "tube",
+          "criteria":     {
+            "label":  {
+              "position":  "barcode",
+              "type":      "ean13",
+              "value":     [ean13]
+            }
+          }
+        }
+      }).done(function(searchResult){
+        searchResult.first(undefined, tubeSearchProcessor).done(function(tubes){
+          tubesDeferred.resolve(tubes);
+        });
+      });
 
 
-      return tubeDeferred.resolve("TUBE");
+      return tubesDeferred.promise();
     }
   };
 
@@ -40,3 +69,4 @@ define(['mapper/s2_base_resource', 'mapper/s2_batch_resource'], function(BaseRes
 
   return Tube;
 });
+

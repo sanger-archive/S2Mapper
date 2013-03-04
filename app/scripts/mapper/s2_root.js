@@ -8,25 +8,33 @@ define([
   // register resources with root.
   var s2_ajax = new S2Ajax();
 
+  var resourceClasses = {
+    tubes: Tube
+  };
+
   var processResources = function(response){
     var rawJson  = response.responseText;
     var processedResources = {};
 
     for (var resource in rawJson){
       var resourceJson       = {};
+      // wrap the json so that it looks like any other resource
       resourceJson[resource] = rawJson[resource];
 
-      processedResources[resource] = BaseResource.instantiate({
+      var resourceClass = resourceClasses[resource]? resourceClasses[resource] : BaseResource;
+
+      processedResources[resource] = resourceClass.instantiate({
         rawJson: resourceJson
       });
+
+      // Extend the class if it has specialisation set up above.
+      $.extend(processedResources[resource], resourceClasses[resource]);
     }
 
     return processedResources;
   };
 
   var S2Root = Object.create(null);
-
-  var instanceMethods = { };
 
   var classMethods = {
     load: function(){
@@ -36,15 +44,16 @@ define([
       s2_ajax.send().done(function(response){
         var rootInstance = processResources(response);
 
-        $.extend(rootInstance, instanceMethods);
-
-        $.extend(rootInstance.tubes, Tube)
+        for (var resource in rootInstance){
+          rootInstance[resource].root = rootInstance;
+        }
 
         rootDeferred.resolve(rootInstance);
       });
 
       return rootDeferred;
     }
+
   };
 
   $.extend(S2Root, classMethods);
