@@ -31,7 +31,9 @@ define([
 
       it("takes an EAN13 barcode and returns the corresponding resource.", function(){
         expect(results.tube).toBeDefined();
+        expect(results.tube.rawJson).toBeDefined();
       });
+
 
     });
 

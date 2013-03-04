@@ -7,9 +7,9 @@ define(['require'], function(require){
 
   $.extend(BaseResource, {
     instantiate: function(options){
-      var rawJson           = options.rawJson;
-      var resource          = Object.create(null);
-      resource.rawJson      = rawJson;
+      var rawJson      = options.rawJson;
+      var resource     = Object.create(null);
+      resource.rawJson = rawJson;
 
       // This assumes that there is only one key and it's always the
       // resourceType.
@@ -37,12 +37,13 @@ define(['require'], function(require){
       // url of the for loop.
       for (var action in resourceActions) {
         resource[action] = (function(action, actionUrl){
-          return function (sendData) {
+          return function (sendData, resourceProcessor) {
             var ResourceFactory = require('mapper/s2_resource_factory');
             return new ResourceFactory({
-                     url:  actionUrl,
-              sendAction:  action,
-                    data:  sendData
+              url:                actionUrl,
+              sendAction:         action,
+              data:               sendData,
+              resourceProcessor:  resourceProcessor
             });
           };
         })(action, resourceActions[action]);

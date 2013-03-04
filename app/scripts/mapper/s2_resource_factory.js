@@ -29,14 +29,14 @@ define([
     };
 
     var resourceDeferred = $.Deferred();
-
-    var url = options.uuid? ('/'+options.uuid) : options.url;
+    var url              = options.uuid? ('/'+options.uuid) : options.url;
+    var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor;
 
     s2ajax.send(
       options.sendAction || 'read',
       url,
       options.data
-    ).done(resourceProcessor);
+    ).done(ajaxProcessor);
 
     // Calling promise makes the defferd object readonly
     return resourceDeferred.promise();
