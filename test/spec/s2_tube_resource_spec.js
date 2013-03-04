@@ -1,4 +1,8 @@
-define(['config','mapper/s2_resource_factory', 'mapper/s2_tube_resource'], function(config, ResourceFactory, S2TubeResource){
+define([
+       'config',
+       'mapper/s2_resource_factory',
+       'mapper/s2_root'
+], function(config, ResourceFactory, Root){
   'use strict';
 
   // We use an empty object for test results so that we can use a
@@ -14,13 +18,19 @@ define(['config','mapper/s2_resource_factory', 'mapper/s2_tube_resource'], funct
 
   config.setTestJson('dna_only_extraction');
 
-  describe("S2TubeResource:-",function(){
+  describe("Tube Resource:-",function(){
+    var s2;
 
-    describe("Searcing for a Resource by EAN13 barcode,", function(){
+    describe("Searcing for a tube by EAN13 barcode,", function(){
+      beforeEach(function(){
+        Root.load().done(assignResultTo('root'));
+        s2 = results.root;
 
-      // TODO[sd9] This is stubbed out waiting pending a latter ticket.
+        s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
+      });
+
       it("takes an EAN13 barcode and returns the corresponding resource.", function(){
-        expect(S2TubeResource.findByEan13Barcode('2345678901234')).toBe('TUBEPROMISE');
+        expect(results.tube).toBeDefined();
       });
 
     });
@@ -35,12 +45,12 @@ define(['config','mapper/s2_resource_factory', 'mapper/s2_tube_resource'], funct
 
       });
 
-      it("is carried out by callind .order() on a TubeResource.", function(){
+      it("is carried out by callind .order() on a Tube.", function(){
         expect(results.tube.order).toBeDefined();
         expect(typeof results.tube.order).toBe('function');
       });
 
-      it("returns an OrderResourcePromise when .order() is called on a TubeResource.", function(){
+      it("returns an OrderResourcePromise when .order() is called on a Tube.", function(){
         expect(results.tube.order().done).toBeDefined();
       });
 

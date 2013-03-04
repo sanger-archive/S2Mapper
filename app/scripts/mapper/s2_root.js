@@ -1,9 +1,11 @@
 define([
        'mapper/s2_ajax',
-       'mapper/s2_base_resource'
-], function(S2Ajax, BaseResource){
+       'mapper/s2_base_resource',
+       'mapper/s2_tube_resource'
+], function(S2Ajax, BaseResource, Tube){
   'use strict';
 
+  // register resources with root.
   var s2_ajax = new S2Ajax();
 
   var processResources = function(response){
@@ -14,7 +16,7 @@ define([
       var resourceJson       = {};
       resourceJson[resource] = rawJson[resource];
 
-      processedResources[resource] = BaseResource.create({
+      processedResources[resource] = BaseResource.instantiate({
         rawJson: resourceJson
       });
     }
@@ -27,11 +29,18 @@ define([
   var instanceMethods = { };
 
   var classMethods = {
-    create: function(){
+    load: function(){
       var rootDeferred = $.Deferred();
 
+      // Make a call for the S2 root...
       s2_ajax.send().done(function(response){
-        rootDeferred.resolve(processResources(response));
+        var rootInstance = processResources(response);
+
+        $.extend(rootInstance, instanceMethods);
+
+        $.extend(rootInstance.tubes, Tube)
+
+        rootDeferred.resolve(rootInstance);
       });
 
       return rootDeferred;
@@ -39,6 +48,7 @@ define([
   };
 
   $.extend(S2Root, classMethods);
+
 
   return S2Root;
 });

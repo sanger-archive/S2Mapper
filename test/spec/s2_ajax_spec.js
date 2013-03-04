@@ -47,7 +47,7 @@ define (['config', 'text!json/dna_and_rna_manual_extraction.json', 'mapper/s2_aj
 
     });
 
-    describe('S2 Root,', function(){
+    describe("Loading S2's Root,", function(){
 
       // We can only access the response object through a side effect.
       var s2root;

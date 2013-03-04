@@ -6,7 +6,7 @@ define(['mapper/s2_base_resource'], function(BaseResource){
   };
 
   var classMethods = {
-    create: function(options){
+    instantiate: function(options){
       var baseResource = BaseResource.create(options);
       $.extend(baseResource, instanceMethods);
       return baseResource;

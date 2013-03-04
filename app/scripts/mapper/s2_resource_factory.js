@@ -21,7 +21,7 @@ define([
     var resourceProcessor = function(response){
       var resourceType  = Object.keys(response.responseText)[0];
       var resourceClass = resourceClasses[resourceType] || BaseResource;
-      var resource      = resourceClass.create({
+      var resource      = resourceClass.instantiate({
         rawJson: response.responseText
       });
 

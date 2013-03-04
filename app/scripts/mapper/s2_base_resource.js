@@ -6,7 +6,7 @@ define(['require'], function(require){
   var BaseResource = Object.create(null);
 
   $.extend(BaseResource, {
-    create: function(options){
+    instantiate: function(options){
       var rawJson           = options.rawJson;
       var resource          = Object.create(null);
       resource.rawJson      = rawJson;
@@ -25,7 +25,7 @@ define(['require'], function(require){
         message:  'resourceType not set for this class'
       }
 
-      return 'TUBEPROMISE';
+      return 'NOT_IMPLETMENTED';
     },
 
     addActions: function (resource){
@@ -39,7 +39,7 @@ define(['require'], function(require){
         resource[action] = (function(action, actionUrl){
           return function (sendData) {
             var ResourceFactory = require('mapper/s2_resource_factory');
-            return ResourceFactory({
+            return new ResourceFactory({
                      url:  actionUrl,
               sendAction:  action,
                     data:  sendData

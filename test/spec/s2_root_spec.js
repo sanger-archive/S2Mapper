@@ -22,7 +22,7 @@ define(['config', 'mapper/s2_root'], function(config, S2Root){
         rawRootJson         = config.getTestJson('/');
         config.currentStage = 'stage1';
         results             = {};
-        rootPromise         = S2Root.create();
+        rootPromise         = S2Root.load();
         rootPromise.done(assignResultTo('root'));
       });
 
