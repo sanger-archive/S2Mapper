@@ -1,4 +1,4 @@
-define(['config','mapper/s2_resource', 'mapper/s2_tube_resource'], function(config,S2Resource, S2TubeResource){
+define(['config','mapper/s2_resource_factory', 'mapper/s2_tube_resource'], function(config, ResourceFactory, S2TubeResource){
   'use strict';
 
   // We use an empty object for test results so that we can use a
@@ -29,7 +29,7 @@ define(['config','mapper/s2_resource', 'mapper/s2_tube_resource'], function(conf
       beforeEach(function(){
         results             = {};
         config.currentStage = 'stage1';
-        var resourcePromise = new S2Resource('11111111-2222-3333-4444-555555555555');
+        var resourcePromise = new ResourceFactory('11111111-2222-3333-4444-555555555555');
 
         resourcePromise.done(assignResultTo('tube'));
 
@@ -57,7 +57,7 @@ define(['config','mapper/s2_resource', 'mapper/s2_tube_resource'], function(conf
 
       describe("when the tube is not in a batch", function(){
         beforeEach(function(){
-          new S2Resource('11111111-2222-3333-4444-555555555555').done(assignResultTo('tube'));
+          new ResourceFactory('11111111-2222-3333-4444-555555555555').done(assignResultTo('tube'));
           results.tube.batch().done(assignResultTo('batch'));
         });
 
@@ -68,7 +68,7 @@ define(['config','mapper/s2_resource', 'mapper/s2_tube_resource'], function(conf
 
       describe("when the tube is in a batch,",function(){
         beforeEach(function(){
-          new S2Resource('11111111-2222-3333-4444-555555555555').done(assignResultTo('tube'));
+          new ResourceFactory('11111111-2222-3333-4444-555555555555').done(assignResultTo('tube'));
           results.tube.batch().done(assignResultTo('batch'));
         });
 

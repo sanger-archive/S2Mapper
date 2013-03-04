@@ -1,6 +1,4 @@
-// TODO[sd9] Rename this to s2_resource_factory.
-// Rename needs to be coordinated with pipeline applications.
-define(['config', 'mapper/s2_resource'],function(config, S2Resource){
+define(['config', 'mapper/s2_resource_factory'],function(config, ResourceFactory){
   'use strict';
 
   // We use an empty object for test results so that we can use a
@@ -16,13 +14,13 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
 
   config.setTestJson('dna_only_extraction');
 
-  describe('S2Resource:-', function(){
+  describe('ResourceFactory:-', function(){
     describe('Mapping a tube,', function(){
       results = {};
 
       config.currentStage = 'stage1';
       var rawTubeJSON     = config.getTestJson('/11111111-2222-3333-4444-555555555555');
-      var resourcePromise = new S2Resource({uuid: '11111111-2222-3333-4444-555555555555' });
+      var resourcePromise = new ResourceFactory({uuid: '11111111-2222-3333-4444-555555555555' });
       resourcePromise.done(assignResultTo('tube'));
 
 
@@ -42,7 +40,7 @@ define(['config', 'mapper/s2_resource'],function(config, S2Resource){
     describe("Mapping an order,",function(){
       beforeEach(function(){
         config.currentStage = 'stage1';
-        (new S2Resource({uuid: "11111111-2222-3333-4444-999999999999"})).done(assignResultTo('order'));
+        (new ResourceFactory({uuid: "11111111-2222-3333-4444-999999999999"})).done(assignResultTo('order'));
       });
 
       it("makes OrderResources when the resource is an order.",function(){

@@ -38,7 +38,7 @@ define(['require'], function(require){
       for (var action in resourceActions) {
         resource[action] = (function(action, actionUrl){
           return function (sendData) {
-            var ResourceFactory = require('mapper/s2_resource');
+            var ResourceFactory = require('mapper/s2_resource_factory');
             return ResourceFactory({
                      url:  actionUrl,
               sendAction:  action,

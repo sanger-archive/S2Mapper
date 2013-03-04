@@ -1,4 +1,4 @@
-define (['config', 'mapper/s2_resource', 'text!json/dna_and_rna_manual_extraction.json', 'mapper/s2_ajax'], function (config, S2Resource, testJSON, S2Ajax) {
+define (['config', 'text!json/dna_and_rna_manual_extraction.json', 'mapper/s2_ajax'], function (config, testJSON, S2Ajax) {
   'use strict';
   //load appropriate JSON for this workflow
   // config.testJSON = $.parseJSON (testJSON);
@@ -38,10 +38,6 @@ define (['config', 'mapper/s2_resource', 'text!json/dna_and_rna_manual_extractio
           '/11111111-2222-3333-4444-555555555555').
             done(function(response){ tube = response.responseText; });
 
-      });
-
-      it('returns an S2Resource object', function(){
-        expect(tube).toBeDefined();
       });
 
       it('matches data directly from JSON file', function(){
