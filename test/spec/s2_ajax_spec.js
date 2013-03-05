@@ -1,4 +1,4 @@
-define (['config', 'mapper/s2_resource', 'text!json/rna_manual_extraction.json', 'mapper/s2_ajax'], function (config, S2Resource, testJSON, S2Ajax) {
+define (['config', 'text!json/dna_and_rna_manual_extraction.json', 'mapper/s2_ajax'], function (config, testJSON, S2Ajax) {
   'use strict';
   //load appropriate JSON for this workflow
   // config.testJSON = $.parseJSON (testJSON);
@@ -25,53 +25,51 @@ define (['config', 'mapper/s2_resource', 'text!json/rna_manual_extraction.json',
   //   }
   // };
 
-  describe('Mocked s2ajax object', function(){
-    var tube;
+  describe("S2Ajax:-", function(){
+    describe('Mocked s2ajax object (used for testing only),', function(){
+      var tube;
 
-    beforeEach(function(){
-      config.setTestJson('dna_only_extraction');
-      config.currentStage = 'stage1';
+      beforeEach(function(){
+        config.setTestJson('dna_only_extraction');
+        config.currentStage = 'stage1';
 
-      s2ajax.send(
-        'read',
-        '/11111111-2222-3333-4444-555555555555').
-        done(function(response){ tube = response.responseText; });
+        s2ajax.send(
+          'read',
+          '/11111111-2222-3333-4444-555555555555').
+            done(function(response){ tube = response.responseText; });
+
+      });
+
+      it('matches data directly from JSON file', function(){
+        // send uuid or barcode to grab resources
+        expect(tube).toEqual(config.getTestJson("/11111111-2222-3333-4444-555555555555"));
+      });
 
     });
 
-    it('returns an S2Resource object', function(){
-      expect(tube).toBeDefined();
-    });
+    describe("Loading S2's Root,", function(){
 
-    it('matches data directly from JSON file', function(){
-      // send uuid or barcode to grab resources
-      expect(tube).toEqual(config.getTestJson()["/11111111-2222-3333-4444-555555555555"]);
-    });
+      // We can only access the response object through a side effect.
+      var s2root;
+      beforeEach(function(){
+        config.currentStage = 'stage1';
+        s2ajax.send('read').done(function(response){
+          s2root = response.responseText;
+        });
+      });
 
-  });
 
-  describe('S2 Root', function(){
+      it('returns an object', function(){
+        expect(s2root).toBeDefined();
+      });
 
-    // We can only access the response object through a side effect.
-    var s2root;
-    beforeEach(function(){
-      config.currentStage = 'stage1';
-      s2ajax.send('read').done(function(response){
-        s2root = response.responseText;
+      it('returns an object containing searches', function(){
+        expect(s2root.searches).toBeDefined();
+
       });
     });
 
-
-    it('returns an object', function(){
-      expect(s2root).toBeDefined();
-    });
-
-    it('returns an object containing searches', function(){
-      expect(s2root.searches).toBeDefined();
-
-    });
   });
-
 
 
   // *** Marked as WIP.  Probably moved out to another file ***

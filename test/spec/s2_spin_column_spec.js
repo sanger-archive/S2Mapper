@@ -1,4 +1,4 @@
-define(['config','json/dna_only_extraction', 'mapper/s2_resource'], function(config, testJSON, S2Resource){
+define(['config','json/dna_only_extraction', 'mapper/s2_resource_factory'], function(config, testJSON, ResourceFactory){
   'use strict';
 
   config.testJSON = testJSON;
@@ -9,7 +9,7 @@ define(['config','json/dna_only_extraction', 'mapper/s2_resource'], function(con
 
     var s2_spinColumn;
 
-    var resourcePromise = new S2Resource('22222222-2222-3333-4444-555555555555');
+    var resourcePromise = new ResourceFactory('22222222-2222-3333-4444-555555555555');
 
     // .done() sets a spin column through a side effect
     resourcePromise.done(function(s2spinColumn){ s2_spinColumn = s2spinColumn; });

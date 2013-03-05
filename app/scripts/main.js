@@ -9,7 +9,10 @@ require.config({
   }
 });
  
-require(['app'], function(app) {
+require(['app','services/print'], function(app, services) {
   // use app here
+  $('#print').click(function (){
+    services.print ('barcode', 'desc', 'name', 'prefix', 'project', 'suffix');
+  });
   console.log(app);
 });

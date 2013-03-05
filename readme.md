@@ -39,15 +39,17 @@ Searching is carried out asynchronusly and returns a jQuery promise
 object.
 
 ```javascript
-S2Resource.findByEan13Barcode('0123456789123');
+var s2root = S2Root.load();
+s2root.tubes.findByEan13Barcode('0123456789123');
 // => Resource Promise
 ```
 
 The resource can then be extracted with a callback.  E.g.
 ```javascript
+var s2root = S2Root.load();
 var tube;
 
-S2Resource.findByEan13Barcode('0123456789123').done(function(returnedResource){
+s2root.tubes.findByEan13Barcode('0123456789123').done(function(returnedResource){
   tube = returnedResource;
 });
 ```
