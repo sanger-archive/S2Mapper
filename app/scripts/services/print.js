@@ -1,6 +1,7 @@
 define ([], function () {
   //call services.print ('barcode', 'desc', 'name', 'prefix', 'project', 'suffix');
   services = {
+    //TODO hardcoded printer and label type, also need to change readme
     printer: 'e367bc',
     labelType:2,
     print: function (barcode, desc, name, prefix, project, suffix) {
@@ -24,17 +25,22 @@ define ([], function () {
         '</labels>' +
         '</n1:printLabels>' +
         '</env:Body>' +
-        '</env:Envelope>'
-      var xhr = new XMLHttpRequest ();
-      xhr.open ('POST', 'http://psd-dev.internal.sanger.ac.uk:8000/printers/legacy/soap');
-      xhr.setRequestHeader ("Content-Type", "text/xml");
-      xhr.onreadystatechange = function () {
-        if (this.status === 200 && this.readyState === 4) {
-          alert ('Printed');
+        '</env:Envelope>',
+          deferred = $.Deferred();
+
+      $.ajax({
+        url: 'http://psd-dev.internal.sanger.ac.uk:8000/printers/legacy/soap',
+        data: soap,
+        type: 'POST',
+        contentType: 'text/xml',
+        crossDomain: true,
+        processData: false,
+        success: function (data){
+          deferred.resolve(data);
         }
-      };
-      xhr.send (soap);
+      });
+      return deferred.promise();
     }
-  }
+  };
   return services;
 });
