@@ -25,30 +25,26 @@ define([
       beforeEach(function(){
         Root.load().done(assignResultTo('root'));
         s2 = results.root;
-
         s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
       });
 
       it("takes an EAN13 barcode and returns the corresponding resource.", function(){
-        expect(results.tube).toBeDefined();
         expect(results.tube.rawJson).toBeDefined();
       });
-
-
     });
 
-    xdescribe("Finding an order from a tube,", function(){
+    describe("Finding an order from a tube,", function(){
       beforeEach(function(){
         results             = {};
         config.currentStage = 'stage1';
-        var resourcePromise = new ResourceFactory('11111111-2222-3333-4444-555555555555');
 
-        resourcePromise.done(assignResultTo('tube'));
+        Root.load().done(assignResultTo('root'));
+        s2 = results.root;
 
+        s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
       });
 
       it("is carried out by callind .order() on a Tube.", function(){
-        expect(results.tube.order).toBeDefined();
         expect(typeof results.tube.order).toBe('function');
       });
 
@@ -69,7 +65,7 @@ define([
 
       describe("when the tube is not in a batch", function(){
         beforeEach(function(){
-          new ResourceFactory('11111111-2222-3333-4444-555555555555').done(assignResultTo('tube'));
+          new ResourceFactory({uuid: '11111111-2222-3333-4444-555555555555' }).done(assignResultTo('tube'));
           results.tube.batch().done(assignResultTo('batch'));
         });
 
@@ -80,7 +76,7 @@ define([
 
       describe("when the tube is in a batch,",function(){
         beforeEach(function(){
-          new ResourceFactory('11111111-2222-3333-4444-555555555555').done(assignResultTo('tube'));
+          new ResourceFactory({uuid: '11111111-2222-3333-4444-555555555555'}).done(assignResultTo('tube'));
           results.tube.batch().done(assignResultTo('batch'));
         });
 

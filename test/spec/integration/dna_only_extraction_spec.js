@@ -9,10 +9,10 @@ define(['config', 'mapper/s2_root'], function(config, S2Root){
   }
 
   var rawJson, results ;
-  xdescribe("INTEGRATION:  DNA only manual extraction:-", function(){
+  describe("INTEGRATION:  DNA only manual extraction:-", function(){
 
     describe("Searching for an input tube by it's EAN13 barcode,", function(){
-      var root;
+      var s2;
       beforeEach(function(){
 
         config.setTestJson('dna_only_extraction');
@@ -21,28 +21,12 @@ define(['config', 'mapper/s2_root'], function(config, S2Root){
         results             = {};
 
         S2Root.load().done(assignResultTo('root'));
-        root = results.root;
+        s2 = results.root;
+        s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
       });
 
-      it("returns a search result object.", function(){
-
-        root.searches.create({
-          "search":  {
-            "description":  "search for barcoded tube",
-            "model":        "tube",
-            "criteria":     {
-              "label":  {
-                "position":  "barcode",
-                "type":      "ean13",
-                "value":     ["0123456789123"]
-              }
-            }
-          }
-        }).done(assignResultTo('searchResultForTube'));
-
-        debugger;
-        results.searchResultForTube.first();
-
+      it("returns the tube as a tube resource object.", function(){
+        expect(results.tube).toBeDefined();
       });
 
 
