@@ -35,12 +35,16 @@ define([
     // Dummy out the ajax call returned by S2Ajax to test from file.
     // Returns a Deferred instead of jqXHR.
     ajax: function (options){
-      var requestOptions = $.extend ({
-        // data:{ uuid: undefined }
-      }, options);
+      var requestOptions = options;
 
       // a blank options.url should default to '/'
-      if (options.url.length === 0) requestOptions.url = '/';
+      if (options.url.length === 0){
+        requestOptions.url = '/';
+      }  else {
+        requestOptions.url = options.url;
+      }
+
+      if (options.type === 'POST') requestOptions.url = options.url+'/'+JSON.stringify(options.data);
 
       console.log('Sending ajax message:-');
       console.log(requestOptions);
@@ -54,7 +58,7 @@ define([
       // with .done() are called as soon as they're added, which should solve 
       // testing latency issues.
       return $.Deferred().resolve({
-        url:           '/something/other',
+        url:           options.url,
         'status':      200,
         responseTime:  750,
         responseText:  responseText
@@ -64,3 +68,4 @@ define([
 
   return config;
 });
+
