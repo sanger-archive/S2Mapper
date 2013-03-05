@@ -6,9 +6,10 @@ define(['require'], function(require){
   var BaseResource = Object.create(null);
 
   $.extend(BaseResource, {
-    create: function(rawJson){
-      var resource          = Object.create(null);
-      resource.rawJson      = rawJson;
+    instantiate: function(options){
+      var rawJson      = options.rawJson;
+      var resource     = Object.create(null);
+      resource.rawJson = rawJson;
 
       // This assumes that there is only one key and it's always the
       // resourceType.
@@ -24,28 +25,28 @@ define(['require'], function(require){
         message:  'resourceType not set for this class'
       }
 
-      return 'TUBEPROMISE';
+      return 'NOT_IMPLETMENTED';
     },
 
     addActions: function (resource){
       var resourceJson    = resource.rawJson[resource.resourceType];
-      var match_uuid      = new RegExp('\\/'+resourceJson.uuid);
       var resourceActions = resourceJson.actions;
 
+      // N.B. Remeber to generate the new action function inside a another
+      // function or else it will close over the last value of the action and
+      // url of the for loop.
       for (var action in resourceActions) {
-        // Check that resource UUID's match up
-        if (!match_uuid.exec(resourceActions[action])) throw {
-          name:     'Resource Validaion',
-          message:  "Resource UUIDs don't match up."
-        };
-
-        // These function close over the resource's uuid as provided to the
-        // original resorcePromise constructor.
-        resource[action] = function (sendData) {
-          if (action === 'delete') debugger;
-          var ResourceFactory = require('mapper/s2_resource');
-          return ResourceFactory(resource.rawJson.uuid, action,  sendData);
-        };
+        resource[action] = (function(action, actionUrl){
+          return function (sendData, resourceProcessor) {
+            var ResourceFactory = require('mapper/s2_resource_factory');
+            return new ResourceFactory({
+              url:                actionUrl,
+              sendAction:         action,
+              data:               sendData,
+              resourceProcessor:  resourceProcessor
+            });
+          };
+        })(action, resourceActions[action]);
       }
     }
   });
