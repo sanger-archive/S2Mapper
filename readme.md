@@ -79,3 +79,12 @@ tube.batch();
 ```
 
 Both Order and Batch are S2 Resources but with some specialiation.
+
+##Services
+###Printing
+
+S2Mapper also includes a service to print barcodes. Currently this is bound to one printer, and only tube labels.
+
+To use the printing service, include 'services/prints.js' and call
+
+```print (barcode, desc, name, prefix, project, suffix) // => Promise```
