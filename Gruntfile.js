@@ -184,6 +184,9 @@ module.exports = function (grunt) {
 
     min:{
       dist:''
+    },
+    server: {
+      port: 8000
     }
   });
 
