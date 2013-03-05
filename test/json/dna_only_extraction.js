@@ -41,9 +41,9 @@ define([],function(){
     "searches": {
       "actions": {
         "create": "http://localhost:9292/searches",
-        "read": "http://localhost:9292/searches",
-        "first": "http://localhost:9292/searches/page=1",
-        "last": "http://localhost:9292/searches/page=-1"
+          "read": "http://localhost:9292/searches",
+         "first": "http://localhost:9292/searches/page=1",
+          "last": "http://localhost:9292/searches/page=-1"
       }
     }
 
@@ -80,6 +80,17 @@ define([],function(){
 
   var stage1 = {
     '/': root,
+
+    "/searches": {
+      "search":  {
+        "actions":  {
+           "read":  "http://localhost:9292/15d67640-6224-0130-7ab9-282066132de2",
+          "first":  "http://localhost:9292/15d67640-6224-0130-7ab9-282066132de2/page=1",
+           "last":  "http://localhost:9292/15d67640-6224-0130-7ab9-282066132de2/page=-1"
+        },
+        "uuid": "15d67640-6224-0130-7ab9-282066132de2"
+      }
+    },
 
     "/11111111-2222-3333-4444-555555555555": {
       "tube": {
@@ -146,6 +157,62 @@ define([],function(){
           ]
         }
       }
+    },
+
+    "/searches": {
+      "search":{
+        "actions":{
+          "read": "http://localhost:9292/15d67640-6224-0130-7ab9-282066132de2",
+          "first":"http://localhost:9292/15d67640-6224-0130-7ab9-282066132de2/page=1",
+          "last": "http://localhost:9292/15d67640-6224-0130-7ab9-282066132de2/page=-1"
+        },
+        "uuid":   "15d67640-6224-0130-7ab9-282066132de2"
+      }
+    },
+
+    "/15d67640-6224-0130-7ab9-282066132de2/page=1": {
+      "actions":{
+        "read": "http://localhost:9292/tubes/page=1",
+        "first":"http://localhost:9292/tubes/page=1",
+        "last": "http://localhost:9292/tubes/page=-1"
+      },
+      "size":   1,
+      "tubes":  [
+        {
+        "tube":{
+          "actions":   {
+            "read":  "http://localhost:9292/106d61c0-6224-0130-90b6-282066132de2",
+            "create":"http://localhost:9292/106d61c0-6224-0130-90b6-282066132de2",
+            "update":"http://localhost:9292/106d61c0-6224-0130-90b6-282066132de2",
+            "delete":"http://localhost:9292/106d61c0-6224-0130-90b6-282066132de2"
+          },
+          "uuid":      "106d61c0-6224-0130-90b6-282066132de2",
+          "type":      null,
+          "max_volume":null,
+          "aliquots":  [
+            {
+            "quantity":1000,
+            "type":    "NA+P",
+            "unit":    "mole"
+          }
+          ],
+          "labels":    {
+            "actions":{
+              "read":  "http://localhost:9292/106d7130-6224-0130-90b6-282066132de2",
+              "create":"http://localhost:9292/106d7130-6224-0130-90b6-282066132de2",
+              "update":"http://localhost:9292/106d7130-6224-0130-90b6-282066132de2",
+              "delete":"http://localhost:9292/106d7130-6224-0130-90b6-282066132de2"
+            },
+            "uuid":   "106d7130-6224-0130-90b6-282066132de2",
+            "barcode":{
+              "value":"XX333333K",
+              "type": "sanger-barcode"
+            }
+          }
+        }
+      }
+      ]
+
     }
 
   };
