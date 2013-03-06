@@ -1,15 +1,15 @@
-define(['text!/json/dna_and_rna_manual_extraction.json',
-       'json/dna_only_extraction'
-], function(dnaRnaJson, dnaJson) {
+define([], function() {
   'use strict';
 
-  var dnaRnaJson = $.parseJSON(dnaRnaJson);
-  console.log(dnaRnaJson)
+
   var config = {
     apiUrl:'', // NOT USED IN TESTING
-    testDataJson : dnaRnaJson,
     currentStage: '1',
-    setupTest: function (stage,step){
+    setupTest: function (testData,stage,step){
+      testData = $.parseJSON(testData);
+
+      config.createTestData(testData);
+
       var actionMethods = {
         post: 'search' // This a POST because we are creating a search object
 //        first: 'GET',
@@ -19,29 +19,34 @@ define(['text!/json/dna_and_rna_manual_extraction.json',
 //        update:'PUT', // Update maps to PUT
 //        'delete':'DELETE', // Update maps to PUT
       };
-      var stepStage = config.testDataJson[stage].steps[step]
-
-
-
+      var stepStage = testData[stage].steps[step];
+      config.stage = stepStage.description || "No description in JSON"
 
 
       config.method = actionMethods[ stepStage.method.toLowerCase() ];
       config.url = stepStage.url;
       config.params = stepStage.request;
-      config.expectedResponse = JSON.stringify(config.testDataJson[stage].steps[step].response);
+      return testData[stage].steps[step].response;
 
     },
 
     finalDna: {},
-    createTestData: function(){
-      for (var stage in dnaRnaJson) {
-        for(var stepNo in dnaRnaJson[stage].steps) {
-          var step = dnaRnaJson[stage].steps[stepNo]
+    createTestData: function(testData){
+      var output = '';
+
+      for (var stage in testData) {
+        output += '<br/>Stage ' + stage + ':' + testData[stage].stage
+        for(var stepNo in testData[stage].steps) {
+          var step = testData[stage].steps[stepNo]
+          output += '<br/>Step' + stepNo + ':' + step.description +'. Needs a ' + step.method + '. Responds with ' +
+            Object.keys(step.response)[0]
+
+
           config.finalDna[step.url + step.method + JSON.stringify(step.request)] = step.response;
 
         }
       }
-
+//      $('body').prepend(output)
 
     },
 
@@ -92,8 +97,8 @@ define(['text!/json/dna_and_rna_manual_extraction.json',
       if (options.type === 'POST') requestOptions.url = options.url+'/'+JSON.stringify(options.data);
  var responseText = config.getTestJson(requestOptions.url);
 */
-      console.log('Sending ajax message:-');
-
+      console.log('Sending ajax message for ' + config.stage);
+//      debugger;
       var reqParams = options.url + options.type.toLowerCase() + JSON.stringify(options.data)
       console.log(reqParams)
 
@@ -105,7 +110,7 @@ define(['text!/json/dna_and_rna_manual_extraction.json',
       // testing latency issues.
 
       var response = config.finalDna[reqParams];
-      console.log('Responding with:-');
+      console.log('Responding with a ' + typeof response);
       console.log(response);
 
 
@@ -114,11 +119,10 @@ define(['text!/json/dna_and_rna_manual_extraction.json',
         url:           options.url,
         'status':      200,
         responseTime:  750,
-        responseText:  JSON.stringify(response)
+        responseText:  response
       });
     }
   };
-  config.createTestData();
 //  console.log(config.finalDna);
   return config;
 });

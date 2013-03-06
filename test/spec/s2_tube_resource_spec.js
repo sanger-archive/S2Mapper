@@ -16,7 +16,6 @@ define([
     }
   }
 
-  config.setTestJson('dna_only_extraction');
 
   describe("Tube Resource:-",function(){
     var s2;

@@ -13,7 +13,7 @@ define(['config', 'mapper/s2_root'], function(config, S2Root){
   }
 
 
-  describe("S2Root:-", function(){
+  xdescribe("S2Root:-", function(){
     var rootPromise;
 
     describe("Creating a new root resource,", function(){

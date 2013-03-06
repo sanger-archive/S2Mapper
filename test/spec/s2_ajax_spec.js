@@ -28,17 +28,16 @@ define (['config', 'text!json/dna_and_rna_manual_extraction.json', 'mapper/s2_aj
   describe("S2Ajax:-", function(){
 
     describe('Mocked s2ajax object (used for testing only),', function(){
-      var search;
+      var search, expectedResponse;
 
       beforeEach(function(){
         //pass stage, step to config.setupTest
-        config.setupTest(1,0);
+        expectedResponse = config.setupTest(testJSON,1,0);
         s2ajax.send(
           config.method,
           config.url,
           config.params
         ).done(function(response){
-
               search = response.responseText;
             });
 
@@ -46,8 +45,7 @@ define (['config', 'text!json/dna_and_rna_manual_extraction.json', 'mapper/s2_aj
 
       it('matches data directly from JSON file', function(){
         // send uuid or barcode to grab resources
-
-        expect(search).toEqual(config.expectedResponse);
+        expect(search).toEqual(expectedResponse);
       });
 
     });

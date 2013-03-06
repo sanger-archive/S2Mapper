@@ -74,7 +74,6 @@ define([
     findByEan13Barcode: function(ean13){
       var tubesDeferred = $.Deferred();
       var root          = this.root;
-
       root.searches.create({
         "search":  {
           "description":  "search for barcoded tube",
