@@ -26,28 +26,33 @@ define (['config', 'text!json/dna_and_rna_manual_extraction.json', 'mapper/s2_aj
   // };
 
   describe("S2Ajax:-", function(){
+
     describe('Mocked s2ajax object (used for testing only),', function(){
-      var tube;
+      var search;
 
       beforeEach(function(){
-        config.setTestJson('dna_only_extraction');
-        config.currentStage = 'stage1';
-
+        //pass stage, step to config.setupTest
+        config.setupTest(1,0);
         s2ajax.send(
-          'read',
-          '/11111111-2222-3333-4444-555555555555').
-            done(function(response){ tube = response.responseText; });
+          config.method,
+          config.url,
+          config.params
+        ).done(function(response){
+
+              search = response.responseText;
+            });
 
       });
 
       it('matches data directly from JSON file', function(){
         // send uuid or barcode to grab resources
-        expect(tube).toEqual(config.getTestJson("/11111111-2222-3333-4444-555555555555"));
+
+        expect(search).toEqual(config.expectedResponse);
       });
 
     });
 
-    describe("Loading S2's Root,", function(){
+    xdescribe("Loading S2's Root,", function(){
 
       // We can only access the response object through a side effect.
       var s2root;

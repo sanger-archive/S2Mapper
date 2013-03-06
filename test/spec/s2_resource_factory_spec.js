@@ -17,8 +17,6 @@ define(['config', 'mapper/s2_resource_factory'],function(config, ResourceFactory
   describe('ResourceFactory:-', function(){
     describe('Mapping a tube,', function(){
       results = {};
-
-      config.currentStage = 'stage1';
       var rawTubeJSON     = config.getTestJson('/11111111-2222-3333-4444-555555555555');
       var resourcePromise = new ResourceFactory({uuid: '11111111-2222-3333-4444-555555555555' });
       resourcePromise.done(assignResultTo('tube'));

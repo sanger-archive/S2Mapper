@@ -6,7 +6,6 @@ module.exports = function (grunt) {
   // https://github.com/cowboy/grunt/blob/master/docs/getting_started.md
   //
   grunt.initConfig ({
-
     // Project configuration
     // ---------------------
 
@@ -186,7 +185,7 @@ module.exports = function (grunt) {
       dist:''
     },
     server: {
-      port: 8000
+      port: 3333
     }
   });
 

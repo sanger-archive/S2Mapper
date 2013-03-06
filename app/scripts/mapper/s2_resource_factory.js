@@ -10,7 +10,7 @@ define([
 
   var resourceClasses = {
     tube:   TubeResource,
-    order:  OrderResource,
+    order:  OrderResource
   };
 
   // Constructor function
