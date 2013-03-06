@@ -20,25 +20,30 @@ define(['config',
 
     describe("Creating a new root resource,", function(){
       beforeEach(function(){
-
+		rawRootJson = config.setupTest(testJSON_1,0);
         results             = {};
         rootPromise         = S2Root.load();
         rootPromise.done(assignResultTo('root'));
+        results.root = results.root;
+        results.root.find("11111111-2222-3333-4444-555555555555").done(assignResultTo('tube'));
       });
 
       it("returns a promise.", function(){
         expect(rootPromise.done).toBeDefined();
       });
 
-      it("resolves to a hash of S2Resources", function(){
-        var expectedResponse = config.setupTest(testJSON_1,0);
-        expect(Object.keys(results.root)).
-          toEqual(Object.keys(expectedResponse));
+      it("resolves to a hash of S2Resources.", function(){
+        expect(_.difference(Object.keys(rawRootJson), Object.keys(results.root)) ).
+          toEqual([]);
       });
 
-      it("has a SearchesResource", function(){
+      it("has a Searches Resource.", function(){
         var resourceType = results.root.searches.resourceType;
         expect(resourceType).toBe('searches');
+      });
+
+      it("can find resources by their UUID", function(){
+        expect(results.tube.rawJson).toBeDefined();
       });
 
     });

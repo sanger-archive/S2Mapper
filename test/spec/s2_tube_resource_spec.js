@@ -21,7 +21,7 @@ define([
   }
 
 
-  xdescribe("Tube Resource:-",function(){
+  describe("Tube Resource:-",function(){
     var s2, expectedResponse = config.setupTest(testJSON_stage2,0);
 
     describe("Searcing for a tube by EAN13 barcode,", function(){
@@ -59,12 +59,13 @@ define([
         expect(results.tube.order().done).toBeDefined();
       });
 
+      it("resolves to an order resource.",function(){
+        results.tube.order().done(assignResultTo('order'));
+        expect(results.order.resourceType).toBe('order');
+      });
+
     });
 
-    describe("finding active orders which contain the batch", function(){
-      it("returns an array of Orders when .orders() is called", function(){
-      });
-    });
 
     // This batch behaviour should move to a module to be shared by other item
     // type resources such as spin column and plate.
