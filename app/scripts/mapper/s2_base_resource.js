@@ -9,12 +9,10 @@ define(['require'], function(require){
     instantiate: function(opts){
       var options  = $.extend({}, opts);
       var rawJson  = options.rawJson;
-      var resource = Object.create({
-        isSaved: false
-      });
+      var resource = Object.create({ isNew: true });
 
       if (rawJson !== undefined){
-        resource.isSaved = true;
+        resource.isNew   = false;
         resource.rawJson = rawJson;
 
         // This assumes that there is only one key and it's always the

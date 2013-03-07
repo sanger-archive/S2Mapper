@@ -41,7 +41,7 @@ define(['config'
 
         results.batch = results.root.batches.new();
         expect(results.batch).toBeDefined();
-        expect(results.batch.isSaved).toBe(false);
+        expect(results.batch.isNew).toBe(true);
       });
     });
   });

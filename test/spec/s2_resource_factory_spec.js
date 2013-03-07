@@ -39,8 +39,8 @@ define([
         });
       }
 
-      it("returns a tube with an .isSaved value of true.",function(){
-        expect(results.tube.isSaved).toBe(true);
+      it("returns a tube with an .isNew value of true.",function(){
+        expect(results.tube.isNew).toBe(false);
       });
 
 
