@@ -12,12 +12,12 @@ require.config({
 });
 
 require([
-        'domReady!',
-        'spec/s2_ajax_spec',
-        'spec/s2_resource_factory_spec',
-        'spec/s2_base_resource_spec',
-//        'spec/s2_tube_resource_spec',
-        'spec/s2_root_spec'
+        'domReady!'
+        ,'spec/s2_ajax_spec'
+        ,'spec/s2_resource_factory_spec'
+        ,'spec/s2_base_resource_spec'
+        ,'spec/s2_tube_resource_spec'
+//        'spec/s2_root_spec'
         //'spec/integration/dna_only_extraction_spec'
 ], function() {
   window.setTimeout(runJasmineTests, 100);

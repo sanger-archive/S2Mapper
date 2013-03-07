@@ -2,7 +2,7 @@ define(['config','json/dna_only_extraction', 'mapper/s2_resource_factory'], func
   'use strict';
 
   config.testJSON = testJSON;
-  describe('S2 Spin Column',function(){
+  xdescribe('S2 Spin Column',function(){
     config.currentStage = 'stage2';
 
     var rawJSON = config.getTestJson()['/22222222-2222-3333-4444-555555555555'];

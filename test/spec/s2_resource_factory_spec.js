@@ -34,15 +34,14 @@ define([
 
 
       it('has a rawJson attribute that matches the JSON returned by S2.',function(){
-
         expect(results.tube.rawJson).toBe(expectedResponse);
       });
 
-//      for (var action in rawTubeJSON.tube.actions){
-//        it('has a '+action+' action method matching the raw JSON action attribute.', function(){
-//          expect(results.tube[action]).toBeDefined();
-//        });
-//      }
+      for (var action in expectedResponse.tube.actions){
+        it('has a '+action+' action method matching the raw JSON action attribute.', function(){
+          expect(results.tube[action]).toBeDefined();
+        });
+      }
 
 
     });
@@ -55,7 +54,6 @@ define([
       });
 
       it("makes OrderResources when the resource is an order.",function(){
-        // expect(results.tube instanceof TubeLikeResource).toBe(true);
         expect(results.order).toBeDefined();
       });
 
