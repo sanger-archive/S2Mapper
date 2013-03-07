@@ -191,6 +191,21 @@ module.exports = function (grunt) {
 
   // Alias the `test` task to run the `mocha` task instead
   grunt.registerTask ('test', 'server:phantom jasmine');
+  //add the split task
+  grunt.registerTask ('splitjson', function () {
+    grunt.file.recurse('test/json', function(absPath,root,sub,file){
+
+      if (absPath.substr(-4) === 'json'){
+        var json = grunt.file.readJSON(absPath), oldFilename = file.slice(0,-5);
+          for (var stageNo in json){
+            if (json[stageNo].description)
+              grunt.file.write(root+ '/' + oldFilename + '_' + stageNo + '.json', JSON.stringify(json[stageNo]))
+          }
+
+      }
+    })
+
+  });
 
 
   grunt.registerTask ('splitjson', function () {
