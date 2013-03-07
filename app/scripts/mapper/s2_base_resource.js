@@ -19,7 +19,9 @@ define(['require', 'mapper/s2_resource_factory'], function(require){
       return resource;
     },
 
+
     findByEan13Barcode: function(ean13){
+
       if (this.resourceType === undefined) throw {
         name:     'Unknown ResourceType',
         message:  'resourceType not set for this class'

@@ -72,6 +72,7 @@ define([
     },
 
     findByEan13Barcode: function(ean13){
+
       var tubesDeferred = $.Deferred();
       var root          = this.root;
       root.searches.create({
@@ -81,12 +82,13 @@ define([
           "criteria":     {
             "label":  {
               "position":  "barcode",
-              "type":      "ean13",
+              "type":      "ean13-barcode",
               "value":     [ean13]
             }
           }
         }
       }).done(function(searchResult){
+        console.log(searchResult);
         searchResult.first(undefined, tubeSearchProcessor).done(function(tube){
           tube.root = root;
           tubesDeferred.resolve(tube);

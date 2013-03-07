@@ -1,18 +1,21 @@
-define(['config','json/dna_only_extraction', 'mapper/s2_resource_factory'], function(config, testJSON, ResourceFactory){
+define(['config','text!json/spin_column_data_1.json', 'mapper/s2_resource_factory'], function(config, testJSON, ResourceFactory){
   'use strict';
+  var expectedResponse = config.setupTest(testJSON,0);
+  describe('S2 Spin Column',function(){
+    beforeEach(function(){
+      var rawJSON = config.stepStage.response;
 
-  config.testJSON = testJSON;
-  xdescribe('S2 Spin Column',function(){
-    config.currentStage = 'stage2';
+      var s2_spinColumn;
 
-    var rawJSON = config.getTestJson()['/22222222-2222-3333-4444-555555555555'];
+      var resourcePromise = new ResourceFactory('');
 
-    var s2_spinColumn;
+      // .done() sets a spin column through a side effect
+      resourcePromise.done(function(s2spinColumn){ s2_spinColumn = s2spinColumn; });
 
-    var resourcePromise = new ResourceFactory('22222222-2222-3333-4444-555555555555');
+    });
 
-    // .done() sets a spin column through a side effect
-    resourcePromise.done(function(s2spinColumn){ s2_spinColumn = s2spinColumn; });
+
+
 
     it('has a rawJson attribute that matches the JSON returned by S2.',function(){
       expect(s2_spinColumn.rawJson).toBe(rawJSON);

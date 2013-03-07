@@ -210,11 +210,12 @@ module.exports = function (grunt) {
 
   grunt.registerTask ('splitjson', function () {
     grunt.file.recurse('test/json', function(absPath,root,sub,file){
-      console.log(absPath, root,sub, file);
+
       if (absPath.substr(-4) === 'json'){
         var json = grunt.file.readJSON(absPath), oldFilename = file.slice(0,-5);
+        console.log('Splitting ' + oldFilename + ' ....');
         for (var stageNo in json){
-          console.log(json[stageNo].stage)
+
           if (json[stageNo].stage)
             grunt.file.write(root+ '/' + oldFilename + '_' + stageNo + '.json', JSON.stringify(json[stageNo]))
         }

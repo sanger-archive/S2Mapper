@@ -2,31 +2,26 @@ define([], function() {
   'use strict';
 
 
+
+
   var config = {
     apiUrl:'', // NOT USED IN TESTING
-    currentStage: '1',
-    setupTest: function (testData,stage,step){
+    setupTest: function (testData,step){
+
       testData = $.parseJSON(testData);
+
 
       config.createTestData(testData);
 
-      var actionMethods = {
-        post: 'search' // This a POST because we are creating a search object
-//        first: 'GET',
-//        create:'POST',
-//        read:  'GET', // Read maps to GET
-//        last:  'GET',
-//        update:'PUT', // Update maps to PUT
-//        'delete':'DELETE', // Update maps to PUT
-      };
-      var stepStage = testData[stage].steps[step];
+      var stepStage = testData.steps[step];
+      config.stepStage = stepStage;
       config.stage = stepStage.description || "No description in JSON"
 
 
-      config.method = actionMethods[ stepStage.method.toLowerCase() ];
+
       config.url = stepStage.url;
       config.params = stepStage.request;
-      return testData[stage].steps[step].response;
+      return testData.steps[step].response;
 
     },
 
@@ -34,17 +29,14 @@ define([], function() {
     createTestData: function(testData){
       var output = '';
 
-      for (var stage in testData) {
-        output += '<br/>Stage ' + stage + ':' + testData[stage].stage
-        for(var stepNo in testData[stage].steps) {
-          var step = testData[stage].steps[stepNo]
+        for(var stepNo in testData.steps) {
+          var step = testData.steps[stepNo]
           output += '<br/>Step' + stepNo + ':' + step.description +'. Needs a ' + step.method + '. Responds with ' +
             Object.keys(step.response)[0]
 
 
           config.finalDna[step.url + step.method + JSON.stringify(step.request)] = step.response;
 
-        }
       }
 //      $('body').prepend(output)
 
@@ -82,25 +74,30 @@ define([], function() {
         config.getTestJson ()["/" + new_uuid] = resourceJsonClone;
     },
 
-    // Dummy out the ajax call returned by S2Ajax to test from file.
-    // Returns a Deferred instead of jqXHR.
+//    Dummy out the ajax call returned by S2Ajax to test from file.
+//    Returns a Deferred instead of jqXHR.
     ajax: function (options){
-      var requestOptions = options;
-/*
-      // a blank options.url should default to '/'
+
+
+//    a blank options.url should default to '/'
+      options.url = options.url.replace(/http:\/\/localhost:9292/,'');
       if (options.url.length === 0){
-        requestOptions.url = '/';
-      }  else {
-        requestOptions.url = options.url;
+        options.url = '/';
+        options.type = 'get';
+        options.data = null;
       }
+
+
+      /*
 
       if (options.type === 'POST') requestOptions.url = options.url+'/'+JSON.stringify(options.data);
  var responseText = config.getTestJson(requestOptions.url);
-*/
+      */
+      console.log('------------------------');
       console.log('Sending ajax message for ' + config.stage);
-//      debugger;
-      var reqParams = options.url + options.type.toLowerCase() + JSON.stringify(options.data)
-      console.log(reqParams)
+
+      config.reqParams = options.url + options.type.toLowerCase() + JSON.stringify(options.data);
+      console.log(config.reqParams);
 
 
 
@@ -108,12 +105,11 @@ define([], function() {
       // We resolve the Deferred object before return so any callbacks added
       // with .done() are called as soon as they're added, which should solve 
       // testing latency issues.
+      console.log(config);
 
-      var response = config.finalDna[reqParams];
+      var response = config.finalDna[config.reqParams];
       console.log('Responding with a ' + typeof response);
       console.log(response);
-
-
 
       return $.Deferred().resolve({
         url:           options.url,

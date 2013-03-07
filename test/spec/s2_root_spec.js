@@ -1,4 +1,6 @@
-define(['config', 'mapper/s2_root'], function(config, S2Root){
+define(['config',
+    'mapper/s2_root',
+    'text!json/dna_and_rna_manual_extraction_1.json'], function(config, S2Root,testJSON_1){
   'use strict';
 
   // We use an empty object for test results so that we can use a
@@ -13,14 +15,12 @@ define(['config', 'mapper/s2_root'], function(config, S2Root){
   }
 
 
-  xdescribe("S2Root:-", function(){
+  describe("S2Root:-", function(){
     var rootPromise;
 
     describe("Creating a new root resource,", function(){
       beforeEach(function(){
-        config.setTestJson('dna_only_extraction');
-        rawRootJson         = config.getTestJson('/');
-        config.currentStage = 'stage1';
+
         results             = {};
         rootPromise         = S2Root.load();
         rootPromise.done(assignResultTo('root'));
@@ -31,8 +31,9 @@ define(['config', 'mapper/s2_root'], function(config, S2Root){
       });
 
       it("resolves to a hash of S2Resources", function(){
+        var expectedResponse = config.setupTest(testJSON_1,0);
         expect(Object.keys(results.root)).
-          toEqual(Object.keys(rawRootJson));
+          toEqual(Object.keys(expectedResponse));
       });
 
       it("has a SearchesResource", function(){

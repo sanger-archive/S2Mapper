@@ -16,7 +16,6 @@ define([
   // Constructor function
   var ResourcePromise = function(options){
     var resourceProcessor = function(response){
-//      debugger;
       var resourceType  = Object.keys(response.responseText)[0];
       var resourceClass = resourceClasses[resourceType] || BaseResource;
       var resource      = resourceClass.instantiate({
