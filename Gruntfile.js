@@ -70,7 +70,8 @@ module.exports = function (grunt) {
           'app/images/**/*',
           'test/*.js',
           'test/json/*.js',
-          'test/spec/*.js'
+          'test/spec/*.js',
+          'test/spec/integration/*.js'
 
         ],
         tasks:'reload'
