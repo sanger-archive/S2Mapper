@@ -14,18 +14,18 @@ define([
     getBatchFor: function(searchItem){
       var orderItems = this.rawJson.order.items;
 
-      var isSearchItemInRoll = function(item, index){
+      var isSearchItemInRole = function(item, index){
         return (searchItem.rawJson.tube.uuid === item.uuid);
       };
 
-      var itemInRoll, rollsForSearchItem = [];
+      var itemInRole, rolesForSearchItem = [];
 
       for (var role in orderItems) {
-        itemInRoll =  orderItems[role].filter(isSearchItemInRoll)[0];
-        rollsForSearchItem.push(itemInRoll);
+        itemInRole =  orderItems[role].filter(isSearchItemInRole)[0];
+        rolesForSearchItem.push(itemInRole);
       }
 
-      var batchJson = _.chain(rollsForSearchItem).
+      var batchJson = _.chain(rolesForSearchItem).
         pluck('batch').
         compact().
         first().

@@ -8,7 +8,7 @@ define(['config',
   var results, rawRootJson;
 
   function assignResultTo(target){
-    return function(source){ 
+    return function(source){
       // Assignment through side effect; simultates callback.
       results[target] = source;
     }
@@ -24,7 +24,6 @@ define(['config',
         results             = {};
         rootPromise         = S2Root.load();
         rootPromise.done(assignResultTo('root'));
-        results.root = results.root;
         results.root.find("11111111-2222-3333-4444-555555555555").done(assignResultTo('tube'));
       });
 

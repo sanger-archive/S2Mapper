@@ -35,9 +35,13 @@ define([
 
       for (var action in expectedResponse.tube.actions){
         it('has a '+action+' action method matching the raw JSON action attribute.', function(){
-          expect(results.tube[action]).toBeDefined();
+          expect(typeof results.tube[action]).toBe('function');
         });
       }
+
+      it("returns a tube with an .isSaved value of true.",function(){
+        expect(results.tube.isSaved).toBe(true);
+      });
 
 
     });

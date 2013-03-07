@@ -6,15 +6,22 @@ define(['require'], function(require){
   var BaseResource = Object.create(null);
 
   $.extend(BaseResource, {
-    instantiate: function(options){
-      var rawJson      = options.rawJson;
-      var resource     = Object.create(null);
-      resource.rawJson = rawJson;
+    instantiate: function(opts){
+      var options  = $.extend({}, opts);
+      var rawJson  = options.rawJson;
+      var resource = Object.create({
+        isSaved: false
+      });
 
-      // This assumes that there is only one key and it's always the
-      // resourceType.
-      resource.resourceType = Object.keys(rawJson)[0];
-      this.addActions(resource);
+      if (rawJson !== undefined){
+        resource.isSaved = true;
+        resource.rawJson = rawJson;
+
+        // This assumes that there is only one key and it's always the
+        // resourceType.
+        resource.resourceType = Object.keys(rawJson)[0];
+        this.addActions(resource);
+      }
 
       return resource;
     },
@@ -28,6 +35,10 @@ define(['require'], function(require){
       }
 
       return 'NOT_IMPLETMENTED';
+    },
+
+    new: function(options){
+      return this.instantiate(options);
     },
 
     addActions: function (resource){

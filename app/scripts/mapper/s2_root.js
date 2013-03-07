@@ -30,7 +30,7 @@ define([
       });
 
       // Extend the class if it has specialisation set up above.
-      $.extend(processedResources[resource], resourceClasses[resource]);
+      $.extend(processedResources[resource], resourceClass);
     }
 
     return processedResources;
