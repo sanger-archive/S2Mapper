@@ -10,12 +10,11 @@ define([
 
   var resourceClasses = {
     tube:   TubeResource,
-    order:  OrderResource,
+    order:  OrderResource
   };
 
   // Constructor function
   var ResourcePromise = function(options){
-
     var resourceProcessor = function(response){
       var resourceType  = Object.keys(response.responseText)[0];
       var resourceClass = resourceClasses[resourceType] || BaseResource;
@@ -33,7 +32,7 @@ define([
     s2ajax.send(
       options.sendAction || 'read',
       url,
-      options.data
+      options.data || null
     ).done(ajaxProcessor);
 
     // Calling promise makes the defferd object readonly

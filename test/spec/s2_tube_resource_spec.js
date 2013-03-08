@@ -1,8 +1,12 @@
 define([
        'config',
        'mapper/s2_resource_factory',
-       'mapper/s2_root'
-], function(config, ResourceFactory, Root){
+       'mapper/s2_root',
+     'text!json/tube_data_1.json',
+  'text!json/dna_and_rna_manual_extraction_2.json'
+
+
+], function(config, ResourceFactory, Root, testJSON_stage1, testJSON_stage2){
   'use strict';
 
   // We use an empty object for test results so that we can use a
@@ -16,17 +20,20 @@ define([
     }
   }
 
-  config.setTestJson('dna_only_extraction');
 
-  describe("Tube Resource:-",function(){
-    var s2;
+  xdescribe("Tube Resource:-",function(){
+    var s2, expectedResponse = config.setupTest(testJSON_stage2,0);
 
     describe("Searcing for a tube by EAN13 barcode,", function(){
       beforeEach(function(){
+
+
         Root.load().done(assignResultTo('root'));
+
         s2 = results.root;
-        s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
+        s2.tubes.findByEan13Barcode('XX111111K').done(assignResultTo('tube'));
       });
+
 
       it("takes an EAN13 barcode and returns the corresponding resource.", function(){
         expect(results.tube.rawJson).toBeDefined();
@@ -36,7 +43,7 @@ define([
     describe("Finding an order from a tube,", function(){
       beforeEach(function(){
         results             = {};
-        config.currentStage = 'stage1';
+
 
         Root.load().done(assignResultTo('root'));
         s2 = results.root;
@@ -54,14 +61,14 @@ define([
 
     });
 
-    xdescribe("finding active orders which contain the batch", function(){
+    describe("finding active orders which contain the batch", function(){
       it("returns an array of Orders when .orders() is called", function(){
       });
     });
 
     // This batch behaviour should move to a module to be shared by other item
     // type resources such as spin column and plate.
-    xdescribe("calling .batch() on a tube,", function(){
+    describe("calling .batch() on a tube,", function(){
 
       describe("when the tube is not in a batch", function(){
         beforeEach(function(){

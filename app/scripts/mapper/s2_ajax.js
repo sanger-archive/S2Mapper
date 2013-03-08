@@ -14,7 +14,7 @@ define (['config'], function (config) {
     read:  'GET', // Read maps to GET
     last:  'GET',
     update:'PUT', // Update maps to PUT
-    'delete':'DELETE', // Update maps to PUT
+    'delete':'DELETE' // Update maps to PUT
   };
 
 
@@ -25,7 +25,7 @@ define (['config'], function (config) {
     // Returns an jqXHR promise or a dummy
     // passing back to the mathcing presenter, callbacks are added there.
     this.send = function (action, actionPath, data) {
-
+      console.log("dummy ajax call with :"+action+"@"+actionPath+" and ", data);
       return config.ajax ({
         type:       actionMethods[action],
         url:        config.apiUrl + (actionPath || ''),

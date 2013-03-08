@@ -6,7 +6,6 @@ module.exports = function (grunt) {
   // https://github.com/cowboy/grunt/blob/master/docs/getting_started.md
   //
   grunt.initConfig ({
-
     // Project configuration
     // ---------------------
 
@@ -186,7 +185,7 @@ module.exports = function (grunt) {
       dist:''
     },
     server: {
-      port: 8000
+      port: 3333
     }
   });
 
@@ -202,6 +201,24 @@ module.exports = function (grunt) {
             if (json[stageNo].description)
               grunt.file.write(root+ '/' + oldFilename + '_' + stageNo + '.json', JSON.stringify(json[stageNo]))
           }
+
+      }
+    })
+
+  });
+
+
+  grunt.registerTask ('splitjson', function () {
+    grunt.file.recurse('test/json', function(absPath,root,sub,file){
+
+      if (absPath.substr(-4) === 'json'){
+        var json = grunt.file.readJSON(absPath), oldFilename = file.slice(0,-5);
+        console.log('Splitting ' + oldFilename + ' ....');
+        for (var stageNo in json){
+
+          if (json[stageNo].stage)
+            grunt.file.write(root+ '/' + oldFilename + '_' + stageNo + '.json', JSON.stringify(json[stageNo]))
+        }
 
       }
     })
