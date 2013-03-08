@@ -1,4 +1,4 @@
-define(['require', 'mapper/s2_resource_factory'], function(require){
+define(['require'], function(require){
   'use strict';
 
   // BaseResource is intended to be an abstract class used by concrete
