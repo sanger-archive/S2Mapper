@@ -42,6 +42,8 @@ define([
 
       // Make a call for the S2 root...
       s2_ajax.send().done(function(response){
+
+
         var rootInstance = processResources(response);
 
         for (var resource in rootInstance){
