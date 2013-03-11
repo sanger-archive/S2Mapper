@@ -2,15 +2,17 @@ define([
        'mapper/s2_base_resource',
        'mapper/s2_tube_resource',
        'mapper/s2_order_resource',
+       'mapper/s2_barcode_resource',
        'mapper/s2_ajax'
-], function (BaseResource, TubeResource, OrderResource, S2Ajax) {
+], function (BaseResource, TubeResource, OrderResource, BarcodeResource, S2Ajax) {
   "use strict";
 
   var s2ajax = new S2Ajax();
 
   var resourceClasses = {
-    tube:   TubeResource,
-    order:  OrderResource
+    tube:    TubeResource,
+    order:   OrderResource,
+    barcode: BarcodeResource
   };
 
   // Constructor function

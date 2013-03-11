@@ -1,0 +1,44 @@
+{
+  "1":{
+    "stage":"Get the root JSON",
+    "steps":[
+      {
+        "description":"Get the root JSON",
+        "method":"get",
+        "url":"/",
+        "request":null,
+        "response":{
+          "barcodes": {
+            "actions": {
+              "create": "http://localhost:9292/barcodes"
+            }
+          },
+          "revision":3
+        }
+      },
+      {
+        "description":"Request a new barcode",
+        "method":"post",
+        "url":"/barcodes",
+        "request":{
+          "barcode": {
+            "labware": "tube",
+            "role": "stock",
+            "contents": "DNA"
+          }
+        },
+        "response":{
+          "barcode": {
+            "actions": { },
+            "ean13": "1234567891011",
+            "sanger": {
+              "prefix": "DN",
+              "number": "1234567",
+              "suffix": "K"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
