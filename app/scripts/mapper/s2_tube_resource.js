@@ -19,7 +19,7 @@ define([
 
     // Search for Order from tube uuid.
     order: function(){
-      var thisTube = this;
+      var thisTube      = this;
       var orderDeferred = $.Deferred();
 
       if (thisTube._order) {

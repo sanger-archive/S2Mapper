@@ -1,23 +1,16 @@
 define([], function() {
   'use strict';
 
-
-
-
   var config = {
     apiUrl:'', // NOT USED IN TESTING
     setupTest: function (testData,step){
 
       testData = $.parseJSON(testData);
-
-
       config.createTestData(testData);
 
       var stepStage = testData.steps[step];
       config.stepStage = stepStage;
-      config.stage = stepStage.description || "No description in JSON"
-
-
+      config.stage = stepStage.description || "No description in JSON";
 
       config.url = stepStage.url;
       config.params = stepStage.request;
@@ -26,19 +19,18 @@ define([], function() {
     },
 
     finalDna: {},
+
     createTestData: function(testData){
       var output = '';
 
-        for(var stepNo in testData.steps) {
-          var step = testData.steps[stepNo]
-          output += '<br/>Step' + stepNo + ':' + step.description +'. Needs a ' + step.method + '. Responds with ' +
-            Object.keys(step.response)[0]
+      for(var stepNo in testData.steps) {
+        var step = testData.steps[stepNo]
+        output += '<br/>Step' + stepNo + ':' + step.description +'. Needs a ' + step.method + '. Responds with ' +
+          Object.keys(step.response)[0];
 
-
-          config.finalDna[step.url + step.method + JSON.stringify(step.request)] = step.response;
+        config.finalDna[step.url + step.method + JSON.stringify(step.request)] = step.response;
 
       }
-//      $('body').prepend(output)
 
     },
 
@@ -48,7 +40,6 @@ define([], function() {
     setTestJson: function(workflow){
       // Fixme Not working ideally yet still having to require
       // the package on module load.
-
       config.testJSON = require('json/'+workflow);
     },
 
@@ -58,41 +49,31 @@ define([], function() {
 
       if (resultFromJson === undefined)
         throw "Path: '"+path+"' not found in test JSON for stage: "
-        +config.currentStage;
-
-
-      //var response = config.finalDna[url + options.type + JSON.stringify(options.data)];
-
+      +config.currentStage;
 
       return resultFromJson;
     },
 
-    cpResource: function (original_uuid, new_uuid) {
-      var resourceJsonClone = JSON.parse (JSON.stringify (
-        config.getTestJson ()["/" + original_uuid]));
-        resourceJsonClone.uuid = new_uuid;
-        config.getTestJson ()["/" + new_uuid] = resourceJsonClone;
-    },
+    // cpResource: function (original_uuid, new_uuid) {
+    //   var resourceJsonClone = JSON.parse(
+    //     JSON.stringify(
+    //      config.getTestJson()["/" + original_uuid]));
 
-//    Dummy out the ajax call returned by S2Ajax to test from file.
-//    Returns a Deferred instead of jqXHR.
+    //   resourceJsonClone.uuid = new_uuid;
+    //   config.getTestJson ()["/" + new_uuid] = resourceJsonClone;
+    // },
+
+    // Dummy out the ajax call returned by S2Ajax to test from file.
+    // Returns a Deferred instead of jqXHR.
     ajax: function (options){
-
-
-//    a blank options.url should default to '/'
-      options.url = options.url.replace(/http:\/\/localhost:9292/,'');
+      // a blank options.url should default to '/'
+      options.url = options.url.replace(/http:\/\/localhost:\d+/,'');
       if (options.url.length === 0){
         options.url = '/';
         options.type = 'get';
         options.data = null;
       }
 
-
-      /*
-
-      if (options.type === 'POST') requestOptions.url = options.url+'/'+JSON.stringify(options.data);
- var responseText = config.getTestJson(requestOptions.url);
-      */
       console.log('------------------------');
       console.log('Sending ajax message for ' + config.stage);
 
@@ -119,7 +100,6 @@ define([], function() {
       });
     }
   };
-//  console.log(config.finalDna);
   return config;
 });
 

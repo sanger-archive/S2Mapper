@@ -19,13 +19,8 @@ define (['config'], function (config) {
 
 
   return function () {
-    // This is an injection of ajax behaviour to allow us to
-    // unit test from file.
-
     // Returns an jqXHR promise or a dummy
-    // passing back to the mathcing presenter, callbacks are added there.
     this.send = function (action, actionPath, data) {
-      console.log("dummy ajax call with :"+action+"@"+actionPath+" and ", data);
       return config.ajax ({
         type:       actionMethods[action],
         url:        config.apiUrl + (actionPath || ''),

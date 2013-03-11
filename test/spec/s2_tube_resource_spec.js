@@ -2,11 +2,9 @@ define([
        'config',
        'mapper/s2_resource_factory',
        'mapper/s2_root',
-     'text!json/tube_data_1.json',
-  'text!json/dna_and_rna_manual_extraction_2.json'
-
-
-], function(config, ResourceFactory, Root, testJSON_stage1, testJSON_stage2){
+       'text!json/unit/root_data.json',
+       'text!json/unit/tube_data.json'
+], function(config, ResourceFactory, Root, rootTestJson, tubeTestJson){
   'use strict';
 
   // We use an empty object for test results so that we can use a
@@ -22,16 +20,17 @@ define([
 
 
   describe("Tube Resource:-",function(){
-    var s2, expectedResponse = config.setupTest(testJSON_stage2,0);
+    var s2;
 
     describe("Searcing for a tube by EAN13 barcode,", function(){
+
       beforeEach(function(){
-
-
+        config.setupTest(rootTestJson, 0);
         Root.load().done(assignResultTo('root'));
 
         s2 = results.root;
-        s2.tubes.findByEan13Barcode('XX111111K').done(assignResultTo('tube'));
+        config.setupTest(tubeTestJson, 2);
+        s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
       });
 
 
@@ -42,12 +41,12 @@ define([
 
     describe("Finding an order from a tube,", function(){
       beforeEach(function(){
-        results             = {};
-
-
+        config.setupTest(rootTestJson, 0);
+        results = {};
         Root.load().done(assignResultTo('root'));
         s2 = results.root;
 
+        config.setupTest(tubeTestJson, 1);
         s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
       });
 
@@ -69,22 +68,25 @@ define([
 
     // This batch behaviour should move to a module to be shared by other item
     // type resources such as spin column and plate.
-    describe("calling .batch() on a tube,", function(){
+    xdescribe("calling .batch() on a tube,", function(){
 
       describe("when the tube is not in a batch", function(){
         beforeEach(function(){
-          new ResourceFactory({uuid: '11111111-2222-3333-4444-555555555555' }).done(assignResultTo('tube'));
+          config.setupTest(tubeTestJson, 0);
+          new ResourceFactory({uuid: '3bcf8010-68ac-0130-9163-282066132de2' }).done(assignResultTo('tube'));
+          debugger;
           results.tube.batch().done(assignResultTo('batch'));
         });
 
-        it("returns a new batch resource that is not persisted against S2", function(){
-          expect(results.batch.new_resource).toBe(false);
+        it("returns null.", function(){
+          expect(results.batch).toBe(null);
         });
       });
 
       describe("when the tube is in a batch,",function(){
         beforeEach(function(){
-          new ResourceFactory({uuid: '11111111-2222-3333-4444-555555555555'}).done(assignResultTo('tube'));
+          config.setupTest(tubeTestJson, 0);
+          new ResourceFactory({uuid: '3bcf8010-68ac-0130-9163-282066132de2'}).done(assignResultTo('tube'));
           results.tube.batch().done(assignResultTo('batch'));
         });
 

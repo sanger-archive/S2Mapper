@@ -9,19 +9,20 @@ define(['require'], function(require){
     instantiate: function(opts){
       var options  = $.extend({}, opts);
       var rawJson  = options.rawJson;
-      var resource = Object.create({ isNew: true });
+      var resourceInstance = Object.create({ isNew: true });
 
       if (rawJson !== undefined){
-        resource.isNew   = false;
-        resource.rawJson = rawJson;
+        resourceInstance.isNew   = false;
+        resourceInstance.rawJson = rawJson;
+        resourceInstance.root = this.root;
 
         // This assumes that there is only one key and it's always the
         // resourceType.
-        resource.resourceType = Object.keys(rawJson)[0];
-        this.addActions(resource);
+        resourceInstance.resourceType = Object.keys(rawJson)[0];
+        this.addActions(resourceInstance);
       }
 
-      return resource;
+      return resourceInstance;
     },
 
 

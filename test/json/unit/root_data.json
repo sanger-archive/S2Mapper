@@ -1,4 +1,4 @@
-{"1":{
+{
   "stage":"root",
   "steps":[
     {
@@ -7,7 +7,6 @@
       "url":"/",
       "request":null,
       "response":{
-        "root":{
           "tubes":{
             "actions":{
               "create":"/tubes",
@@ -52,11 +51,9 @@
               "last":"http://localhost:9292/searches/page=-1"
             }
           }
-        }
       }
     }
   ]
-}
 }
 
 
