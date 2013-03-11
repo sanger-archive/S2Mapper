@@ -2,15 +2,17 @@ define([
        'mapper/s2_ajax',
        'mapper/s2_resource_factory',
        'mapper/s2_base_resource',
-       'mapper/s2_tube_resource'
-], function(S2Ajax, ResourceFactory, BaseResource, Tube){
+       'mapper/s2_tube_resource',
+       'mapper/s2_batch_resource'
+], function(S2Ajax, ResourceFactory, BaseResource, Tube, Batch){
   'use strict';
 
   // register resources with root.
   var s2_ajax = new S2Ajax();
 
   var resourceClasses = {
-    tubes: Tube
+    tubes: Tube,
+    batches: Batch
   };
 
   // Symilar to BaseResource
