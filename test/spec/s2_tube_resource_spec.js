@@ -1,12 +1,12 @@
 define([
        'resource_test_helper',
        'config',
-       'mapper/s2_resource_factory',
        'mapper/s2_root',
+       'mapper/s2_tube_resource',
        'text!json/unit/root.json',
        'text!json/unit/tube.json',
        'text!json/unit/tube_by_barcode.json'
-], function(TestHelper, config, ResourceFactory, Root, rootTestJson, tubeTestJson, tubeByBarcodeJson){
+], function(TestHelper, config, Root, TubeResource, rootTestJson, tubeTestJson, tubeByBarcodeJson){
   'use strict';
 
   TestHelper(function(results) {

@@ -1,0 +1,68 @@
+{
+  "stage":"Labelling a resource with a new barcode",
+  "steps":[
+    {
+      "description":"Get the root JSON",
+      "method":"get",
+      "url":"/",
+      "request":null,
+      "response":{
+        "barcodes": {
+          "actions": {
+            "create": "http://localhost:9292/barcodes"
+          }
+        },
+        "labellables": {
+          "actions": {
+            "create": "http://localhost:9292/labellables"
+          }
+        },
+        "revision":3
+      }
+    },
+    {
+      "description":"Request a new barcode",
+      "method":"post",
+      "url":"/barcodes",
+      "request":{
+        "barcode": {
+          "labware": "tube",
+          "role": "stock",
+          "contents": "DNA"
+        }
+      },
+      "response":{
+        "barcode": {
+          "actions": { },
+          "ean13": "1234567891011",
+          "sanger": {
+            "prefix": "DN",
+            "number": "1234567",
+            "suffix": "K"
+          }
+        }
+      }
+    },
+    {
+      "description":"Label resource with barcode",
+      "method":"post",
+      "url":"/labellables",
+      "request":{
+        "labellable": {
+          "name": "UUID OF RESOURCE",
+          "type": "resource",
+          "labels": {
+            "barcode": { "type": "ean13-barcode", "value": "1234567891011" },
+            "sanger label": { "type": "sanger-barcode", "value": "DN1234567K" }
+          }
+        }
+      },
+      "response":{
+        "labelleable": {
+          "actions": { },
+          "uuid": "UUID OF LABEL"
+        }
+      }
+    }
+  ]
+}

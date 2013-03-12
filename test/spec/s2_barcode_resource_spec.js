@@ -2,10 +2,10 @@ define([
   'resource_test_helper',
   'config',
   'mapper/s2_root',
-  'text!json/barcode_data_1.json',
+  'text!json/unit/barcode.json',
   'mapper/s2_labellable',
   'mapper/s2_barcode_resource'
-], function(TestHelper, config, Root, testJSON_stage1, Labellable) {
+], function(TestHelper, config, Root, testData, Labellable) {
   'use strict';
 
   TestHelper(function(results) {
@@ -17,7 +17,7 @@ define([
 
       // Ensure that the root JSON is always processed and we have that available
       beforeEach(function() {
-        var expectedResponse = config.setupTest(testJSON_stage1, 0);
+        var expectedResponse = config.setupTest(testData);
 
         Root.load().done(results.assignTo('root'));
         s2 = results.get('root');
