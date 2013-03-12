@@ -1,9 +1,9 @@
 define([
-    'config',
-    'mapper/s2_resource_factory',
-    'text!json/tube_data_1.json',
-    'text!json/dna_and_rna_manual_extraction.json'],
-    function(config, ResourceFactory, testJSON_stage1, dnaJSON){
+       'config',
+       'mapper/s2_resource_factory',
+       'text!json/unit/tube.json',
+],
+function(config, ResourceFactory, tubeJson){
   'use strict';
 
   // We use an empty object for test results so that we can use a
@@ -24,7 +24,8 @@ define([
   describe('ResourceFactory:-', function(){
     describe('Mapping a tube,', function(){
       results = {};
-      var expectedResponse = config.setupTest(testJSON_stage1,0);
+      var expectedResponse = config.setupTest(tubeJson);
+
       var resourcePromise = new ResourceFactory({uuid: '3bcf8010-68ac-0130-9163-282066132de2' });
       resourcePromise.done(assignResultTo('tube'));
 
@@ -48,8 +49,7 @@ define([
 
     describe("Mapping an order,",function(){
       beforeEach(function(){
-        var expectedResponse = config.setupTest(testJSON_stage1,1);
-        console.log(expectedResponse)
+        var expectedResponse = config.setupTest(tubeJson,1);
         new ResourceFactory({uuid: "25ec5e30-67b1-0130-915d-282066132de2"}).done(assignResultTo('order'))
       });
 

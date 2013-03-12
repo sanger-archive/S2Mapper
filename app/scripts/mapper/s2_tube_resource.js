@@ -57,7 +57,7 @@ define([
 
       // We _should_ only see one result per tube
       // ...have to check that...
-      var order = Order.instantiate({rawJson: ordersJson[0]});
+      var order = Order.instantiate({rawJson: {order: ordersJson[0]}});
 
       return resultDeferred.resolve(order);
     };

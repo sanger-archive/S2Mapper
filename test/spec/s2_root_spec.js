@@ -1,6 +1,8 @@
 define(['config',
-    'mapper/s2_root',
-    'text!json/dna_and_rna_manual_extraction_1.json'], function(config, S2Root,testJSON_1){
+       'mapper/s2_root',
+       'text!json/unit/root.json',
+       'text!json/unit/tube.json'
+], function(config, S2Root,rootTestJson, tubeTestJson){
   'use strict';
 
   // We use an empty object for test results so that we can use a
@@ -18,13 +20,12 @@ define(['config',
   describe("S2Root:-", function(){
     var rootPromise;
 
-    describe("Creating a new root resource,", function(){
+    describe("Loading an S2 root,", function(){
       beforeEach(function(){
-		rawRootJson = config.setupTest(testJSON_1,0);
+        rawRootJson = config.setupTest(rootTestJson);
         results             = {};
         rootPromise         = S2Root.load();
         rootPromise.done(assignResultTo('root'));
-        results.root.find("11111111-2222-3333-4444-555555555555").done(assignResultTo('tube'));
       });
 
       it("returns a promise.", function(){
@@ -32,8 +33,12 @@ define(['config',
       });
 
       it("resolves to a hash of S2Resources.", function(){
-        expect(_.difference(Object.keys(rawRootJson), Object.keys(results.root)) ).
-          toEqual([]);
+        var diffExpectedWithRoot = _.difference(
+          Object.keys(rawRootJson),
+          Object.keys(results.root)
+        );
+
+        expect(diffExpectedWithRoot).toEqual([]);
       });
 
       it("has a Searches Resource.", function(){
@@ -42,6 +47,8 @@ define(['config',
       });
 
       it("can find resources by their UUID", function(){
+        config.setupTest(tubeTestJson);
+        results.root.find("3bcf8010-68ac-0130-9163-282066132de2").done(assignResultTo('tube'));
         expect(results.tube.rawJson).toBeDefined();
       });
 

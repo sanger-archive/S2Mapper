@@ -3,7 +3,8 @@ define([], function() {
 
   var config = {
     apiUrl:'', // NOT USED IN TESTING
-    setupTest: function (testData,step){
+    setupTest: function (testData, stepNo){
+      var step = stepNo || 0
 
       testData = $.parseJSON(testData);
       config.createTestData(testData);

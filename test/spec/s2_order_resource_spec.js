@@ -1,10 +1,13 @@
 define([
        'config',
-       'mapper/s2_root'
-], function(config, Root){
+       'mapper/s2_root',
+       'text!json/unit/root.json',
+       'text!json/unit/order_without_batch.json',
+       'text!json/unit/order_with_batch.json',
+], function(config, Root, rootTestJson, orderWithoutBatchJson, orderWithBatchJson){
   'use strict';
 
-  var s2, results = {};
+  var s2, results;
 
   function assignResultTo(target){
     return function(source){ 
@@ -17,12 +20,13 @@ define([
     describe("Calling order.getBatchFor(item), where item is a tube in the order,", function(){
       describe("and the item IS NOT in a batch,", function(){
         beforeEach(function(){
-          results             = {};
-          config.currentStage = 'stage1';
+          results = {};
 
+          config.setupTest(rootTestJson);
           Root.load().done(assignResultTo('root'));
           s2 = results.root;
 
+          config.setupTest(orderWithoutBatchJson);
           s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
           results.tube.order().done(assignResultTo('order'));
         });
@@ -39,11 +43,12 @@ define([
       describe("and the item IS in a batch,", function(){
         beforeEach(function(){
           results = {};
-          config.currentStage = 'tubeInBatch';
+          config.setupTest(rootTestJson, 0);
 
           Root.load().done(assignResultTo('root'));
           s2 = results.root;
 
+          config.setupTest(orderWithBatchJson);
           s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
           results.tube.order().done(assignResultTo('order'));
         });

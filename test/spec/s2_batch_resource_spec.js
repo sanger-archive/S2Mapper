@@ -1,7 +1,9 @@
 define([
        'config',
-       'mapper/s2_root'
-], function(config, Root){
+       'mapper/s2_root',
+       'text!json/unit/root.json',
+       'text!json/unit/tube_by_barcode.json'
+], function(config, Root, rootTestJson, tubeByBarcodeJson){
   'use strict';
 
 
@@ -13,16 +15,18 @@ define([
   }
 
   var s2, results;
-  config.setTestJson('dna_only_extraction');
 
   describe("Batch Resource:-",function(){
 
     describe("Creating a new, unsaved, batch using s2.batches.new(),", function(){
       beforeEach(function(){
         results = {};
-        config.currentStage = 'stage1';
+
+        config.setupTest(rootTestJson);
         Root.load().done(assignResultTo('root'));
         s2 = results.root;
+
+        config.setupTest(tubeByBarcodeJson);
         s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
       });
 
