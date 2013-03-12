@@ -16,7 +16,7 @@ define([
     tube:    TubeResource,
     order:   OrderResource,
     barcode: BarcodeResource,
-    batch:   BatchResource
+    batch:   BatchResource,
 
     // Functions
     get: function(name) {

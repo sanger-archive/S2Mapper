@@ -45,7 +45,6 @@
         "size":1,
         "tubes":[
           {
-            "tube":{
               "actions":{
                 "read":"http://localhost:9292/3bcf8010-68ac-0130-9163-282066132de2",
                 "create":"http://localhost:9292/3bcf8010-68ac-0130-9163-282066132de2",
@@ -85,7 +84,6 @@
                   "type":"ean13-barcode"
                 }
               }
-            }
           }
         ]
       }
@@ -132,7 +130,6 @@
         "size":1,
         "orders":[
           {
-          "order":{
             "actions":{
               "read":"http://localhost:9292/3bd3da30-68ac-0130-9163-282066132de2",
               "create":"http://localhost:9292/3bd3da30-68ac-0130-9163-282066132de2",
@@ -178,7 +175,6 @@
               ]
             }
           }
-        }
         ]
       }
     }

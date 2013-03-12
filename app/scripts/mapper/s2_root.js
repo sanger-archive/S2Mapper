@@ -9,22 +9,23 @@ define([
 
   var processResources = function(response){
     var rawJson  = response.responseText;
-    var processedResources = {};
+    var rootInstance = {};
 
     for (var resource in rawJson){
       var resourceJson       = {};
       // wrap the json so that it looks like any other resource
       resourceJson[resource] = rawJson[resource];
 
-      processedResources[resource] = Resources.base.instantiate({
+      rootInstance[resource] = Resources.base.instantiate({
+        root: rootInstance,
         rawJson: resourceJson
       });
 
       // Extend the class if it has specialisation set up above.
-      $.extend(processedResources[resource], Resources.get(resource));
+      $.extend(rootInstance[resource], Resources.get(resource));
     }
 
-    return processedResources;
+    return rootInstance;
   };
 
   var S2Root = Object.create(null);

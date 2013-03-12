@@ -5,7 +5,7 @@ define([
        'mapper/s2_tube_resource',
        'text!json/unit/root.json',
        'text!json/unit/tube.json',
-       'text!json/unit/tube_by_barcode.json'
+       'text!json/unit/order_without_batch.json'
 ], function(TestHelper, config, Root, TubeResource, rootTestJson, tubeTestJson, tubeByBarcodeJson){
   'use strict';
 

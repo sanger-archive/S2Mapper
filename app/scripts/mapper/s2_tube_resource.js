@@ -6,11 +6,13 @@ define([
 ], function(BaseResource, BatchResource, Order, Labellable){
   'use strict';
 
-  function processor(root, resourceTypeCollection) {
+  function processor(root, resourceTypeCollection, resourceType) {
     return function(resultDeferred) {
       return function(response) {
         var json = response.responseText[resourceTypeCollection];
-        var resource = root[resourceTypeCollection].instantiate({rawJson: json[0]});
+        var rawJson = {}; rawJson[resourceType] = json[0];
+
+        var resource = root[resourceTypeCollection].instantiate({rawJson: rawJson});
         return resultDeferred.resolve(resource);
       };
     };
@@ -49,8 +51,9 @@ define([
             }
           }
         }).done(function(searchResult){
-          searchResult.first(undefined, processor(root, 'orders'))
+          searchResult.first(undefined, processor(root, 'orders', 'order'))
           .done(function(order){
+            order.root = root;
             thisTube._order = order;
             orderDeferred.resolve(order);
           });
@@ -86,8 +89,7 @@ define([
           }
         }
       }).done(function(searchResult){
-        console.log(searchResult);
-        searchResult.first(undefined, processor(root, 'tubes')).done(function(tube){
+        searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
           tube.root = root;
           tubesDeferred.resolve(tube);
         });

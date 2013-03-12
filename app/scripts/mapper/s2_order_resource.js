@@ -31,8 +31,13 @@ define([
         first().
         value();
 
-      if (batchJson) return BaseResource.instantiate({rawJson: {batch: batchJson}}).read();
-      else return null;
+      if (batchJson)
+        return this.root.batches.instantiate({
+          root: this.root,
+          rawJson: {batch: batchJson}
+        }).read();
+      else
+        return null;
     }
   };
 

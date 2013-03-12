@@ -36,7 +36,7 @@ define(['require'], function(require){
       var options           = $.extend({}, opts);
       var rawJson           = options.rawJson;
       var resourceInstance  = Object.create({ isNew: true });
-      resourceInstance.root = options.root;
+      resourceInstance.root = this.root || options.root;
 
       if (rawJson !== undefined){
         resourceInstance.isNew        = false;
