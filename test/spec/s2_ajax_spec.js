@@ -1,7 +1,7 @@
 define (['config',
-  'mapper/s2_ajax',
-  'text!json/dna_and_rna_manual_extraction_1.json',
-], function (config, S2Ajax, testJSON_stage1) {
+        'mapper/s2_ajax',
+        'text!json/unit/ajax.json',
+], function (config, S2Ajax, ajaxTestJson) {
   'use strict';
   //load appropriate JSON for this workflow
   // config.testJSON = $.parseJSON (testJSON);
@@ -39,7 +39,7 @@ define (['config',
 
       beforeEach(function(){
         //pass stage, step to config.setupTest
-        expectedResponse = config.setupTest(testJSON_stage1,0);
+        expectedResponse = config.setupTest(ajaxTestJson);
         config.method = getActionMethod(config.stepStage);
 
 
@@ -48,8 +48,8 @@ define (['config',
           config.url,
           config.params
         ).done(function(response){
-              search = response.responseText;
-            });
+          search = response.responseText;
+        });
 
       });
 
@@ -65,12 +65,12 @@ define (['config',
       // We can only access the response object through a side effect.
       var s2root, expectedResponse;
       beforeEach(function(){
-        expectedResponse = config.setupTest(testJSON_stage1,0);
+        expectedResponse = config.setupTest(ajaxTestJson);
 
         s2ajax.send(
-            config.method,
-            config.url,
-            config.params
+          config.method,
+          config.url,
+          config.params
         ).done(function(response){
           s2root = response.responseText;
         });
