@@ -58,7 +58,7 @@
         }
       },
       "response":{
-        "labelleable": {
+        "labellable": {
           "actions": { },
           "uuid": "UUID OF LABEL"
         }
