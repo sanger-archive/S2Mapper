@@ -1,9 +1,22 @@
 define([
        'mapper/s2_base_resource',
        'mapper/s2_batch_resource',
-       'mapper/s2_order_resource'
-], function(BaseResource, BatchResource, Order ){
+       'mapper/s2_order_resource',
+       'mapper/s2_labellable',
+], function(BaseResource, BatchResource, Order, Labellable){
   'use strict';
+
+  function processor(root, resourceTypeCollection, resourceType) {
+    return function(resultDeferred) {
+      return function(response) {
+        var json = response.responseText[resourceTypeCollection];
+        var rawJson = {}; rawJson[resourceType] = json[0];
+
+        var resource = root[resourceTypeCollection].instantiate({rawJson: rawJson});
+        return resultDeferred.resolve(resource);
+      };
+    };
+  }
 
   var Tube = Object.create(BaseResource);
   Tube.resourceType = 'tube';
@@ -21,6 +34,7 @@ define([
     order: function(){
       var thisTube      = this;
       var orderDeferred = $.Deferred();
+      var root = this.root;
 
       if (thisTube._order) {
         orderDeferred.resolve(thisTube._order);
@@ -37,47 +51,24 @@ define([
             }
           }
         }).done(function(searchResult){
-          searchResult.first(undefined, orderSearchProcessor)
+          searchResult.first(undefined, processor(root, 'orders', 'order'))
           .done(function(order){
-            order.root      = thisTube.root;
+            order.root = root;
             thisTube._order = order;
             orderDeferred.resolve(order);
           });
         });
       }
 
-
       return orderDeferred.promise();
     }
-  };
-
-  var orderSearchProcessor = function(resultDeferred){
-    return function(response){
-      var ordersJson = response.responseText.orders;
-
-      // We _should_ only see one result per tube
-      // ...have to check that...
-      var order = Order.instantiate({rawJson: {order: ordersJson[0]}});
-
-      return resultDeferred.resolve(order);
-    };
-  };
-
-  var tubeSearchProcessor = function(resultDeferred){
-    return function(response){
-      var tubesJson = response.responseText.tubes;
-
-      // We _should_ only see one result for an EAN13 search...
-      var tube = Tube.instantiate({rawJson: tubesJson[0]});
-
-      return resultDeferred.resolve(tube);
-    };
   };
 
   var classMethods = {
     instantiate: function(options){
       var tubeInstance = BaseResource.instantiate(options);
       $.extend(tubeInstance, instanceMethods);
+      $.extend(tubeInstance, Labellable);
       return tubeInstance;
     },
 
@@ -98,8 +89,7 @@ define([
           }
         }
       }).done(function(searchResult){
-        console.log(searchResult);
-        searchResult.first(undefined, tubeSearchProcessor).done(function(tube){
+        searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
           tube.root = root;
           tubesDeferred.resolve(tube);
         });

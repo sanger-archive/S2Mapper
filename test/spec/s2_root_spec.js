@@ -1,57 +1,74 @@
-define(['config',
+define([
+       'resource_test_helper',
+       'config',
        'mapper/s2_root',
        'text!json/unit/root.json',
-       'text!json/unit/tube.json'
-], function(config, S2Root,rootTestJson, tubeTestJson){
+       'text!json/unit/tube.json',
+       'text!json/unit/order_with_batch.json'
+], function(TestHelper, config, S2Root, rootTestJson, tubeTestJson, orderTestJson){
   'use strict';
 
-  // We use an empty object for test results so that we can use a
-  // string as a pointer to a returned value.
-  var results, rawRootJson;
+  var rawRootJson;
 
-  function assignResultTo(target){
-    return function(source){
-      // Assignment through side effect; simultates callback.
-      results[target] = source;
-    }
-  }
+  TestHelper(function(results) {
+    describe("S2Root:-", function(){
+      results.lifeCycle();
 
+      describe("Loading an S2 root,", function(){
+        var rootPromise;
 
-  describe("S2Root:-", function(){
-    var rootPromise;
+        beforeEach(function(){
+          rawRootJson = config.setupTest(rootTestJson);
+          rootPromise         = S2Root.load();
+          rootPromise.done(results.assignTo('root'));
+        });
 
-    describe("Loading an S2 root,", function(){
-      beforeEach(function(){
-        rawRootJson = config.setupTest(rootTestJson);
-        results             = {};
-        rootPromise         = S2Root.load();
-        rootPromise.done(assignResultTo('root'));
+        it("returns a promise.", function(){
+          expect(rootPromise.done).toBeDefined();
+        });
+
+        it("has a SearchesResource", function(){
+          var resourceType = results.get('root').searches.resourceType;
+          expect(resourceType).toBe('searches');
+        });
+
+        it("resolves to a hash of S2Resources.", function(){
+          var diffExpectedWithRoot = _.difference(
+            Object.keys(rawRootJson),
+            Object.keys(results.get('root'))
+          );
+
+          expect(diffExpectedWithRoot).toEqual([]);
+        });
       });
 
-      it("returns a promise.", function(){
-        expect(rootPromise.done).toBeDefined();
+      describe('find', function(){
+        var resourceTests = [
+          { resourceType: 'tube',  uuid: '3bcf8010-68ac-0130-9163-282066132de2', data: tubeTestJson  },
+          { resourceType: 'order', uuid: '25ec5e30-67b1-0130-915d-282066132de2', data: orderTestJson }
+        ]
+        for (var index in resourceTests) {
+          var resourceTest = resourceTests[index];
+
+          describe(resourceTest.resourceType + " resource", function() {
+            var expectedResponse;
+
+            beforeEach(function() {
+              expectedResponse = config.setupTest(resourceTest.data);
+              S2Root.load().done(results.assignTo('root'));
+              results.get('root').find(resourceTest.uuid).done(results.assignTo('resource'));
+            });
+
+            it("is " + resourceTest.resourceType + " resource", function() {
+              expect(results.get('resource').resourceType).toBe(resourceTest.resourceType);
+            });
+
+            it("sets the root", function() {
+              expect(results.get('resource').root).toBeDefined();
+            });
+          });
+        }
       });
-
-      it("resolves to a hash of S2Resources.", function(){
-        var diffExpectedWithRoot = _.difference(
-          Object.keys(rawRootJson),
-          Object.keys(results.root)
-        );
-
-        expect(diffExpectedWithRoot).toEqual([]);
-      });
-
-      it("has a Searches Resource.", function(){
-        var resourceType = results.root.searches.resourceType;
-        expect(resourceType).toBe('searches');
-      });
-
-      it("can find resources by their UUID", function(){
-        config.setupTest(tubeTestJson);
-        results.root.find("3bcf8010-68ac-0130-9163-282066132de2").done(assignResultTo('tube'));
-        expect(results.tube.rawJson).toBeDefined();
-      });
-
     });
   });
 });
