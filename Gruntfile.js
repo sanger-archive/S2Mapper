@@ -47,7 +47,7 @@ module.exports = function (grunt) {
 
     // headless testing through PhantomJS
     jasmine: {
-      all:['http://localhost:3501/index.html']
+      all:['http://localhost:3333/index.html']
     },
 
     // default watch configuration
@@ -70,7 +70,8 @@ module.exports = function (grunt) {
           'app/images/**/*',
           'test/*.js',
           'test/json/*.js',
-          'test/spec/*.js'
+          'test/spec/*.js',
+          'test/spec/integration/*.js'
 
         ],
         tasks:'reload'

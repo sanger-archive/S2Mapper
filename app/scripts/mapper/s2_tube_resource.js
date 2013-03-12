@@ -19,23 +19,33 @@ define([
 
     // Search for Order from tube uuid.
     order: function(){
+      var thisTube      = this;
       var orderDeferred = $.Deferred();
 
-      this.root.searches.create({
-        "search":{
-          "description":"search for order",
-          "model":      "order",
-          "criteria":   {
-            "item":{
-              "uuid": this.rawJson.tube.uuid,
-              "role":"tube_to_be_extracted"
+      if (thisTube._order) {
+        orderDeferred.resolve(thisTube._order);
+      } else {
+        thisTube.root.searches.create({
+          "search":{
+            "description":"search for order",
+            "model":      "order",
+            "criteria":   {
+              "item":{
+                "uuid": thisTube.rawJson.tube.uuid,
+                "role":"tube_to_be_extracted"
+              }
             }
           }
-        }
-      }).done(function(searchResult){
-        searchResult.first(undefined, orderSearchProcessor)
-          .done(function(order){ orderDeferred.resolve(order); });
-      });
+        }).done(function(searchResult){
+          searchResult.first(undefined, orderSearchProcessor)
+          .done(function(order){
+            order.root      = thisTube.root;
+            thisTube._order = order;
+            orderDeferred.resolve(order);
+          });
+        });
+      }
+
 
       return orderDeferred.promise();
     }
@@ -47,7 +57,7 @@ define([
 
       // We _should_ only see one result per tube
       // ...have to check that...
-      var order = Order.instantiate({rawJson: ordersJson[0]});
+      var order = Order.instantiate({rawJson: {order: ordersJson[0]}});
 
       return resultDeferred.resolve(order);
     };

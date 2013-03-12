@@ -1,17 +1,21 @@
 define([
        'mapper/s2_ajax',
+       'mapper/s2_resource_factory',
        'mapper/s2_base_resource',
-       'mapper/s2_tube_resource'
-], function(S2Ajax, BaseResource, Tube){
+       'mapper/s2_tube_resource',
+       'mapper/s2_batch_resource'
+], function(S2Ajax, ResourceFactory, BaseResource, Tube, Batch){
   'use strict';
 
   // register resources with root.
   var s2_ajax = new S2Ajax();
 
   var resourceClasses = {
-    tubes: Tube
+    tubes: Tube,
+    batches: Batch
   };
 
+  // Symilar to BaseResource
   var processResources = function(response){
     var rawJson  = response.responseText;
     var processedResources = {};
@@ -28,13 +32,19 @@ define([
       });
 
       // Extend the class if it has specialisation set up above.
-      $.extend(processedResources[resource], resourceClasses[resource]);
+      $.extend(processedResources[resource], resourceClass);
     }
 
     return processedResources;
   };
 
   var S2Root = Object.create(null);
+
+  var instanceMethods = {
+    find: function(uuid){
+      return new ResourceFactory({uuid: uuid});
+    }
+  };
 
   var classMethods = {
     load: function(){
@@ -45,6 +55,7 @@ define([
 
 
         var rootInstance = processResources(response);
+        $.extend(rootInstance, instanceMethods);
 
         for (var resource in rootInstance){
           rootInstance[resource].root = rootInstance;
@@ -52,6 +63,7 @@ define([
 
         rootDeferred.resolve(rootInstance);
       });
+
 
       return rootDeferred;
     }

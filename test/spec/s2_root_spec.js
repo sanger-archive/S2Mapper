@@ -1,6 +1,8 @@
 define(['config',
-    'mapper/s2_root',
-    'text!json/dna_and_rna_manual_extraction_1.json'], function(config, S2Root,testJSON_1){
+       'mapper/s2_root',
+       'text!json/unit/root.json',
+       'text!json/unit/tube.json'
+], function(config, S2Root,rootTestJson, tubeTestJson){
   'use strict';
 
   // We use an empty object for test results so that we can use a
@@ -8,7 +10,7 @@ define(['config',
   var results, rawRootJson;
 
   function assignResultTo(target){
-    return function(source){ 
+    return function(source){
       // Assignment through side effect; simultates callback.
       results[target] = source;
     }
@@ -18,9 +20,9 @@ define(['config',
   describe("S2Root:-", function(){
     var rootPromise;
 
-    describe("Creating a new root resource,", function(){
+    describe("Loading an S2 root,", function(){
       beforeEach(function(){
-
+        rawRootJson = config.setupTest(rootTestJson);
         results             = {};
         rootPromise         = S2Root.load();
         rootPromise.done(assignResultTo('root'));
@@ -30,15 +32,24 @@ define(['config',
         expect(rootPromise.done).toBeDefined();
       });
 
-      it("resolves to a hash of S2Resources", function(){
-        var expectedResponse = config.setupTest(testJSON_1,0);
-        expect(Object.keys(results.root)).
-          toEqual(Object.keys(expectedResponse));
+      it("resolves to a hash of S2Resources.", function(){
+        var diffExpectedWithRoot = _.difference(
+          Object.keys(rawRootJson),
+          Object.keys(results.root)
+        );
+
+        expect(diffExpectedWithRoot).toEqual([]);
       });
 
-      it("has a SearchesResource", function(){
+      it("has a Searches Resource.", function(){
         var resourceType = results.root.searches.resourceType;
         expect(resourceType).toBe('searches');
+      });
+
+      it("can find resources by their UUID", function(){
+        config.setupTest(tubeTestJson);
+        results.root.find("3bcf8010-68ac-0130-9163-282066132de2").done(assignResultTo('tube'));
+        expect(results.tube.rawJson).toBeDefined();
       });
 
     });

@@ -1,9 +1,7 @@
 define(['config'
-  ,'mapper/s2_root'
-  ,'text!json/dna_and_rna_manual_extraction_1.json'
-  ,'text!json/dna_and_rna_manual_extraction_2.json'
-  ,'text!json/tube_data_1.json'],
-    function(config, S2Root,rootJSON,testJSON_2,tubeData){
+       ,'mapper/s2_root'
+       // ,'text!json/dna_and_rna_manual_extraction_1.json'
+], function(config, S2Root, integrationTestJson){
   'use strict';
 
   function assignResultTo(target){
@@ -14,31 +12,35 @@ define(['config'
     }
   }
 
-  var rawJson, results ;
-  describe("INTEGRATION:  DNA only manual extraction:-", function(){
+  var rawRootJson, results ;
 
-    describe("Searching for an input tube by it's EAN13 barcode,", function(){
+  describe("**** INTEGRATION:  DNA only manual extraction:-", function(){
+    xdescribe("Extracting DNA from an input tube,", function(){
       var s2,expectedResponse, tube;
+
       beforeEach(function(){
-
-        expectedResponse = config.setupTest(rootJSON,0);
-
+        rawRootJson         = config.setupTest(integrationTestJson);
         results             = {};
-
         S2Root.load().done(assignResultTo('root'));
-
-        s2 = results.root;
-
-        expectedResponse = config.setupTest(testJSON_2,0);
-        s2.tubes.findByEan13Barcode('XX111111K').done(assignResultTo('tube'));
-
       });
 
-      it("returns the tube as a tube resource object.", function(){
+      it("passes all required Mapper API calls.", function(){
+        expect(_.difference(Object.keys(rawRootJson), Object.keys(results.root)) ).
+          toEqual([]);
+
+        results.root.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
         expect(results.tube).toBeDefined();
-      });
 
+        results.tube.order().done(assignResultTo('order'));
+        var batchPromise = results.order.getBatchFor(results.tube)
+        expect(batchPromise).toBe(null);
+
+        results.batch = results.root.batches.new();
+        expect(results.batch).toBeDefined();
+        expect(results.batch.isNew).toBe(true);
+      });
 
     });
   });
+
 });
