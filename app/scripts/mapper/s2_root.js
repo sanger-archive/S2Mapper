@@ -1,21 +1,12 @@
 define([
        'mapper/s2_ajax',
-       'mapper/s2_resource_factory',
-       'mapper/s2_base_resource',
-       'mapper/s2_tube_resource',
-       'mapper/s2_batch_resource'
-], function(S2Ajax, ResourceFactory, BaseResource, Tube, Batch){
+       'mapper/resources'
+], function(S2Ajax, Resources) {
   'use strict';
 
   // register resources with root.
   var s2_ajax = new S2Ajax();
 
-  var resourceClasses = {
-    tubes: Tube,
-    batches: Batch
-  };
-
-  // Symilar to BaseResource
   var processResources = function(response){
     var rawJson  = response.responseText;
     var processedResources = {};
@@ -25,14 +16,12 @@ define([
       // wrap the json so that it looks like any other resource
       resourceJson[resource] = rawJson[resource];
 
-      var resourceClass = resourceClasses[resource]? resourceClasses[resource] : BaseResource;
-
-      processedResources[resource] = resourceClass.instantiate({
+      processedResources[resource] = Resources.base.instantiate({
         rawJson: resourceJson
       });
 
       // Extend the class if it has specialisation set up above.
-      $.extend(processedResources[resource], resourceClass);
+      $.extend(processedResources[resource], Resources.get(resource));
     }
 
     return processedResources;
@@ -40,9 +29,37 @@ define([
 
   var S2Root = Object.create(null);
 
+  function resourceProcessor(rootInstance, resourceDeferred) {
+    return function(response){
+      var resourceType  = Object.keys(response.responseText)[0];
+      var resourceClass = Resources.get(resourceType);
+      var resource      = resourceClass.instantiate({
+        root: rootInstance,
+        rawJson: response.responseText
+      });
+
+      resourceDeferred.resolve(resource);
+    }
+  };
+
   var instanceMethods = {
     find: function(uuid){
-      return new ResourceFactory({uuid: uuid});
+      return this.something({ uuid: uuid });
+    },
+
+    something: function(options) {
+      var resourceDeferred = $.Deferred();
+      var url              = options.uuid? ('/'+options.uuid) : options.url;
+      var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred);
+
+      s2_ajax.send(
+        options.sendAction || 'read',
+        url,
+        options.data || null
+      ).done(ajaxProcessor);
+
+      // Calling promise makes the defferd object readonly
+      return resourceDeferred.promise();
     }
   };
 
@@ -60,6 +77,7 @@ define([
         for (var resource in rootInstance){
           rootInstance[resource].root = rootInstance;
         }
+        $.extend(rootInstance, instanceMethods);
 
         rootDeferred.resolve(rootInstance);
       });
@@ -67,7 +85,6 @@ define([
 
       return rootDeferred;
     }
-
   };
 
   $.extend(S2Root, classMethods);

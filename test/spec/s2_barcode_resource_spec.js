@@ -1,73 +1,72 @@
 define([
+  'resource_test_helper',
   'config',
   'mapper/s2_root',
   'text!json/barcode_data_1.json',
+  'mapper/s2_labellable',
   'mapper/s2_barcode_resource'
-], function(config, Root, testJSON_stage1) {
+], function(TestHelper, config, Root, testJSON_stage1, Labellable) {
   'use strict';
 
-  // Boiler plate setup for dealing with the futures & promises in testing
-  var results = {};
-  function assignResultTo(target) {
-    return function(r) { results[target] = r; };
-  }
+  TestHelper(function(results) {
+    describe('S2BarcodeResource', function() {
+      results.lifeCycle();
 
-  describe('S2BarcodeResource', function() {
-    // Setup the environment for the S2 javascript
-    var s2, expectedResponse;
+      // Setup the environment for the S2 javascript
+      var s2;
 
-    // Ensure that the root JSON is always processed and we have that available
-    beforeEach(function() {
-      expectedResponse = config.setupTest(testJSON_stage1, 0);
+      // Ensure that the root JSON is always processed and we have that available
+      beforeEach(function() {
+        var expectedResponse = config.setupTest(testJSON_stage1, 0);
 
-      results = {};
-      Root.load().done(assignResultTo('root'));
-      s2 = results.root;
-    });
-
-    describe('create', function() {
-      it("returns both an EAN13 and a Sanger barcode", function() {
-        s2.barcodes.create({
-          "barcode": {
-            "labware": "tube",
-            "role": "stock",
-            "contents": "DNA"
-          }
-        }).done(assignResultTo("barcode"));
-
-        expect(results.barcode.ean13).toBeDefined();
-        expect(results.barcode.sanger).toBeDefined();
+        Root.load().done(results.assignTo('root'));
+        s2 = results.get('root');
       });
 
-      it("includes a convenience method for the sanger barcode", function() {
-        s2.barcodes.create({
-          "barcode": {
-            "labware": "tube",
-            "role": "stock",
-            "contents": "DNA"
-          }
-        }).done(assignResultTo("barcode"));
+      describe('create', function() {
+        beforeEach(function() {
+          s2.barcodes.create({
+            "barcode": {
+              "labware": "tube",
+              "role": "stock",
+              "contents": "DNA"
+            }
+          }).done(results.assignTo("barcode"));
+        });
 
-        expect(results.barcode.sangerBarcode).toEqual("DN1234567K");
+        it("has an EAN13 barcode", function() {
+          expect(results.get('barcode').ean13).toBeDefined();
+        });
+
+        it("has a structured Sanger barcode", function() {
+          expect(results.get('barcode').sanger).toBeDefined();
+        });
+
+        it("has a string representation of the Sanger barcode", function() {
+          expect(results.get('barcode').sangerBarcode).toEqual("DN1234567K");
+        });
       });
 
-/*
-      it("requires the type of the labware", function() {
-        expect(function() {
+      describe('label', function() {
+        beforeEach(function() {
+          var resource = { root: s2, uuid: "UUID OF RESOURCE" }
+          $.extend(resource, Labellable);
 
-        }).toThrow();
-      });
-      it("requires the role of the labware", function() {
-        expect(function() {
+          s2.barcodes.create({
+            "barcode": {
+              "labware": "tube",
+              "role": "stock",
+              "contents": "DNA"
+            }
+          }).done(function(barcode) {
+            barcode.label(resource).done(results.assignTo('labellable'));
+          });
+        });
 
-        }).toThrow();
+        it("attaches barcode labels to resources", function() {
+          expect(results.get('labellable')).toBeDefined();
+        });
       });
-      it("requires the type of the contents", function() {
-        expect(function() {
-
-        }).toThrow();
-      });
-*/
     });
   });
 });

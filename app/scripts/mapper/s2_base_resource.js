@@ -5,23 +5,49 @@ define(['require'], function(require){
   // resource types such as tube, order and spin column.
   var BaseResource = Object.create(null);
 
+  function actionHelper(name) {
+    return function(sendData, resourceProcessor) {
+      var actionUrl = this.actions[name];
+      if (actionUrl === undefined) { throw 'No ' + name + ' action URL'; }
+
+      return this.root.something({
+        url:                actionUrl,
+        sendAction:         name,
+        data:               sendData,
+        resourceProcessor:  resourceProcessor
+      });
+    }
+  };
+
+  var instanceMethods = {
+    // Standard actions for all resources
+    create: actionHelper('create'),
+    read:   actionHelper('read'),
+    update: actionHelper('update'),
+    delete: actionHelper('delete'),
+
+    // Pagination and searching
+    first: actionHelper('first'),
+    last:  actionHelper('last')
+  };
+
   $.extend(BaseResource, {
     instantiate: function(opts){
-      var options  = $.extend({}, opts);
-      var rawJson  = options.rawJson;
-      var resourceInstance = Object.create({ isNew: true });
+      var options           = $.extend({}, opts);
+      var rawJson           = options.rawJson;
+      var resourceInstance  = Object.create({ isNew: true });
+      resourceInstance.root = options.root;
 
       if (rawJson !== undefined){
-        resourceInstance.isNew   = false;
-        resourceInstance.rawJson = rawJson;
-        resourceInstance.root = this.root;
-
-        // This assumes that there is only one key and it's always the
-        // resourceType.
+        resourceInstance.isNew        = false;
+        resourceInstance.rawJson      = rawJson;
         resourceInstance.resourceType = Object.keys(rawJson)[0];
-        this.addActions(resourceInstance);
+        $.extend(resourceInstance, rawJson[resourceInstance.resourceType]);
+      } else {
+        // TODO: resourceInstance.resourceType = ???
       }
 
+      $.extend(resourceInstance, instanceMethods);
       return resourceInstance;
     },
 
@@ -38,28 +64,6 @@ define(['require'], function(require){
 
     new: function(options){
       return this.instantiate(options);
-    },
-
-    addActions: function (resource){
-      var resourceJson    = resource.rawJson[resource.resourceType];
-      var resourceActions = resourceJson.actions;
-
-      // N.B. Remeber to generate the new action function inside a another
-      // function or else it will close over the last value of the action and
-      // url of the for loop.
-      for (var action in resourceActions) {
-        resource[action] = (function(action, actionUrl){
-          return function (sendData, resourceProcessor) {
-            var ResourceFactory = require('mapper/s2_resource_factory');
-            return new ResourceFactory({
-              url:                actionUrl,
-              sendAction:         action,
-              data:               sendData,
-              resourceProcessor:  resourceProcessor
-            });
-          };
-        })(action, resourceActions[action]);
-      }
     }
   });
 

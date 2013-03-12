@@ -90,8 +90,11 @@ define([], function() {
       console.log(config);
 
       var response = config.finalDna[config.reqParams];
-      console.log('Responding with a ' + typeof response);
-      console.log(response);
+      if (response === undefined) {
+        console.log("AJAX[" + config.reqParams + "]: not found in " + JSON.stringify(config.finalDna));
+      } else {
+        console.log("AJAX[" + config.reqParams + "]: responding with a " + (typeof response));
+      }
 
       return $.Deferred().resolve({
         url:           options.url,
