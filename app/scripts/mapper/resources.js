@@ -3,16 +3,10 @@ define([
   'mapper/s2_tube_resource',
   'mapper/s2_order_resource',
   'mapper/s2_barcode_resource',
-  'mapper/s2_batch_resource'
+  'mapper/s2_batch_resource',
+  'mapper/support/pluralization'
 ], function(BaseResource, TubeResource, OrderResource, BarcodeResource, BatchResource) {
   return {
-    // Pluralised resource type names
-    tubes:    TubeResource,
-    orders:   OrderResource,
-    barcodes: BarcodeResource,
-    batches:  BatchResource,
-
-    // Singularised resource type names
     tube:    TubeResource,
     order:   OrderResource,
     barcode: BarcodeResource,
@@ -20,7 +14,7 @@ define([
 
     // Functions
     get: function(name) {
-      return this[name]? this[name] : this.base;
+      return this[name.singularize()]? this[name.singularize()] : this.base;
     },
 
     base: BaseResource

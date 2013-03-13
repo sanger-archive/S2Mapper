@@ -10,7 +10,7 @@ define(['require'], function(require){
       var actionUrl = this.actions[name];
       if (actionUrl === undefined) { throw 'No ' + name + ' action URL'; }
 
-      return this.root.something({
+      return this.root.retrieve({
         url:                actionUrl,
         sendAction:         name,
         data:               sendData,
