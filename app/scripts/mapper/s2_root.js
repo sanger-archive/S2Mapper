@@ -1,6 +1,7 @@
 define([
        'mapper/s2_ajax',
-       'mapper/resources'
+       'mapper/resources',
+       'mapper/support/pluralization'
 ], function(S2Ajax, Resources) {
   'use strict';
 
@@ -12,7 +13,7 @@ define([
   function resourceProcessor(rootInstance, resourceDeferred) {
     return function(response){
       var resourceType  = Object.keys(response.responseText)[0];
-      var resourceClass = rootInstance.get(resourceType);
+      var resourceClass = rootInstance[resourceType.pluralize()];
       var resource      = resourceClass.instantiate({
         root: rootInstance,
         rawJson: response.responseText
@@ -24,22 +25,10 @@ define([
 
   var instanceMethods = {
     find: function(uuid){
-      return this.something({ uuid: uuid });
+      return this.retrieve({ uuid: uuid });
     },
 
-    get: function(resourceType) {
-      switch(resourceType) {
-        case 'tube': return this.tubes; break;
-        case 'order': return this.orders; break;
-        case 'batch': return this.batches; break;
-        case 'barcode': return this.barcodes; break;
-        case 'search': return this.searches; break;
-        case 'labellable': return this.labellables; break;
-        default: throw 'Unknown resource type ' + resourceType; break;
-      }
-    },
-
-    something: function(options) {
+    retrieve: function(options) {
       var resourceDeferred = $.Deferred();
       var url              = options.uuid? ('/'+options.uuid) : options.url;
       var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred);
