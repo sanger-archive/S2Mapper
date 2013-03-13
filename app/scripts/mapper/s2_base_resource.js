@@ -10,7 +10,7 @@ define(['require'], function(require){
       var actionUrl = this.actions[name];
       if (actionUrl === undefined) { throw 'No ' + name + ' action URL'; }
 
-      return this.root.something({
+      return this.root.retrieve({
         url:                actionUrl,
         sendAction:         name,
         data:               sendData,
@@ -32,6 +32,8 @@ define(['require'], function(require){
   };
 
   $.extend(BaseResource, {
+    register: function(callback) { callback(this.resourceType, this); },
+
     instantiate: function(opts){
       var options           = $.extend({}, opts);
       var rawJson           = options.rawJson;

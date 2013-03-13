@@ -2,8 +2,6 @@ define(['mapper/s2_base_resource'], function(BaseResource){
   'use strict';
 
   describe('S2BaseResource', function(){
-    var results = {};
-
     describe("findByEan13Barcode", function(){
       var callFindByEan13Barcode = function(){
         BaseResource.findByEan13Barcode('1234567890123');
@@ -16,10 +14,21 @@ define(['mapper/s2_base_resource'], function(BaseResource){
 
     describe("BaseResource#new()", function(){
       it("returns an unsaved BaseResource.", function(){
-        results.freshBaseResource = BaseResource.new();
-        expect(results.freshBaseResource).toBeDefined();
+        expect(BaseResource.new()).toBeDefined();
+      });
+    });
+
+    describe('register', function() {
+      it("calls back with the resourceType", function() {
+        var resource = {};
+        $.extend(resource, BaseResource);
+        resource.resourceType = 'foo';
+
+        var registry = {};
+        resource.register(function(name,value) { registry[name] = value; });
+
+        expect(registry['foo']).toBe(resource);
       });
     });
   });
-
 });
