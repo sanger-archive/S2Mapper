@@ -32,6 +32,8 @@ define(['require'], function(require){
   };
 
   $.extend(BaseResource, {
+    register: function(callback) { callback(this.resourceType, this); },
+
     instantiate: function(opts){
       var options           = $.extend({}, opts);
       var rawJson           = options.rawJson;
