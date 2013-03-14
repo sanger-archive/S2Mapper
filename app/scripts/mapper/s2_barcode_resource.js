@@ -18,15 +18,8 @@ define(['mapper/s2_base_resource'], function(BaseResource) {
   var BarcodeResource = Object.create(BaseResource);
   BarcodeResource.resourceType = 'barcode';
 
-  // TODO: Remove this function & it's call once raw JSON attributes are set directly on the instance
-  function _removeAfterRefactor(barcodeInstance) {
-    barcodeInstance.ean13  = barcodeInstance.rawJson.barcode.ean13;
-    barcodeInstance.sanger = barcodeInstance.rawJson.barcode.sanger;
-  }
-
   // Post processing of the raw JSON that will setup the correct attributes on the barcode instance.
   function setupInstanceAttributes(barcodeInstance) {
-    _removeAfterRefactor(barcodeInstance);
     barcodeInstance.sangerBarcode = barcodeInstance.sanger.prefix + barcodeInstance.sanger.number + barcodeInstance.sanger.suffix;
   }
 
