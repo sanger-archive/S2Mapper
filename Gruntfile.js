@@ -186,8 +186,10 @@ module.exports = function (grunt) {
       dist:''
     },
     server: {
-      port: 3333
+      port: 3331,
+      base: 'app'
     }
+
   });
 
   // Alias the `test` task to run the `mocha` task instead
@@ -227,17 +229,43 @@ module.exports = function (grunt) {
   });
 
   /*
-   * create a new task to copy app to temp directory
-   * used by calling
-   * $ grunt dev_old:WORKFLOW:STAGE
-   * WORKFLOW and STAGE are passed into test/dev_config.js (via test/dev_config_tmpl) , so the app runs the correct stage
-   * additionally, test/index.html is passed the dev value, rather than test
+   * create a new task 'dev', will point server to index.html in 'dev' folder
+   * TODO - get livereload to work
    */
-  grunt.registerTask ('dev', function () {
-    var exec = require ('child_process').exec;
-    exec ("rm -rf temp && mkdir temp && cp -r app/ temp");
-    grunt.task.run ('server:test', 'watch');
+
+
+  grunt.registerTask('dev', 'Start a development web server.', function() {
+
+    var path = require('path'),
+      connect = require('connect'),
+      port = grunt.config('server.port') || 8000,
+      base = path.resolve(grunt.config('server.base') || '.'),
+      middleware = [
+        //serve the app folder
+        connect.static('dev'),
+        //serve the app folder
+        connect.static('app'),
+        //serve test data
+        connect.static('test'),
+        connect.static('node_modules/yeoman/tasks/livereload')
+
+      ];
+
+
+    // If --debug was specified, enable logging.
+    if (grunt.option('debug')) {
+      connect.logger.format('grunt', ('[D] server :method :url :status ' +
+          ':res[content-length] - :response-time ms').magenta);
+      middleware.unshift(connect.logger('grunt'));
+    }
+
+    // Start server.
+    grunt.log.writeln('Starting development web server on port ' + port + '.');
+    connect.apply(null, middleware).listen(port);
+    grunt.task.run ('watch');
   });
+
+
   /*
    * create a new task to allow command line control over the workflow and stage
    * used by calling
