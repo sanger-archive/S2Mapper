@@ -24,6 +24,8 @@ define([], function() {
         return results[name];
       },
 
+      getAll: function(){ return results; },
+
       // Ensures that before and after each test the results are properly reset
       lifeCycle: function() {
         beforeEach(function() { results = {}; console.log("BEFORE: Reset results"); });
