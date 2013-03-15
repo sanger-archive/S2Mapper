@@ -69,10 +69,11 @@ define([], function() {
     ajax: function (options){
       // a blank options.url should default to '/'
       options.url = options.url.replace(/http:\/\/localhost:\d+/,'');
+
       if (options.url.length === 0){
-        options.url = '/';
-        options.type = 'get';
-        options.data = null;
+        options.url  = '/'
+        options.type = 'get'
+        options.data = null
       }
 
       console.log('------------------------');
@@ -82,26 +83,35 @@ define([], function() {
       console.log(config.reqParams);
 
 
-
+      // The real $.ajax returns a promise.  Please leave this as a defered as
+      // it lets us spy on reject and resolve.
+      var fakeAjaxDeferred = $.Deferred();
 
       // We resolve the Deferred object before return so any callbacks added
-      // with .done() are called as soon as they're added, which should solve 
+      // with .done() are called as soon as they're added, which should solve
       // testing latency issues.
-      console.log(config);
 
       var response = config.finalDna[config.reqParams];
       if (response === undefined) {
-        console.log("AJAX[" + config.reqParams + "]: not found in " + JSON.stringify(config.finalDna));
+        // if the stored result can't be found in the data but the url is in the root then
+        // it means that the system couldn't find the data.
+
+        var textStatus = "AJAX[" + config.reqParams + "]: not found in " + config.finalDna;
+        fakeAjaxDeferred.reject(fakeAjaxDeferred, 'error');
       } else {
-        console.log("AJAX[" + config.reqParams + "]: responding with a " + (typeof response));
+        console.log("AJAX[" + config.reqParams + "]: responding with:");
+        console.log(response);
+
+        fakeAjaxDeferred.resolve({
+          url:           options.url,
+          'status':      200,
+          responseTime:  750,
+          responseText:  response
+        });
+
       }
 
-      return $.Deferred().resolve({
-        url:           options.url,
-        'status':      200,
-        responseTime:  750,
-        responseText:  response
-      });
+      return fakeAjaxDeferred;
     }
   };
   return config;

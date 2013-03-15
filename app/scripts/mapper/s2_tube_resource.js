@@ -73,10 +73,8 @@ define([
     },
 
     findByEan13Barcode: function(ean13){
-
-      var tubesDeferred = $.Deferred();
-      var root          = this.root;
-      root.searches.create({
+      var root        = this.root;
+      var ajaxPromise = root.searches.create({
         "search":  {
           "description":  "search for barcoded tube",
           "model":        "tube",
@@ -88,15 +86,19 @@ define([
             }
           }
         }
-      }).done(function(searchResult){
+      }).then(function(searchResult){
+        var thisTube;
+
         searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
           tube.root = root;
-          tubesDeferred.resolve(tube);
+          thisTube  = tube;
         });
+
+        return thisTube;
       });
 
 
-      return tubesDeferred.promise();
+      return ajaxPromise;
     }
   };
 

@@ -21,7 +21,14 @@ define([
 
       resourceDeferred.resolve(resource);
     }
-  };
+  }
+
+  function ajaxErrorHandler(resourceDeferred){
+    return function(jqXHR, textStatus, errorThrown){
+      return resourceDeferred.reject(jqXHR);
+    };
+
+  }
 
   var instanceMethods = {
     find: function(uuid){
@@ -33,11 +40,13 @@ define([
       var url              = options.uuid? ('/'+options.uuid) : options.url;
       var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred);
 
-      s2_ajax.send(
+      var ajax = s2_ajax.send(
         options.sendAction || 'read',
         url,
         options.data || null
-      ).done(ajaxProcessor);
+      );
+
+      ajax.done(ajaxProcessor).fail(ajaxErrorHandler(resourceDeferred));
 
       // Calling promise makes the defferd object readonly
       return resourceDeferred.promise();

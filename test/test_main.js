@@ -13,6 +13,7 @@ require.config({
 
 require([
         'domReady!',
+        'spec/support/test_config_spec',
         'spec/support/pluralization_spec',
         'spec/s2_ajax_spec',
         'spec/s2_labellable_spec',
