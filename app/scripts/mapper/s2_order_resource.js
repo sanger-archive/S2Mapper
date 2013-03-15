@@ -6,46 +6,71 @@ define([
   var Order = Object.create(BaseResource);
   Order.resourceType = 'order';
 
-  function toAttr(attr){ return function(element) { return element[attr]; }; }
-
   var instanceMethods = {
-
-    // Returns null if searchItem is not in a batch (undefined is too vague).
+    /* DEPRECATED: Call batchFor(predicate) to find batch
+     * Returns null if searchItem is not in a batch (undefined is too vague).
+     */
     getBatchFor: function(searchItem){
-      var orderItems = this.rawJson.order.items;
+      var result = null;
+      this.batchFor(function(item) { return item.uuid === searchItem.uuid; }).done(function(batch) { result = batch; });
+      return result;
+    },
 
-      var isSearchItemInRole = function(item, index){
-        return (searchItem.rawJson.tube.uuid === item.uuid);
-      };
+    /*
+     * Asynchronously find the batch based on the given predicate.  The predicate takes two arguments:
+     *
+     * - the current item being examined;
+     * - the order being checked.
+     *
+     * Calls the 'done' handler on the returned promise with the first batch found, and the 'fail' handler
+     * should none be found.
+     */
+    batchFor: function(criteria) {
+      var deferredObject = $.Deferred();
 
-      var itemInRole, rolesForSearchItem = [];
+      var root = this.root, order = this.order;
+      this.items
+          .filter(function(item) { return (item.batch !== null) && criteria(item, order); })
+          .done(function(items) { deferredObject.resolve(root.batches.instantiate({root: root, rawJson: {batch: items[0].batch}}).read()); })
+          .fail(deferredObject.reject);
 
-      for (var role in orderItems) {
-        itemInRole =  orderItems[role].filter(isSearchItemInRole)[0];
-        rolesForSearchItem.push(itemInRole);
-      }
-
-      var batchJson = _.chain(rolesForSearchItem).
-        pluck('batch').
-        compact().
-        first().
-        value();
-
-      if (batchJson)
-        return this.root.batches.instantiate({
-          root: this.root,
-          rawJson: {batch: batchJson}
-        }).read();
-      else
-        return null;
+       return deferredObject.promise();
     }
   };
 
+  // Helper functions for dealing with the items structure
+  function isFunction(x) { return typeof x === 'function'; }
+  function fillInRole(role, items) { return _.map(items, function(item) { return $.extend({role:role}, item); }); }
+
+  // Instance methods for the items structure
+  var itemsInstanceMethods = {
+    filter: function(fn) {
+      var results =
+        _.chain(this)
+         .map(function(items, role) { return !isFunction(items) && fillInRole(role, items) })
+         .flatten()
+         .compact()
+         .filter(function(item) { return fn(item); })
+         .value();
+
+       var deferredObject = $.Deferred();
+       if (results.length == 0) {
+         deferredObject.reject();
+       } else {
+         deferredObject.resolve(results);
+       }
+       return deferredObject.promise();
+    }
+  };
+
+  function initializeInstance(order) {
+    $.extend(order.items, itemsInstanceMethods);
+  }
 
   var classMethods = {
     instantiate: function(options){
       var orderInstance = BaseResource.instantiate(options);
-
+      initializeInstance(orderInstance);
       $.extend(orderInstance, instanceMethods);
 
       return orderInstance;
