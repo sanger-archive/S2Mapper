@@ -47,6 +47,45 @@ define([
 
       });
 
+      describe("items", function() {
+        beforeEach(function() {
+          config.setupTest(orderWithoutBatchJson);
+          s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'));
+          results.get('tube').order().done(results.assignTo('order'));
+        });
+
+        var unexpectedCall = function() { throw 'Not expected to be called'; };
+        var expectedCall   = function() {
+          results.assignTo('result')(arguments);
+        };
+
+        describe("filter", function() {
+          var order, tube;
+
+          beforeEach(function() {
+            order = results.get('order');
+            tube = results.get('tube');
+          });
+
+          it("calls the done case when roles found", function() {
+            order.items.filter(function(item) { return true; }).done(expectedCall).fail(unexpectedCall);
+            expect(results.get('result')[0].length).toBe(2);
+          });
+
+          it("calls the failure case if no roles found", function() {
+            order.items.filter(function(item) { return false; }).done(unexpectedCall).fail(expectedCall);
+            expect(results.get('result')[0]).toBeUndefined();
+          });
+
+          it("enables filtering of the items", function() {
+            order.items.filter(function(item) { return item.uuid === tube.uuid; }).done(expectedCall).fail(unexpectedCall);
+
+            var calledWithArguments = results.get('result')[0];
+            expect(calledWithArguments.length).toBe(1);
+            expect(calledWithArguments).toContain({ uuid: tube.uuid, role: 'tube_to_be_extracted', status: 'done', batch: null });
+          });
+        });
+      });
     });
   });
 });
