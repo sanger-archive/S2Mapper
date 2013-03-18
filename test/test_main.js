@@ -15,6 +15,7 @@ require([
         'domReady!',
         'spec/support/test_config_spec',
         'spec/support/pluralization_spec',
+        'spec/services/print_spec',
         'spec/s2_ajax_spec',
         'spec/s2_labellable_spec',
         'spec/s2_base_resource_spec',
