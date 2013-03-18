@@ -14,6 +14,21 @@ define([], function() {
           labels: labelDetails
         }
       });
+    },
+
+    attachBarcode: function(contentType, intendedRole) {
+      var labellable = this, deferred = $.Deferred();
+
+      labellable.root.barcode.create({
+        labware:  labellable.resourceType,
+        contents: contentType,
+        role:     intendedRole || "Stock"
+      }).done(function(barcode) {
+        barcode.label(labellable).done(function() {
+          deferred.resolve();
+        }).fail(deferred.failure);
+      }).fail(deferred.failure);
+      return deferred.promise();
     }
   };
 });
