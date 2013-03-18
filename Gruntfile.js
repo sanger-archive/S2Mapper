@@ -212,25 +212,28 @@ module.exports = function (grunt) {
 
 
   grunt.registerTask ('splitjson', function () {
-    grunt.file.recurse('test/json', function(absPath,root,sub,file){
+    grunt.file.recurse('test/json', function(filePath,root,sub,fileName){
 
-      if (absPath.substr(-4) === 'json'){
-        var json = grunt.file.readJSON(absPath), oldFilename = file.slice(0,-5);
-        console.log('Splitting ' + oldFilename + ' ....');
-        for (var stageNo in json){
+      if (fileName.substr(-4) === 'json'){
+        var json = grunt.file.readJSON(filePath), oldFilename = fileName.slice(0,-5);
+        for (var stageNum in json){
+          if (json[stageNum].stage){
+            json[stageNum].stageNum = parseFloat(stageNum);
 
-          if (json[stageNo].stage)
-            grunt.file.write(root+ '/' + oldFilename + '_' + stageNo + '.json', JSON.stringify(json[stageNo]))
+            var newFilename = root+   '/' + oldFilename + '/' + stageNum + '.json';
+            grunt.log.writeln('Splitting to ' + newFilename);
+            for(var stepNum in json[stageNum].steps){
+              json[stageNum].steps[stepNum].stepNum = parseFloat(stepNum);
+            };
+            grunt.file.write(newFilename, JSON.stringify(json[stageNo], undefined, 2));
+          }
         }
-
       }
     })
-
   });
 
   /*
    * create a new task 'dev', will point server to index.html in 'dev' folder
-   * TODO - get livereload to work
    */
 
 
@@ -262,30 +265,10 @@ module.exports = function (grunt) {
     // Start server.
     grunt.log.writeln('Starting development web server on port ' + port + '.');
     connect.apply(null, middleware).listen(port);
-    grunt.task.run ('watch');
+    grunt.task.run ('splitjson','watch');
   });
 
 
-  /*
-   * create a new task to allow command line control over the workflow and stage
-   * used by calling
-   * $ grunt dev_old:WORKFLOW:STAGE
-   * WORKFLOW and STAGE are passed into test/dev_config.js (via test/dev_config_tmpl) , so the app runs the correct stage
-   * additionally, test/index.html is passed the dev value, rather than test
-   */
-
-  grunt.registerTask ('dev_old', 'A description goes here', function () {
-    grunt.config ('isDev', true);
-    grunt.config ('workflow', this.args[0]);
-    grunt.config ('stage', this.args[1]);
-    var templates = ['test/index.html', 'test/dev_config.js'];
-    for (var t in templates) {
-      grunt.log.writeln ('Rewriting ' + templates[t]);
-      var template = grunt.file.read (templates[t].split ('.')[0] + '_dev.tmpl');
-      grunt.file.write (templates[t], grunt.template.process (template));
-    }
-    grunt.task.run ('server:test', 'watch');
-  });
   /*
    * end of command line workflow control
    */
