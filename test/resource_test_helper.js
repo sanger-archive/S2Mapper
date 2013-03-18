@@ -12,7 +12,7 @@
  */
 define([], function() {
   return function(callback) {
-    var results = {};
+    var results = {}, expectationCall = false;
     callback({
       // Returns a function that will set the given result into the specified name
       assignTo: function(target) {
@@ -35,7 +35,13 @@ define([], function() {
       // Resets the results
       reset: function() {
         results = {};
-      }
+        expectationCall = false;
+      },
+
+      // Dealing with expectations of methods being called in a more convenient manner
+      unexpected: function() { throw 'Unexpected call!'; },
+      expected: function() { expectationCall = true; },
+      expectToBeCalled: function() { expect(expectationCall).toBe(true); }
     });
   };
 });

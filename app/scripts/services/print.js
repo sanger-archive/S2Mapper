@@ -1,46 +1,76 @@
-define ([], function () {
-  //call services.print ('barcode', 'desc', 'name', 'prefix', 'project', 'suffix');
-  services = {
-    //TODO hardcoded printer and label type, also need to change readme
-    printer: 'e367bc',
-    labelType:2,
-    print: function (barcode, desc, name, prefix, project, suffix) {
-      var soap = '<?xml version = "1.0" encoding="UTF-8"?>' +
-        '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:n1="urn:Barcode/Service" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">' +
-        '<env:Body>' +
-        '<n1:printLabels>' +
-        '<printer>' + this.printer + '</printer>' +
-        '<type>' + this.labelType + '</type>' +
-        '<headerLabel>1</headerLabel>' +
-        '<footerLabel>1</footerLabel>' +
-        '<labels n2:arrayType="n1:BarcodeLabelDTO[1]" xmlns:n2="http://schemas.xmlsoap.org/soap/encoding/" xsi:type="n2:Array">' +
-        '<item>' +
-        '<barcode>' + barcode + '</barcode>' +
-        '<desc>' + desc + '</desc>' +
-        '<name>' + name + '</name>' +
-        '<prefix>' + prefix + '</prefix>' +
-        '<project>' + project + '</project>' +
-        '<suffix>' + suffix + '</suffix>' +
-        '</item>' +
-        '</labels>' +
-        '</n1:printLabels>' +
-        '</env:Body>' +
-        '</env:Envelope>',
-          deferred = $.Deferred();
-
-      $.ajax({
-        url: 'http://psd-dev.internal.sanger.ac.uk:8000/printers/legacy/soap',
-        data: soap,
-        type: 'POST',
-        contentType: 'text/xml',
-        crossDomain: true,
-        processData: false,
-        success: function (data){
-          deferred.resolve(data);
-        }
-      });
-      return deferred.promise();
-    }
+define(['config'], function(config) {
+  'use strict';
+  return {
+    /*
+     * A list of printers that can be used for barcode printing.  Each has a couple of methods:
+     *
+     * - printBarcodes: prints an array of labels, with success and failure callbacks;
+     * - labelFor: creates a label from prefix, barcode, suffix, name, desc, project.
+     *
+     * There are two attributes:
+     *
+     * - name: name of the printer;
+     * - type: type of printer, probably irrelevant outside of the printer itself.
+     */
+    printers: _.map(config.printers, function(details) { return printer(details.name, details.type); })
   };
-  return services;
+
+  function printer(name, labelType) {
+    return {
+      name: name,
+      type: labelType,
+
+      print: function(labels) {
+        return config.ajax({
+          url: config.printServiceUrl,
+          type: 'POST',
+          data: soapForPrint({ name: name, labelType: labelType }, labels),
+          dataType: 'xml',
+          headers: { 'Content-Type': 'text/xml' }
+        });
+      },
+
+      labelFor: function(prefix, barcode, suffix, name, desc, project) {
+        return {
+          prefix: prefix,
+          barcode: barcode,
+          suffix: suffix,
+          name: name,
+          description: desc,
+          project: project
+        };
+      }
+    };
+  };
+
+  function soapItemForLabel(label) {
+    var soap =
+      '<item>' +
+        '<barcode>' + label.barcode     + '</barcode>' +
+        '<desc>'    + label.description + '</desc>'    +
+        '<name>'    + label.name        + '</name>'    +
+        '<prefix>'  + label.prefix      + '</prefix>'  +
+        '<project>' + label.project     + '</project>' +
+        '<suffix>'  + label.suffix      + '</suffix>'  +
+      '</item>';
+    return soap;
+  };
+
+  function soapForPrint(printer, labels) {
+    var soap = '<?xml version = "1.0" encoding="UTF-8"?>' +
+      '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:n1="urn:Barcode/Service" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">' +
+        '<env:Body>' +
+          '<n1:printLabels>' +
+            '<printer>' + printer.name      + '</printer>' +
+            '<type>'    + printer.labelType + '</type>' +
+            '<headerLabel>1</headerLabel>' +
+            '<footerLabel>1</footerLabel>' +
+            '<labels n2:arrayType="n1:BarcodeLabelDTO[' + labels.length + ']" xmlns:n2="http://schemas.xmlsoap.org/soap/encoding/" xsi:type="n2:Array">' +
+              $.map(labels, soapItemForLabel).join('') +
+            '</labels>' +
+          '</n1:printLabels>' +
+        '</env:Body>' +
+      '</env:Envelope>';
+    return soap;
+  }
 });
