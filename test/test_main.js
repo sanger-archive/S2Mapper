@@ -14,17 +14,17 @@ require.config({
 require([
         'domReady!',
         'spec/support/test_config_spec',
-        'spec/support/pluralization_spec',
-        'spec/services/print_spec',
-        'spec/s2_ajax_spec',
-        'spec/s2_labellable_spec',
-        'spec/s2_base_resource_spec',
+        //'spec/support/pluralization_spec',
+        //'spec/services/print_spec',
+        //'spec/s2_ajax_spec',
+        //'spec/s2_labellable_spec',
+        //'spec/s2_base_resource_spec',
         'spec/s2_tube_resource_spec',
-        'spec/s2_order_resource_spec',
-        'spec/s2_batch_resource_spec',
-        'spec/s2_root_spec',
-        'spec/s2_barcode_resource_spec',
-        'spec/integration/dna_only_extraction_spec'
+        //'spec/s2_order_resource_spec',
+        //'spec/s2_batch_resource_spec',
+        //'spec/s2_root_spec',
+        //'spec/s2_barcode_resource_spec',
+        //'spec/integration/dna_only_extraction_spec'
 ], function() {
   window.setTimeout(runJasmineTests, 100);
 });

@@ -28,7 +28,7 @@ define([
 
           s2 = results.get('root');
           config.setupTest(tubeByBarcodeJson);
-          s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'));
+          s2.tubes.findByEan13Barcode('2345678901234asds').done(results.assignTo('tube'));
         });
 
         it("takes an EAN13 barcode and returns the corresponding resource.", function(){
