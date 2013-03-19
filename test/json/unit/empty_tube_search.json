@@ -1,0 +1,37 @@
+{
+  "stage": "Search the tubes by barcode and then search their corresponding order. Assign a batch to the tubes in the orders.",
+  "steps": [
+    {
+      "description": "Find the tubes by barcodes for [\"XX111111K\", \"XX222222K\"]",
+      "method": "post",
+      "url": "/searches",
+      "request": {
+        "search": "SIMULATES_BAD_SEARCH"
+      },
+      "response": {
+        "search": {
+          "actions": {
+            "read": "http://localhost:9292/EmPtY00-68ac-0130-7ac8-282066132de2",
+            "first": "http://localhost:9292/EmPtY00-68ac-0130-7ac8-282066132de2/page=1",
+            "last": "http://localhost:9292/EmPtY00-68ac-0130-7ac8-282066132de2/page=-1"
+          },
+          "uuid": "EmPtY00-68ac-0130-7ac8-282066132de2"
+        }
+      }
+    },
+    {
+      "description": "Get empty search result",
+      "method": "get",
+      "url": "/EmPtY00-68ac-0130-7ac8-282066132de2/page=1",
+      "request": null,
+      "response": {
+        "actions": {
+          "read": "http://localhost:9292/tubes/page=1",
+          "first": "http://localhost:9292/tubes/page=1",
+          "last": "http://localhost:9292/tubes/page=-1"
+        },
+        "size": 0
+      }
+    }
+  ]
+}
