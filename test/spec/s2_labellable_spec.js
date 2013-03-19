@@ -16,9 +16,7 @@ define([
 
           object.labelWith('labels');
 
-          expect(object.root.labellables.create).toHaveBeenCalledWith({
-            'labellable': { name: 'uuid', type: 'resource', labels: 'labels' }
-          });
+          expect(object.root.labellables.create).toHaveBeenCalledWith({ name: 'uuid', type: 'resource', labels: 'labels' });
         });
       });
     });

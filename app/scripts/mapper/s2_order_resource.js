@@ -3,8 +3,7 @@ define([
 ], function(BaseResource){
   'use strict';
 
-  var Order = Object.create(BaseResource);
-  Order.resourceType = 'order';
+  var Order = BaseResource.extendAs('order');
 
   var instanceMethods = {
     /* DEPRECATED: Call batchFor(predicate) to find batch
