@@ -30,5 +30,11 @@ define(['mapper/s2_base_resource'], function(BaseResource){
         expect(registry['foo']).toBe(resource);
       });
     });
+
+    describe('extendAs', function() {
+      it('configures the resourceType', function() {
+        expect(BaseResource.extendAs('foo').resourceType).toBe('foo');
+      });
+    });
   });
 });

@@ -15,8 +15,7 @@
 define(['mapper/s2_base_resource'], function(BaseResource) {
   'use strict';
 
-  var BarcodeResource = Object.create(BaseResource);
-  BarcodeResource.resourceType = 'barcode';
+  var BarcodeResource = BaseResource.extendAs('barcode');
 
   // Post processing of the raw JSON that will setup the correct attributes on the barcode instance.
   function setupInstanceAttributes(barcodeInstance) {

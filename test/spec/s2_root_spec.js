@@ -29,7 +29,7 @@ define([
 
         it("has a SearchesResource", function(){
           var resourceType = results.get('root').searches.resourceType;
-          expect(resourceType).toBe('searches');
+          expect(resourceType).toBe('search');
         });
 
         it("resolves to a hash of S2Resources.", function(){
