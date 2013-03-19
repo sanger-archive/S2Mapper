@@ -8,11 +8,9 @@ define([], function() {
   return {
     labelWith: function(labelDetails) {
       return this.root.labellables.create({
-        'labellable': {
-          name: this.uuid,
-          type: "resource",
-          labels: labelDetails
-        }
+        name: this.uuid,
+        type: "resource",
+        labels: labelDetails
       });
     },
 

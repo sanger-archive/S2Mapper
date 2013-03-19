@@ -1,8 +1,7 @@
 define(['mapper/s2_base_resource'], function(BaseResource){
   'use strict';
 
-  var Batch= Object.create(BaseResource);
-  Batch.resourceType = 'batch';
+  var Batch = BaseResource.extendAs('batch');
 
   var instanceMethods = {
     items: []
