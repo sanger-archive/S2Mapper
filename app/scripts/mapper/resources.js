@@ -13,7 +13,10 @@ define([
   // This is the registry for all resource classes, mapped from the name in the JSON.
   var registry = {
     base: BaseResource,
-    get: function(name) { return this[name.singularize()]? this[name.singularize()] : this.base; }
+
+    get: function(name) {
+      return (this[name.singularize()] = this[name.singularize()] || this.base.extendAs(name.singularize()));
+    }
   };
 
   // Register all of the resources into the registry.

@@ -26,11 +26,9 @@ define([
       describe('create', function() {
         beforeEach(function() {
           s2.barcodes.create({
-            "barcode": {
-              "labware": "tube",
-              "role": "stock",
-              "contents": "DNA"
-            }
+            "labware": "tube",
+            "role": "stock",
+            "contents": "DNA"
           }).done(results.assignTo("barcode"));
         });
 
@@ -53,11 +51,9 @@ define([
           $.extend(resource, Labellable);
 
           s2.barcodes.create({
-            "barcode": {
-              "labware": "tube",
-              "role": "stock",
-              "contents": "DNA"
-            }
+            "labware": "tube",
+            "role": "stock",
+            "contents": "DNA"
           }).done(function(barcode) {
             barcode.label(resource).done(results.assignTo('labellable'));
           });

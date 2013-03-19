@@ -18,8 +18,7 @@ define([
     };
   }
 
-  var Tube = Object.create(BaseResource);
-  Tube.resourceType = 'tube';
+  var Tube = BaseResource.extendAs('tube');
 
   var instanceMethods = {
     batch: function(){
@@ -40,14 +39,12 @@ define([
         orderDeferred.resolve(thisTube._order);
       } else {
         thisTube.root.searches.create({
-          "search":{
-            "description":"search for order",
-            "model":      "order",
-            "criteria":   {
-              "item":{
-                "uuid": thisTube.rawJson.tube.uuid,
-                "role":"tube_to_be_extracted"
-              }
+          "description":"search for order",
+          "model":      "order",
+          "criteria":   {
+            "item":{
+              "uuid": thisTube.rawJson.tube.uuid,
+              "role":"tube_to_be_extracted"
             }
           }
         }).done(function(searchResult){
@@ -75,15 +72,13 @@ define([
     findByEan13Barcode: function(ean13){
       var root        = this.root;
       var ajaxPromise = root.searches.create({
-        "search":  {
-          "description":  "search for barcoded tube",
-          "model":        "tube",
-          "criteria":     {
-            "label":  {
-              "position":  "barcode",
-              "type":      "ean13-barcode",
-              "value":     [ean13]
-            }
+        "description":  "search for barcoded tube",
+        "model":        "tube",
+        "criteria":     {
+          "label":  {
+            "position":  "barcode",
+            "type":      "ean13-barcode",
+            "value":     [ean13]
           }
         }
       }).then(function(searchResult){

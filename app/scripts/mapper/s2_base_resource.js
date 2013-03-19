@@ -10,12 +10,16 @@ define(['require'], function(require){
       var actionUrl = this.actions[name];
       if (actionUrl === undefined) { throw 'No ' + name + ' action URL'; }
 
-      return this.root.retrieve({
+      var actionOptions = {
         url:                actionUrl,
         sendAction:         name,
-        data:               sendData,
         resourceProcessor:  resourceProcessor
-      });
+      };
+      if ((sendData !== undefined) && (sendData !== null)) {
+        actionOptions['data'] = {}
+        actionOptions['data'][this.resourceType] = sendData;
+      }
+      return this.root.retrieve(actionOptions);
     }
   };
 
@@ -32,6 +36,13 @@ define(['require'], function(require){
   };
 
   $.extend(BaseResource, {
+    // Convenience method for creating extensions of the base resource class.
+    extendAs: function(resourceType) {
+      var resourceClass = Object.create(this);
+      resourceClass.resourceType = resourceType;
+      return resourceClass;
+    },
+
     register: function(callback) { callback(this.resourceType, this); },
 
     instantiate: function(opts){
@@ -51,17 +62,6 @@ define(['require'], function(require){
 
       $.extend(resourceInstance, instanceMethods);
       return resourceInstance;
-    },
-
-
-    findByEan13Barcode: function(ean13){
-
-      if (this.resourceType === undefined) throw {
-        name:     'Unknown ResourceType',
-        message:  'resourceType not set for this class'
-      }
-
-      return 'NOT_IMPLETMENTED';
     },
 
     new: function(options){
