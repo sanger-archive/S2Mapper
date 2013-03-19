@@ -1,4 +1,4 @@
-define(['require'], function(require){
+define([], function(){
   'use strict';
 
   // BaseResource is intended to be an abstract class used by concrete
@@ -38,7 +38,7 @@ define(['require'], function(require){
       var options           = $.extend({}, opts);
       var rawJson           = options.rawJson;
       var resourceInstance  = Object.create({ isNew: true });
-      resourceInstance.root = this.root || options.root;
+      resourceInstance.root = options.root;
 
       if (rawJson !== undefined){
         resourceInstance.isNew        = false;
