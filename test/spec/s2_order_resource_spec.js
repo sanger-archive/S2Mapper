@@ -14,13 +14,13 @@ define([
     describe("Order Resource:-", function(){
       results.lifeCycle();
 
-      describe("Calling order.getBatchFor(item), where item is a tube in the order,", function(){
-        beforeEach(function() {
-          config.setupTest(rootTestJson);
-          Root.load().done(results.assignTo('root'));
-          s2 = results.get('root');
-        });
+      beforeEach(function() {
+        config.setupTest(rootTestJson);
+        Root.load().done(results.assignTo('root'));
+        s2 = results.get('root');
+      });
 
+      describe("Calling order.getBatchFor(item), where item is a tube in the order,", function(){
         describe("and the item IS NOT in a batch,", function(){
           beforeEach(function(){
             config.setupTest(orderWithoutBatchJson);
@@ -82,7 +82,7 @@ define([
 
             var calledWithArguments = results.get('result')[0];
             expect(calledWithArguments.length).toBe(1);
-            expect(calledWithArguments).toContain({ uuid: tube.uuid, role: 'tube_to_be_extracted', status: 'done', batch: null });
+            expect(calledWithArguments).toContain({ uuid: tube.uuid, order: order, role: 'tube_to_be_extracted', status: 'done', batch: null });
           });
         });
       });

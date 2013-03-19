@@ -4,8 +4,28 @@ define(['mapper/s2_base_resource'], function(BaseResource){
   var Batch = BaseResource.extendAs('batch');
 
   var instanceMethods = {
-    items: []
+    orders: function() {
+      return this.root.searches.handling(this.root.orders).first({
+        "description": "search order by batch",
+        "model": "order",
+        "criteria": {
+          "item": {
+            "batch": this.uuid
+          }
+        }
+      });
+    },
 
+    items: function() {
+      var batch = this;
+      return this.orders().then(function(orders) {
+        return _.chain(orders)
+                .map(function(order) { return _.values(order.items); })
+                .flatten()
+                .filter(function(item) { return item.batch.uuid === batch.uuid; })
+                .value();
+      });
+    }
   };
 
 
@@ -15,8 +35,7 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       var batchInstance = BaseResource.instantiate(options);
 
       $.extend(batchInstance, instanceMethods);
-
-      batchInstance.items = options.items;
+      batchInstance.resources = options.resources;
 
       return batchInstance;
     }

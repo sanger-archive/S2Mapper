@@ -7,6 +7,7 @@ define([
   'mapper/s2_order_resource',
   'mapper/s2_barcode_resource',
   'mapper/s2_batch_resource',
+  'mapper/s2_search_resource',
 ], function(ignoreStringStuff, BaseResource) {
   'use strict';
 

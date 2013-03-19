@@ -37,41 +37,36 @@ define([
     }
   };
 
-  // Helper functions for dealing with the items structure
-  function isFunction(x) { return typeof x === 'function'; }
-  function fillInRole(role, items) { return _.map(items, function(item) { return $.extend({role:role}, item); }); }
+  function extendItemBehaviour(order) {
+    // Helper functions for dealing with the items structure
+    function notFunction(x) { return typeof x !== 'function'; }
 
-  // Instance methods for the items structure
-  var itemsInstanceMethods = {
-    filter: function(fn) {
-      var results =
-        _.chain(this)
-         .map(function(items, role) { return !isFunction(items) && fillInRole(role, items) })
-         .flatten()
-         .compact()
-         .filter(function(item) { return fn(item); })
-         .value();
+    // Ensure that the items in an order have a hook back into the order & the role
+    _.chain(order.items).each(function(items, role) {
+      _.each(items, function(item) { $.extend(item, { order: order, role: role }); });
+    });
 
-       var deferredObject = $.Deferred();
-       if (results.length == 0) {
-         deferredObject.reject();
-       } else {
-         deferredObject.resolve(results);
-       }
-       return deferredObject.promise();
-    }
-  };
+    // Instance methods for the items structure
+    order.items = $.extend(Object.create({
+      filter: function(fn) {
+        var results = _.chain(this).values().flatten().filter(fn).value();
 
-  function initializeInstance(order) {
-    $.extend(order.items, itemsInstanceMethods);
+        var deferredObject = $.Deferred();
+        if (results.length == 0) {
+          deferredObject.reject();
+        } else {
+          deferredObject.resolve(results);
+        }
+        return deferredObject.promise();
+      }
+    }), order.items);
   }
 
   var classMethods = {
-    instantiate: function(options){
+    instantiate: function(options) {
       var orderInstance = BaseResource.instantiate(options);
-      initializeInstance(orderInstance);
+      extendItemBehaviour(orderInstance);
       $.extend(orderInstance, instanceMethods);
-
       return orderInstance;
     }
   };
