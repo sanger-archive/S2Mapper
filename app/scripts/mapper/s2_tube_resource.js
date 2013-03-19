@@ -9,6 +9,11 @@ define([
   function processor(root, resourceTypeCollection, resourceType) {
     return function(resultDeferred) {
       return function(response) {
+        if (response.responseText.size === 0){
+          // reject with error...
+          return resultDeferred.reject(resultDeferred,'Barcode not found');
+        }
+
         var json = response.responseText[resourceTypeCollection];
         var rawJson = {}; rawJson[resourceType] = json[0];
 
@@ -73,8 +78,11 @@ define([
     },
 
     findByEan13Barcode: function(ean13){
-      var root        = this.root;
-      var ajaxPromise = root.searches.create({
+
+
+      var tubesDeferred = $.Deferred();
+      var root          = this.root;
+      root.searches.create({
         "search":  {
           "description":  "search for barcoded tube",
           "model":        "tube",
@@ -86,19 +94,19 @@ define([
             }
           }
         }
-      }).then(function(searchResult){
-        var thisTube;
+      }).done(function(searchResult){
 
         searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
           tube.root = root;
-          thisTube  = tube;
-        });
+          tubesDeferred.resolve(tube);
+        }).fail(function(error){
 
-        return thisTube;
+          tubesDeferred.reject(error);
+        });
       });
 
 
-      return ajaxPromise;
+      return tubesDeferred.promise();
     }
   };
 
