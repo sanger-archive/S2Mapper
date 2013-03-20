@@ -32,6 +32,7 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
         config.stepJson[step.url + step.method + JSON.stringify(step.request)] = step.response;
       }
     },
+
     setTestJson: function(workflow){
       // Fixme Not working ideally yet still having to require
       // the package on module load.

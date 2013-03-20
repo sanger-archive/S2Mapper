@@ -8,13 +8,25 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     itemUuid,
     currentItem,
     i,
-    orderUpdateJson;
+    orderUpdateJson,
+    orderResolvePromises = [],
+    itemLookupPromises = [],
+    orderUpdatePromises = [],
+    itemUuids = [],
+    nextItemPromise;    
     // TODO : temporary fixed
     var role = "tube_to_be_extracted";
    
     that.isNew = false;
     batchUuid = batch.rawJson && batch.rawJson.batch && batch.rawJson.batch.uuid;
     
+    // To get an update order we need 3 levels of promises
+    // 1st promise -> order
+    // 2nd promise -> filtered items on order
+    // 3rd promise -> updated order
+
+    // We need to store all of each. 
+
     for(i = 0; i < that.resources.length; i++) {
       orderUpdateJson = {
 	"items" : {
@@ -24,25 +36,79 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       currentItem = that.resources[i];
       if(currentItem) {
 	itemUuid = currentItem.rawJson[currentItem.resourceType].uuid;
-	currentItem.order().done(function(order) {
-	  var itemsInRole = order.items[role],
-	  itemInRole,
-	  j;
-	  for(j = 0; j < itemsInRole.length; j++) {
-	    itemInRole = itemsInRole[j];
-	    if(itemInRole.uuid === itemUuid) {
-	      addBatchToItem(batch, itemInRole);
-	      orderUpdateJson.items[role].push({batch: { uuid: batchUuid } });
-	    }
-	  }
-
-	  order.update(orderUpdateJson);
-	  
-	});
-      }
+	orderResolvePromises.push(currentItem.order());
+	itemUuids.push(itemUuid);
+	};
     }
     
-    deferred.resolve(batch);
+    for(i = 0; i < orderResolvePromises.length; i++) {
+      orderResolvePromises[i].
+	done(function(order) {
+	  console.log("resolving order resolve promise");
+	  nextItemPromise = handleItemOrderDone(order, role, itemUuids[i], batchUuid);
+	  itemLookupPromises.push(nextItemPromise);
+	  nextItemPromise.done(function(items) {
+	    orderUpdatePromises.push(handleMatchingItemDone(order, items, role, itemUuids[i], batchUuid));
+	  });
+      }).
+	fail(function() {
+	  deferred.reject();
+	});
+    }
+
+    // There is one for each item in the seed resources. We can't resolve until
+    // all of these have gone. Therefore, we need to store each promise. But the inner
+    // promises can't be reached until the outer ones have resolved. Therefore we have
+    // to wait for all the 1st level promises, then all the 2nd level promises, 
+    // then all the 3rd level promises
+    $.when(orderResolvePromises).done(function() {
+      $.when(itemLookupPromises).done(function() {
+	$.when(orderUpdatePromises).done(function() {
+	  deferred.resolve(batch);
+	}).
+	  fail(function() {
+	    deferred.reject();
+	  });
+      }).
+	fail(function() {
+	  deferred.reject();
+	});
+      
+    }).fail(function() {
+      deferred.reject();
+    });
+  }
+
+  function handleMatchingItemDone(order, items, role, itemUuid, batchUuid) {
+    var updateJson = { "items" : {} },
+    item,
+    i;
+    console.log("items");
+    console.log(items);
+    
+    for(i = 0; i < items.length; i++) {
+      console.log("would add batch to item:");
+      console.log(items[i]);
+      item = items[i];
+      if (updateJson.items[role] === undefined) {
+	updateJson.items[role] = {}
+      }
+      updateJson.items[role][itemUuid] = { "batch_uuid" : batchUuid };
+    }
+    
+    console.log("would use this json to update order");
+    console.log(updateJson);
+    
+    // TODO : do we need to get this promise to the calling funciton?
+    return order.update(updateJson);
+  }
+
+  function handleItemOrderDone(order, role, itemUuid, batchUuid) {
+    var matchingItems = order.items.filter(function(item) { 
+      return item.uuid === itemUuid && item.status === "done";
+    });
+
+    return matchingItems;
   }
 
   function addBatchToItem(batch, itemInRole) {
