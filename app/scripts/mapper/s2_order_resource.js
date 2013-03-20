@@ -3,7 +3,11 @@ define([
 ], function(BaseResource){
   'use strict';
 
-  var Order = BaseResource.extendAs('order');
+  var Order = BaseResource.extendAs('order', function(orderInstance, options) {
+    extendItemBehaviour(orderInstance);
+    $.extend(orderInstance, instanceMethods);
+    return orderInstance;
+  });
 
   var instanceMethods = {
     /* DEPRECATED: Call batchFor(predicate) to find batch
@@ -30,7 +34,7 @@ define([
       var root = this.root, order = this.order;
       this.items
           .filter(function(item) { return (item.batch !== null) && criteria(item, order); })
-          .done(function(items) { deferredObject.resolve(root.batches.instantiate({root: root, rawJson: {batch: items[0].batch}}).read()); })
+          .done(function(items) { deferredObject.resolve(root.batches.instantiate({rawJson: {batch: items[0].batch}}).read()); })
           .fail(deferredObject.reject);
 
        return deferredObject.promise();
@@ -61,17 +65,6 @@ define([
       }
     }), order.items);
   }
-
-  var classMethods = {
-    instantiate: function(options) {
-      var orderInstance = BaseResource.instantiate(options);
-      extendItemBehaviour(orderInstance);
-      $.extend(orderInstance, instanceMethods);
-      return orderInstance;
-    }
-  };
-
-  $.extend(Order, classMethods);
 
   return Order;
 });
