@@ -12,6 +12,8 @@ define([
 
   function resourceProcessor(rootInstance, resourceDeferred) {
     return function(response){
+      console.log("resourceProcessor got response");
+      console.log(response);
       var resourceType  = Object.keys(response.responseText)[0];
       var resourceClass = rootInstance[resourceType.pluralize()];
       var resource      = resourceClass.instantiate({
@@ -36,9 +38,11 @@ define([
     },
 
     retrieve: function(options) {
-      var resourceDeferred = $.Deferred();
+      var resourceDeferred = $.Deferred();      
       var url              = options.uuid? ('/'+options.uuid) : options.url;
       var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred);
+
+      console.log("retrive called");
 
       var ajax = s2_ajax.send(
         options.sendAction || 'read',

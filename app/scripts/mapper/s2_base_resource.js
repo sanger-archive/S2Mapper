@@ -1,4 +1,4 @@
-define(['require'], function(require){
+define([], function(){
   'use strict';
 
   // BaseResource is intended to be an abstract class used by concrete
