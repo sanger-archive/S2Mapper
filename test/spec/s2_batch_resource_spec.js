@@ -46,7 +46,7 @@ define([
         });
 
         it("yields the orders found", function() {
-          batch.orders().done(results.assignTo('orders')).fail(results.unexpected);
+          batch.orders.done(results.assignTo('orders')).fail(results.unexpected);
           expect(results.get('orders').length).toBe(2);
         });
       });
@@ -61,12 +61,12 @@ define([
         });
 
         it("yields the items for a single order", function() {
-          batch.items().done(results.assignTo('items')).fail(results.unexpected);
+          batch.items.done(results.assignTo('items')).fail(results.unexpected);
           expect(results.get('items').length).toBe(3);
         });
 
         it("yields the items for multiple orders", function() {
-          batch.items().done(results.assignTo('items')).fail(results.unexpected);
+          batch.items.done(results.assignTo('items')).fail(results.unexpected);
           expect(results.get('items').length).toBe(3);
         });
       });
