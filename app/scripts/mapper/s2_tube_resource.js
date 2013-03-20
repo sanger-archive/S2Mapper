@@ -7,6 +7,7 @@ define([
   'use strict';
 
   function processor(root, resourceTypeCollection, resourceType) {
+
     return function(resultDeferred) {
       return function(response) {
         if (response.responseText.size === 0){
@@ -58,6 +59,7 @@ define([
         }).done(function(searchResult){
           searchResult.first(undefined, processor(root, 'orders', 'order'))
           .done(function(order){
+
             order.root = root;
             thisTube._order = order;
             orderDeferred.resolve(order);
@@ -97,16 +99,47 @@ define([
       }).done(function(searchResult){
 
         searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
+
           tube.root = root;
           tubesDeferred.resolve(tube);
-        }).fail(function(error){
-
+        }).fail(function(tube,error){
           tubesDeferred.reject(error);
         });
       });
 
 
       return tubesDeferred.promise();
+    },
+
+    transfer: function (target){
+      var tubesDeferred = $.Deferred();
+      var root          = this.root;
+      root.transfer_tube_to_tubes.create({
+        "search":  {
+          "description":  "search for barcoded tube",
+          "model":        "tube",
+          "criteria":     {
+            "label":  {
+              "position":  "barcode",
+              "type":      "ean13-barcode",
+              "value":     [ean13]
+            }
+          }
+        }
+      }).done(function(searchResult){
+
+            searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
+
+              tube.root = root;
+              tubesDeferred.resolve(tube);
+            }).fail(function(tube,error){
+                  tubesDeferred.reject(error);
+                });
+          });
+
+
+      return tubesDeferred.promise();
+
     }
   };
 
