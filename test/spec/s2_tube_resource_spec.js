@@ -47,7 +47,6 @@ define([ 'resource_test_helper'
           })
 
           it("takes an EAN13 barcode but the returned promise is rejected.", function(){
-
             expect(tubePromise.state()).toBe('rejected')
           })
         })
