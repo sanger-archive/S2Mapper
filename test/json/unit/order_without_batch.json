@@ -177,8 +177,21 @@
           }
         ]
       }
+    },
+    {
+      "description": "Get empty search result",
+      "method": "get",
+      "url": "/EmPtY00-68ac-0130-7ac8-282066132de2/page=1",
+      "request": null,
+      "response": {
+        "actions": {
+          "read": "http://localhost:9292/tubes/page=1",
+          "first": "http://localhost:9292/tubes/page=1",
+          "last": "http://localhost:9292/tubes/page=-1"
+        },
+        "size": 0
+      }
     }
-
   ]
 }
 
