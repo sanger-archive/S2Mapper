@@ -42,9 +42,9 @@ require(['config','mapper/s2_root','text!json/dna_and_rna_manual_extraction.json
       // testing latency issues.
 
 
-      var response = config.finalDna[config.reqParams];
+      var response = config.stepJson[config.reqParams];
       if (response === undefined) {
-        console.log("AJAX[" + config.reqParams + "]: not found in " + JSON.stringify(config.finalDna));
+        console.log("AJAX[" + config.reqParams + "]: not found in " + JSON.stringify(config.stepJson));
       } else {
         console.log("AJAX[" + config.reqParams + "]: responding with a " + (typeof response));
       }
@@ -63,22 +63,13 @@ require(['config','mapper/s2_root','text!json/dna_and_rna_manual_extraction.json
       });
     }
 
-    //populate the pipeline and finalDna
-
+    //populate the pipeline and stepJson
     for (var stageNum in json){
       for  (var stepNum in json[stageNum].steps) {
         var step = json[stageNum].steps[stepNum];
-
-        config.finalDna[step.url + step.method + JSON.stringify(step.request)] = step.response;
+        config.stepJson[step.url + step.method + JSON.stringify(step.request)] = step.response;
         config.steps.push(step.description);
       }
-    }
-
-
-    function incrementStage (){
-      console.log ('Incrementing step');
-      console.log(config);
-
     }
     //carry out the first load
     window.s2 = S2Root.load();
