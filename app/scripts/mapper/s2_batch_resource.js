@@ -1,8 +1,6 @@
 define(['mapper/s2_base_resource'], function(BaseResource){
   'use strict';
 
-  var Batch = BaseResource.extendAs('batch');
-
   function handleRootCreateDone(that, batch, deferred) {
     var batchUuid,
     itemUuid,
@@ -11,37 +9,37 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     orderUpdateJson;
     // TODO : temporary fixed
     var role = "tube_to_be_extracted";
-   
+
     that.isNew = false;
     batchUuid = batch.rawJson && batch.rawJson.batch && batch.rawJson.batch.uuid;
-    
+
     for(i = 0; i < that.resources.length; i++) {
       orderUpdateJson = {
-	"items" : {
-	}
+        "items" : {
+        }
       };
       orderUpdateJson.items[role] = [];
       currentItem = that.resources[i];
       if(currentItem) {
-	itemUuid = currentItem.rawJson[currentItem.resourceType].uuid;
-	currentItem.order().done(function(order) {
-	  var itemsInRole = order.items[role],
-	  itemInRole,
-	  j;
-	  for(j = 0; j < itemsInRole.length; j++) {
-	    itemInRole = itemsInRole[j];
-	    if(itemInRole.uuid === itemUuid) {
-	      addBatchToItem(batch, itemInRole);
-	      orderUpdateJson.items[role].push({batch: { uuid: batchUuid } });
-	    }
-	  }
+        itemUuid = currentItem.rawJson[currentItem.resourceType].uuid;
+        currentItem.order().done(function(order) {
+          var itemsInRole = order.items[role],
+          itemInRole,
+          j;
+          for(j = 0; j < itemsInRole.length; j++) {
+            itemInRole = itemsInRole[j];
+            if(itemInRole.uuid === itemUuid) {
+              addBatchToItem(batch, itemInRole);
+              orderUpdateJson.items[role].push({batch: { uuid: batchUuid } });
+            }
+          }
 
-	  order.update(orderUpdateJson);
-	  
-	});
+          order.update(orderUpdateJson);
+
+        });
       }
     }
-    
+
     deferred.resolve(batch);
   }
 
@@ -65,6 +63,7 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     });
     return proxy;
   }
+
   function extendProxy(proxy, batch) {
     // TODO: Once the proxy has been removed these are the functions that are needed on an instance
     var instanceMethods = {
@@ -81,12 +80,12 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       items: function() {
         return this.orders.then(function(orders) {
           return _.chain(orders)
-                  .map(function(order) { return _.values(order.items); })
-                  .flatten()
-                  .filter(function(item) { return item.batch.uuid === batch.uuid; })
-                  .value();
+          .map(function(order) { return _.values(order.items); })
+          .flatten()
+          .filter(function(item) { return item.batch.uuid === batch.uuid; })
+          .value();
         });
-      },     
+      }
     };
 
     Object.defineProperties(proxy, {
@@ -102,39 +101,24 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       var i,
       that = this,
       deferred = $.Deferred();
-      
-	if(!this.items || this.items.length === 0) {
-	  throw { type : "PersistenceError", message : "Empty batches cannot be saved" };
-	}
-      if(this.isNew) {
-	this.root.batches.create({}).done(function(result) {
-	  handleRootCreateDone(that, result, deferred);
-	});	
+
+      if(!this.items || this.items.length === 0) {
+        throw { type : "PersistenceError", message : "Empty batches cannot be saved" };
       }
-      
+      if(this.isNew) {
+        this.root.batches.create({}).done(function(result) {
+          handleRootCreateDone(that, result, deferred);
+        });
+      }
+
       return deferred.promise();
     }
   };
 
-  var classMethods = {
-    instantiate: function(opts){
-      var options = opts || {};
-      var batchInstance = BaseResource.instantiate.apply(this, [options]);
-      $.extend(batchInstance, instanceMethods);
-
-      batchInstance.resources = options.resources;
-
-      if(!batchInstance.actions) {
-	batchInstance.actions = {};
-      }
-      batchInstance.resources = options.resources;
-
-      return extendProxy(proxyFor(batchInstance), batchInstance);
-    }
-  };
-
-  $.extend(Batch, classMethods);
-
+  var Batch = BaseResource.extendAs('batch', function(batchInstance, options) {
+    $.extend(batchInstance, instanceMethods);
+    batchInstance.resources = options.resources;
+    return extendProxy(proxyFor(batchInstance), batchInstance);
+  });
   return Batch;
-    
 });

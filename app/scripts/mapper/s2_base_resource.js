@@ -37,13 +37,15 @@ define([], function(){
 
   $.extend(BaseResource, {
     // Convenience method for creating extensions of the base resource class.
-    extendAs: function(resourceType) {
+    extendAs: function(resourceType, constructor) {
       var resourceClass = Object.create(this);
       resourceClass.resourceType = resourceType;
+      resourceClass.constructor  = constructor || this.constructor;
       return resourceClass;
     },
 
     register: function(callback) { callback(this.resourceType, this); },
+    constructor: function(instance) { return instance; },
 
     instantiate: function(opts){
       var options           = $.extend({}, opts);
@@ -57,15 +59,17 @@ define([], function(){
         resourceInstance.resourceType = Object.keys(rawJson)[0];
         $.extend(resourceInstance, rawJson[resourceInstance.resourceType]);
       } else {
-        // TODO: resourceInstance.resourceType = ???
+        resourceInstance.resourceType = this.resourceType;
       }
 
       $.extend(resourceInstance, instanceMethods);
-      return resourceInstance;
+      return this.constructor(resourceInstance, options);
     },
 
     new: function(options){
-      return this.instantiate(options);
+      var instance = this.instantiate(options);
+      if (instance.actions === undefined) { instance.actions = {}; }
+      return instance;
     }
   });
 

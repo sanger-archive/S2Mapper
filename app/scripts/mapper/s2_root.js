@@ -14,10 +14,7 @@ define([
     return function(response){
       var resourceType  = Object.keys(response.responseText)[0];
       var resourceClass = rootInstance[resourceType.pluralize()];
-      var resource      = resourceClass.instantiate({
-        root: rootInstance,
-        rawJson: response.responseText
-      });
+      var resource      = resourceClass.instantiate({ rawJson: response.responseText });
 
       resourceDeferred.resolve(resource);
     }
@@ -63,6 +60,8 @@ define([
       // wrap the json so that it looks like any other resource
       resourceJson[resource] = rawJson[resource];
 
+      // We need to create a BaseResource that handles the individual resource models.  It's at this point that
+      // we define the 'root' instance that will be bound to all instances created from these resource models.
       rootInstance[resource] = Resources.base.instantiate({
         root: rootInstance,
         rawJson: resourceJson

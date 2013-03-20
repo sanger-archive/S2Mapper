@@ -15,7 +15,11 @@
 define(['mapper/s2_base_resource'], function(BaseResource) {
   'use strict';
 
-  var BarcodeResource = BaseResource.extendAs('barcode');
+  var BarcodeResource = BaseResource.extendAs('barcode', function(barcodeInstance, options) {
+    $.extend(barcodeInstance, instanceMethods);
+    setupInstanceAttributes(barcodeInstance);
+    return barcodeInstance;
+  });
 
   // Post processing of the raw JSON that will setup the correct attributes on the barcode instance.
   function setupInstanceAttributes(barcodeInstance) {
@@ -31,18 +35,6 @@ define(['mapper/s2_base_resource'], function(BaseResource) {
       });
     }
   };
-
-  // Class methods on the barcode resource type; mainly here for the extension of the base resource
-  // instance to include the instance methods above.
-  var classMethods = {
-    instantiate: function(options) {
-      var barcodeInstance = BaseResource.instantiate(options);
-      $.extend(barcodeInstance, instanceMethods);
-      setupInstanceAttributes(barcodeInstance);
-      return barcodeInstance;
-    }
-  };
-  $.extend(BarcodeResource, classMethods);
 
   return BarcodeResource;
 });
