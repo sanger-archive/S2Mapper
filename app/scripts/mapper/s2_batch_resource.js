@@ -17,13 +17,13 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     batchUuid = batch.rawJson && batch.rawJson.batch && batch.rawJson.batch.uuid;
     console.log("batch uuid ", batchUuid);
     
-    for(i = 0; i < that.items.length; i++) {
+    for(i = 0; i < that.resources.length; i++) {
       orderUpdateJson = {
 	"items" : {
 	}
       };
       orderUpdateJson.items[role] = [];
-      currentItem = that.items[i];
+      currentItem = that.resources[i];
       if(currentItem) {
 	itemUuid = currentItem.rawJson[currentItem.resourceType].uuid;
 	console.log("item uuid", itemUuid);
@@ -56,22 +56,69 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     itemInRole.batch = { "uuid" : batch.rawJson.batch.uuid };
   }
 
+  /*
+   * We need to lazily load the 'orders' and 'items' when they are asked for, but don't want to have to
+   * define these as functions.  Hence we can wrap a batch in a proxy object that deals with intercepting
+   * the calls.
+   *
+   * TODO: Remove the proxy once the application is using functions rather than attributes.
+   */
+  function proxyFor(batch) {
+    // Create a proxy that mimics the behaviour of the batch
+    var proxy = Object.create(Object.getPrototypeOf(batch), {});
+    Object.getOwnPropertyNames(batch).forEach(function(name) {
+      var propertyOnBatch = Object.getOwnPropertyDescriptor(batch, name);
+      Object.defineProperty(proxy, name, propertyOnBatch);
+    });
+    return proxy;
+  }
+  function extendProxy(proxy, batch) {
+    // TODO: Once the proxy has been removed these are the functions that are needed on an instance
+    var instanceMethods = {
+      orders: function() {
+        return batch.root.searches.handling(batch.root.orders).first({
+          "description": "search order by batch",
+          "model": "order",
+          "criteria": {
+            "item": { "batch": batch.uuid }
+          }
+        });
+      },
+
+      items: function() {
+        return this.orders.then(function(orders) {
+          return _.chain(orders)
+                  .map(function(order) { return _.values(order.items); })
+                  .flatten()
+                  .filter(function(item) { return item.batch.uuid === batch.uuid; })
+                  .value();
+        });
+      },     
+    };
+
+    Object.defineProperties(proxy, {
+      orders: { get: instanceMethods.orders },
+      items:  { get: instanceMethods.items  }
+    });
+
+    return proxy;
+  }
+
   var instanceMethods = {
-    items: [],
     save: function() {
       var i,
       that = this,
       deferred = $.Deferred();
-
-      if(!this.items || this.items.length === 0) {
-	throw { type : "PersistenceError", message : "Empty batches cannot be saved" };
-      }
+      
+	if(!this.items || this.items.length === 0) {
+	  throw { type : "PersistenceError", message : "Empty batches cannot be saved" };
+	}
       if(this.isNew) {
 	this.root.batches.create({}).done(function(result) {
 	  handleRootCreateDone(that, result, deferred);
 	});	
       }
-
+      
       return deferred.promise();
     }
   };
@@ -80,15 +127,16 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     instantiate: function(opts){
       var options = opts || {};
       var batchInstance = BaseResource.instantiate.apply(this, [options]);
-
       $.extend(batchInstance, instanceMethods);
 
-      batchInstance.items = options.items;
+      batchInstance.resources = options.resources;
 
       if(!batchInstance.actions) {
 	batchInstance.actions = {};
       }
-      return batchInstance;
+      batchInstance.resources = options.resources;
+
+      return extendProxy(proxyFor(batchInstance), batchInstance);
     }
   };
 

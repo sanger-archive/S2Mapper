@@ -6,18 +6,6 @@ define([
 ], function(BaseResource, BatchResource, Order, Labellable){
   'use strict';
 
-  function processor(root, resourceTypeCollection, resourceType) {
-    return function(resultDeferred) {
-      return function(response) {
-        var json = response.responseText[resourceTypeCollection];
-        var rawJson = {}; rawJson[resourceType] = json[0];
-
-        var resource = root[resourceTypeCollection].instantiate({rawJson: rawJson});
-        return resultDeferred.resolve(resource);
-      };
-    };
-  }
-
   var Tube = BaseResource.extendAs('tube');
 
   var instanceMethods = {
@@ -38,7 +26,7 @@ define([
       if (thisTube._order) {
         orderDeferred.resolve(thisTube._order);
       } else {
-        thisTube.root.searches.create({
+        this.root.searches.handling(this.root.orders).first({
           "description":"search for order",
           "model":      "order",
           "criteria":   {
@@ -47,14 +35,12 @@ define([
               "role":"tube_to_be_extracted"
             }
           }
-        }).done(function(searchResult){
-          searchResult.first(undefined, processor(root, 'orders', 'order'))
-          .done(function(order){
-            order.root = root;
-            thisTube._order = order;
-            orderDeferred.resolve(order);
-          });
-        });
+        }).done(function(orders) {
+          var order = orders[0];
+          order.root = root;
+          thisTube._order = order;
+          orderDeferred.resolve(order);
+        }).fail(orderDeferred.reject);
       }
 
       return orderDeferred.promise();
@@ -70,8 +56,8 @@ define([
     },
 
     findByEan13Barcode: function(ean13){
-      var root        = this.root;
-      var ajaxPromise = root.searches.create({
+      var deferred = $.Deferred();
+      this.root.searches.handling(this.root.tubes).first({
         "description":  "search for barcoded tube",
         "model":        "tube",
         "criteria":     {
@@ -81,19 +67,14 @@ define([
             "value":     [ean13]
           }
         }
-      }).then(function(searchResult){
-        var thisTube;
-
-        searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
-          tube.root = root;
-          thisTube  = tube;
-        });
-
-        return thisTube;
-      });
-
-
-      return ajaxPromise;
+      }).done(function(tubes) {
+        if (tubes.length == 1) {
+          deferred.resolve(tubes[0]);
+        } else {
+          deferred.reject();
+        }
+      }).fail(deferred.reject);
+      return deferred.promise();
     }
   };
 
