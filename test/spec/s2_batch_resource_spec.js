@@ -71,7 +71,6 @@ define([
       
       describe("New unsaved empty batch", function() {
 	beforeEach(function() {
-//	  commonBefore();
 	  results.batch = s2.batches.new();
 	 });
 	  
@@ -91,11 +90,19 @@ define([
 	
       describe("New unsaved batch with one tube item", function() {
 	
-	var order = undefined;	
+	var order = undefined;
+	var mockOrderPromise;
 	
 	beforeEach(function() {
-//	  commonBefore();
-	  spyOn(results.tube, "order").andCallThrough();
+	  mockOrderPromise = $.Deferred();
+	  results.tube.order().done(function(theOrder) {
+	    order = theOrder;
+	    mockOrderPromise.resolve(order);
+	  });
+
+	  // We need to make sure that the order we get is always the
+	  // one we are spying on
+	  spyOn(results.tube, "order").andReturn(mockOrderPromise); 
 	  
 	  results.batch = s2.batches.new({
 	    resources : [ results.tube ]
@@ -103,8 +110,6 @@ define([
 					 s2);
 	  
 	  // Take advantage of memoisation
-	  results.tube.order();
-	  order = results.tube._order;
 	  spyOn(order, "update");
 	  
 	  config.setupTest(batchJson);
@@ -115,30 +120,46 @@ define([
 	  });
 	  
 	  
-	it("saving with no callback saves batch and item", function() {
+	describe("default saving behaviour", function() {
 	  var expectedBatchUuid = "47608460-68ac-0130-7ac8-282066132de2",
 	  expectedRole = "tube_to_be_extracted",
 	  savedBatch = undefined;
-	  spyOn(s2.batches, "create").andCallThrough();
-	  results.batch.save(function(order) { }).
-	    done(function(batch) {
-	      savedBatch = batch;
-	    });
+
+	  beforeEach(function() {
+	    spyOn(s2.batches, "create").andCallThrough();
+	    results.batch.save().
+	      done(function(batch) {
+		savedBatch = batch;
+	      });
+	  });
 	  
-	  expect(s2.batches.create).toHaveBeenCalledWith({});
+
+	  it("creates a new batch", function() {
+	    expect(s2.batches.create).toHaveBeenCalledWith({});
+	  });
+	
+	  it("extracts the order from the tube", function() {
 	  expect(results.tube.order).toHaveBeenCalled();
-	  var items = order.items && order.items[expectedRole];
-	  var batch0 = items[0] && items[0].batch;
-	  
-	  expect(savedBatch).toBeDefined();
-	  expect(savedBatch.uuid).toBe(expectedBatchUuid);
-	  expect(batch0 && batch0.uuid).toBe(expectedBatchUuid);
-	  expect(order.update).toHaveBeenCalledWith({
-	    items: {
-	      tube_to_be_extracted: [
-		{ batch : { uuid : "47608460-68ac-0130-7ac8-282066132de2" } }
-	      ]
+	  });
+
+	  it("sets the uuid of the saved batch", function() {	  
+	    expect(savedBatch).toBeDefined();
+	    expect(savedBatch.uuid).toBe(expectedBatchUuid);
+	  });
+
+	  it("calls update on order", function() {
+
+	    // We can't test that the order has been updated
+	    // using static test json ( the request would always be
+	    // the same, so we'd always get the same result back )
+	    expect(order.update).toHaveBeenCalledWith({
+	      items: {
+		tube_to_be_extracted: {
+		"3bcf8010-68ac-0130-9163-282066132de2" :
+		  { batch_uuid : "47608460-68ac-0130-7ac8-282066132de2" } 
+		}
 	      }
+	    });
 	  });
 	});
       });

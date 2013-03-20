@@ -28,27 +28,60 @@ define(['mapper/s2_base_resource'], function(BaseResource){
 	itemUuid = currentItem.rawJson[currentItem.resourceType].uuid;
 	console.log("item uuid", itemUuid);
 	currentItem.order().done(function(order) {
-	  var itemsInRole = order.items[role],
-	  itemInRole,
-	  j;
-	  console.log("retrieved order", order);
-	  for(j = 0; j < itemsInRole.length; j++) {
-	    itemInRole = itemsInRole[j];
-	    if(itemInRole.uuid === itemUuid) {
-	      addBatchToItem(batch, itemInRole);
-	      orderUpdateJson.items[role].push({batch: { uuid: batchUuid } });
-	    }
-	    console.log("item in role", itemInRole);
-	  }
-
-	  order.update(orderUpdateJson);
-	  
+	  handleItemOrderDone(order, role, itemUuid, batchUuid, orderUpdateJson);
 	});
 	console.log("considering item: ", currentItem);
       }
     }
     
     deferred.resolve(batch);
+  }
+
+  function handleItemOrderDone(order, role, itemUuid, batchUuid) {
+    var matchingItems = order.items.filter(function(item) { 
+      return item.uuid === itemUuid && item.status === "done";
+    }).
+      done(function(items) {
+	var updateJson = { "items" : {} },
+	item,
+	i;
+	console.log("items");
+	console.log(items);
+	
+	for(i = 0; i < items.length; i++) {
+	  console.log("would add batch to item:");
+	  console.log(items[i]);
+	  item = items[i];
+	  if (updateJson.items[role] === undefined) {
+	    updateJson.items[role] = {}
+	  }
+	  updateJson.items[role][itemUuid] = { "batch_uuid" : batchUuid };
+	}
+
+	console.log("would use this json to update order");
+	console.log(updateJson);
+
+	// TODO : do we need to get this promise to the calling funciton?
+	order.update(updateJson);
+      });
+
+    /*
+    var itemsInRole = order.items[role],
+    itemInRole,
+    batchUuid = batch.rawJson && batch.rawJson.batch && batch.rawJson.batch.uuid,
+    j;
+    console.log("retrieved order", order);
+    for(j = 0; j < itemsInRole.length; j++) {
+      itemInRole = itemsInRole[j];
+      if(itemInRole.uuid === itemUuid) {
+	addBatchToItem(batch, itemInRole);
+	orderUpdateJson.items[role].push({batch: { uuid: batchUuid } });
+      }
+      console.log("item in role", itemInRole);
+    }
+    
+    order.update(orderUpdateJson);
+    */
   }
 
   function addBatchToItem(batch, itemInRole) {
