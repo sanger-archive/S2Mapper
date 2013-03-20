@@ -3,52 +3,83 @@ define(['mapper/s2_base_resource'], function(BaseResource){
 
   var Batch = BaseResource.extendAs('batch');
 
+  function handleRootCreateDone(that, batch, deferred) {
+    var batchUuid,
+    itemUuid,
+    currentItem,
+    i,
+    orderUpdateJson;
+    // TODO : temporary fixed
+    var role = "tube_to_be_extracted";
+   
+    that.isNew = false;
+    console.log("batches create result is ", batch);
+    batchUuid = batch.rawJson && batch.rawJson.batch && batch.rawJson.batch.uuid;
+    console.log("batch uuid ", batchUuid);
+    
+    for(i = 0; i < that.items.length; i++) {
+      orderUpdateJson = {
+	"items" : {
+	}
+      };
+      orderUpdateJson.items[role] = [];
+      currentItem = that.items[i];
+      if(currentItem) {
+	itemUuid = currentItem.rawJson[currentItem.resourceType].uuid;
+	console.log("item uuid", itemUuid);
+	currentItem.order().done(function(order) {
+	  var itemsInRole = order.items[role],
+	  itemInRole,
+	  j;
+	  console.log("retrieved order", order);
+	  for(j = 0; j < itemsInRole.length; j++) {
+	    itemInRole = itemsInRole[j];
+	    if(itemInRole.uuid === itemUuid) {
+	      addBatchToItem(batch, itemInRole);
+	      orderUpdateJson.items[role].push({batch: { uuid: batchUuid } });
+	    }
+	    console.log("item in role", itemInRole);
+	  }
+
+	  order.update(orderUpdateJson);
+	  
+	});
+	console.log("considering item: ", currentItem);
+      }
+    }
+    
+    deferred.resolve(batch);
+  }
+
+  function addBatchToItem(batch, itemInRole) {
+    console.log("adding batch to item");
+    itemInRole.batch = { "uuid" : batch.rawJson.batch.uuid };
+  }
+
   var instanceMethods = {
     items: [],
     save: function() {
       var i,
-      batch_uuid,
-      orderPromise,
-      currentItem,
-      that = this;
+      that = this,
+      deferred = $.Deferred();
+
       if(!this.items || this.items.length === 0) {
 	throw { type : "PersistenceError", message : "Empty batches cannot be saved" };
       }
-      if(!this.isNew) {
-	return;
+      if(this.isNew) {
+	this.root.batches.create({}).done(function(result) {
+	  handleRootCreateDone(that, result, deferred);
+	});	
       }
-      this.create({"batch": {}}).done(function(result) {
-	batch_uuid = result.rawJson && result.rawJson.batch && result.rawJson.batch.uuid;
-	console.log("batch uuid ", batch_uuid);
-	// The response has no items, so we set it
-	result.items = []; 
 
-      for(i =0; i < that.items.length; i++) {
-	currentItem = that.items[i];
-	// TODO configured item manipulation
-	// TODO add batch uuid etc to item
-
-//	result.items.push(currentItem);
-	
-	orderPromise = currentItem && currentItem.order && currentItem.order();
-	if(!orderPromise) {
-	  continue;
-	}
-	orderPromise.done(function(order) {
-	  
-	  order.update();
-	});
-      }
-      });
-      
+      return deferred.promise();
     }
   };
-
 
   var classMethods = {
     instantiate: function(opts){
       var options = opts || {};
-      var batchInstance = BaseResource.instantiate(options);
+      var batchInstance = BaseResource.instantiate.apply(this, [options]);
 
       $.extend(batchInstance, instanceMethods);
 
@@ -57,15 +88,12 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       if(!batchInstance.actions) {
 	batchInstance.actions = {};
       }
-
-      if(batchInstance.root) {
-	batchInstance.actions["create"] = bathcInstance.root["create_batches"].actions["create"];
-      }
       return batchInstance;
     }
   };
 
   $.extend(Batch, classMethods);
-  return Batch;
 
+  return Batch;
+    
 });

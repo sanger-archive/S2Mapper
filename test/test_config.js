@@ -96,7 +96,7 @@ define([], function() {
         // if the stored result can't be found in the data but the url is in the root then
         // it means that the system couldn't find the data.
 
-        console.log("AJAX[" + config.reqParams + "]: not found in " + config.finalDna);
+        console.log("AJAX[" + config.reqParams + "]: not found in ", config.finalDna);
         fakeAjaxDeferred.reject(fakeAjaxDeferred, 'error');
       } else {
         console.log("AJAX[" + config.reqParams + "]: responding with:");
