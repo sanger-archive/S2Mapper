@@ -7,6 +7,24 @@ define([
   'use strict';
 
   var Tube = BaseResource.extendAs('tube');
+  function processor(root, resourceTypeCollection, resourceType) {
+
+    return function(resultDeferred) {
+      return function(response) {
+        if (response.responseText.size === 0){
+          // reject with error...
+          return resultDeferred.reject(resultDeferred,'Barcode not found');
+        }
+
+        var json = response.responseText[resourceTypeCollection];
+        var rawJson = {}; rawJson[resourceType] = json[0];
+
+        var resource = root[resourceTypeCollection].instantiate({rawJson: rawJson});
+        return resultDeferred.resolve(resource);
+      };
+    };
+  }
+  Tube.resourceType = 'tube';
 
   var instanceMethods = {
     batch: function(){
@@ -53,8 +71,11 @@ define([
     },
 
     findByEan13Barcode: function(ean13){
-      var deferred = $.Deferred();
-      this.root.searches.handling(this.root.tubes).first({
+
+
+      var tubesDeferred = $.Deferred();
+      var root          = this.root;
+      root.searches.create({
         "description":  "search for barcoded tube",
         "model":        "tube",
         "criteria":     {
@@ -64,15 +85,22 @@ define([
             "value":     [ean13]
           }
         }
-      }).done(function(tubes) {
-        if (tubes.length == 1) {
-          deferred.resolve(tubes[0]);
-        } else {
-          deferred.reject();
-        }
-      }).fail(deferred.reject);
-      return deferred.promise();
+
+      }).done(function(searchResult){
+
+        searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
+
+          tube.root = root;
+          tubesDeferred.resolve(tube);
+        }).fail(function(tube,error){
+          tubesDeferred.reject(error);
+        });
+      });
+
+
+      return tubesDeferred.promise();
     }
+
   };
 
   $.extend(Tube, classMethods);

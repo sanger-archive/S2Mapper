@@ -13,9 +13,7 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     var role = "tube_to_be_extracted";
    
     that.isNew = false;
-    console.log("batches create result is ", batch);
     batchUuid = batch.rawJson && batch.rawJson.batch && batch.rawJson.batch.uuid;
-    console.log("batch uuid ", batchUuid);
     
     for(i = 0; i < that.resources.length; i++) {
       orderUpdateJson = {
@@ -26,11 +24,9 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       currentItem = that.resources[i];
       if(currentItem) {
 	itemUuid = currentItem.rawJson[currentItem.resourceType].uuid;
-	console.log("item uuid", itemUuid);
 	currentItem.order().done(function(order) {
 	  handleItemOrderDone(order, role, itemUuid, batchUuid, orderUpdateJson);
 	});
-	console.log("considering item: ", currentItem);
       }
     }
     
@@ -85,7 +81,6 @@ define(['mapper/s2_base_resource'], function(BaseResource){
   }
 
   function addBatchToItem(batch, itemInRole) {
-    console.log("adding batch to item");
     itemInRole.batch = { "uuid" : batch.rawJson.batch.uuid };
   }
 

@@ -1,10 +1,12 @@
-define([], function() {
+define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
   'use strict';
+
+  var log = "";
 
   var config = {
     apiUrl:'', // NOT USED IN TESTING
     setupTest: function (testData, stepNo){
-      var step = stepNo || 0
+      var step = stepNo || 0;
 
       testData = $.parseJSON(testData);
       config.createTestData(testData);
@@ -19,20 +21,16 @@ define([], function() {
 
     },
 
-    finalDna: {},
+    stepJson: {},
 
     createTestData: function(testData){
       var output = '';
-
       for(var stepNo in testData.steps) {
         var step = testData.steps[stepNo]
         output += '<br/>Step' + stepNo + ':' + step.description +'. Needs a ' + step.method + '. Responds with ' +
           Object.keys(step.response)[0];
-
-        config.finalDna[step.url + step.method + JSON.stringify(step.request)] = step.response;
-
+        config.stepJson[step.url + step.method + JSON.stringify(step.request)] = step.response;
       }
-
     },
 
     setTestJson: function(workflow){
@@ -52,14 +50,11 @@ define([], function() {
       return resultFromJson;
     },
 
-    // cpResource: function (original_uuid, new_uuid) {
-    //   var resourceJsonClone = JSON.parse(
-    //     JSON.stringify(
-    //      config.getTestJson()["/" + original_uuid]));
+    log: function(message){
+      if (message) log = log + "\n"+ message;
 
-    //   resourceJsonClone.uuid = new_uuid;
-    //   config.getTestJson ()["/" + new_uuid] = resourceJsonClone;
-    // },
+      return log;
+    },
 
     // Dummy out the ajax call returned by S2Ajax to test from file.
     // Returns a Deferred instead of jqXHR.
@@ -73,11 +68,11 @@ define([], function() {
         options.data = null
       }
 
-      console.log('------------------------');
-      console.log('Sending ajax message for ' + config.stage);
+      config.log('------------------------');
+      config.log('Sending ajax message for ' + config.stage);
 
       config.reqParams = options.url + options.type.toLowerCase() + JSON.stringify(options.data);
-      console.log(config.reqParams);
+      config.log(config.reqParams);
 
 
       // The real $.ajax returns a promise.  Please leave this as a defered as
@@ -88,16 +83,30 @@ define([], function() {
       // with .done() are called as soon as they're added, which should solve
       // testing latency issues.
 
-      var response = config.finalDna[config.reqParams];
+      var response = config.stepJson[config.reqParams];
       if (response === undefined) {
         // if the stored result can't be found in the data but the url is in the root then
         // it means that the system couldn't find the data.
 
-        console.log("AJAX[" + config.reqParams + "]: not found in ", config.finalDna);
-        fakeAjaxDeferred.reject(fakeAjaxDeferred, 'error');
+        config.log("AJAX[" + config.reqParams + "]: not found in " + config.stepJson);
+          // Check whether this is a search we need to fake.
+        if (options.url === '/searches' && options.type.toLowerCase() === 'post') {
+          config.log('But we are searching for a ' + options.data.search.model  + ', so need to return the empty data');
+
+          fakeAjaxDeferred.resolve({
+            url:           options.url,
+            'status':      200,
+            responseTime:  750,
+            responseText:  JSON.parse(emptyTubeData).steps[0].response
+          });
+
+        } else {
+
+          fakeAjaxDeferred.reject(fakeAjaxDeferred, '404 error');
+        }
       } else {
-        console.log("AJAX[" + config.reqParams + "]: responding with:");
-        console.log(response);
+        config.log("AJAX[" + config.reqParams + "]: responding with:");
+        config.log(response);
 
         fakeAjaxDeferred.resolve({
           url:           options.url,
@@ -107,7 +116,6 @@ define([], function() {
         });
 
       }
-
       return fakeAjaxDeferred;
     },
 
