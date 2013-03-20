@@ -45,7 +45,6 @@ define([
         orderDeferred.resolve(thisTube._order);
       } else {
         thisTube.root.searches.create({
-          "search":{
             "description":"search for order",
             "model":      "order",
             "criteria":   {
@@ -54,7 +53,6 @@ define([
                 "role":"tube_to_be_extracted"
               }
             }
-          }
         }).done(function(searchResult){
           searchResult.first(undefined, processor(root, 'orders', 'order'))
           .done(function(order){
@@ -84,17 +82,16 @@ define([
       var tubesDeferred = $.Deferred();
       var root          = this.root;
       root.searches.create({
-        "search":  {
-          "description":  "search for barcoded tube",
-          "model":        "tube",
-          "criteria":     {
-            "label":  {
-              "position":  "barcode",
-              "type":      "ean13-barcode",
-              "value":     [ean13]
-            }
+        "description":  "search for barcoded tube",
+        "model":        "tube",
+        "criteria":     {
+          "label":  {
+            "position":  "barcode",
+            "type":      "ean13-barcode",
+            "value":     [ean13]
           }
         }
+
       }).done(function(searchResult){
 
         searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
@@ -108,38 +105,8 @@ define([
 
 
       return tubesDeferred.promise();
-    },
-
-    transfer: function (target){
-      var tubesDeferred = $.Deferred();
-      var root          = this.root;
-      root.transfer_tube_to_tubes.create({
-        "search":  {
-          "description":  "search for barcoded tube",
-          "model":        "tube",
-          "criteria":     {
-            "label":  {
-              "position":  "barcode",
-              "type":      "ean13-barcode",
-              "value":     [ean13]
-            }
-          }
-        }
-      }).done(function(searchResult){
-
-            searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
-
-              tube.root = root;
-              tubesDeferred.resolve(tube);
-            }).fail(function(tube,error){
-                  tubesDeferred.reject(error);
-                });
-          });
-
-
-      return tubesDeferred.promise();
-
     }
+
   };
 
   $.extend(Tube, classMethods);
