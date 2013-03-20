@@ -18,7 +18,7 @@ define([
     },
 
     // Search for Order from tube uuid.
-    order: function(){
+    order: function(){    
       var thisTube      = this;
       var orderDeferred = $.Deferred();
       var root = this.root;
