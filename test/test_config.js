@@ -93,6 +93,7 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
           });
 
         } else {
+
           fakeAjaxDeferred.reject(fakeAjaxDeferred, '404 error');
         }
       } else {

@@ -40,14 +40,15 @@ define([ 'resource_test_helper'
           beforeEach(function(){
             config.setupTest(rootTestJson)
             Root.load().done(results.assignTo('root'))
-
             s2 = results.get('root')
             config.setupTest(tubeByBarcodeJson)
             tubePromise = s2.tubes.findByEan13Barcode('6666666666666')
+
           })
 
           it("takes an EAN13 barcode but the returned promise is rejected.", function(){
-            expect(tubePromise.state()).toBeDefined('rejected')
+
+            expect(tubePromise.state()).toBe('rejected')
           })
         })
       })
@@ -68,7 +69,19 @@ define([ 'resource_test_helper'
             expect(results.get('order').resourceType).toBe('order')
           })
         })
+
+        xdescribe(".transfer", function(){
+          it("can be transferred",function(){
+            var tube = results.get('tube')
+              , transferResults = tube.transfer(tube)
+            console.warn(transferResults)
+
+          })
+
+        })
       })
+
+
     })
   })
 })
