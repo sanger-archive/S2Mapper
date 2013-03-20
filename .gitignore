@@ -7,3 +7,4 @@ dist
 app/components/**
 components/**
 *.orig
+test/json/unit/batch.json~
