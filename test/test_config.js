@@ -1,6 +1,8 @@
 define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
   'use strict';
 
+  var log = "";
+
   var config = {
     apiUrl:'', // NOT USED IN TESTING
     setupTest: function (testData, stepNo){
@@ -47,6 +49,11 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
       return resultFromJson;
     },
 
+    log: function(message){
+      if (message) log = log + "\n"+ message;
+
+      return log;
+    },
 
     // Dummy out the ajax call returned by S2Ajax to test from file.
     // Returns a Deferred instead of jqXHR.
@@ -60,11 +67,11 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
         options.data = null
       }
 
-      console.log('------------------------');
-      console.log('Sending ajax message for ' + config.stage);
+      config.log('------------------------');
+      config.log('Sending ajax message for ' + config.stage);
 
       config.reqParams = options.url + options.type.toLowerCase() + JSON.stringify(options.data);
-      console.log(config.reqParams);
+      config.log(config.reqParams);
 
 
       // The real $.ajax returns a promise.  Please leave this as a defered as
@@ -80,10 +87,10 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
         // if the stored result can't be found in the data but the url is in the root then
         // it means that the system couldn't find the data.
 
-        console.log("AJAX[" + config.reqParams + "]: not found in " + config.stepJson);
+        config.log("AJAX[" + config.reqParams + "]: not found in " + config.stepJson);
           // Check whether this is a search we need to fake.
         if (options.url === '/searches' && options.type.toLowerCase() === 'post') {
-          console.log('But we are searching for a ' + options.data.search.model  + ', so need to return the empty data');
+          config.log('But we are searching for a ' + options.data.search.model  + ', so need to return the empty data');
 
           fakeAjaxDeferred.resolve({
             url:           options.url,
@@ -97,8 +104,8 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
           fakeAjaxDeferred.reject(fakeAjaxDeferred, '404 error');
         }
       } else {
-        console.log("AJAX[" + config.reqParams + "]: responding with:");
-        console.log(response);
+        config.log("AJAX[" + config.reqParams + "]: responding with:");
+        config.log(response);
 
         fakeAjaxDeferred.resolve({
           url:           options.url,
