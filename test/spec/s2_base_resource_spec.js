@@ -32,8 +32,22 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     });
 
     describe('extendAs', function() {
+      var model;
+
+      beforeEach(function() {
+        model = BaseResource.extendAs('foo');
+      });
+
       it('configures the resourceType', function() {
-        expect(BaseResource.extendAs('foo').resourceType).toBe('foo');
+        expect(model.resourceType).toBe('foo');
+      });
+
+      it('ensures instances have the correct type', function() {
+        expect(model.new().resourceType).toBe('foo');
+      });
+
+      it('ensures instances have actions', function() {
+        expect(model.new().actions).toEqual({});
       });
     });
   });

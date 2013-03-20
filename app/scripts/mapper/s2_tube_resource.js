@@ -6,7 +6,13 @@ define([
 ], function(BaseResource, BatchResource, Order, Labellable){
   'use strict';
 
-  var Tube = BaseResource.extendAs('tube');
+  var Tube = BaseResource.extendAs('tube', function(tubeInstance, options) {
+    var tubeInstance = BaseResource.instantiate(options);
+    $.extend(tubeInstance, instanceMethods);
+    $.extend(tubeInstance, Labellable);
+    return tubeInstance;
+  });
+
   function processor(root, resourceTypeCollection, resourceType) {
 
     return function(resultDeferred) {
@@ -69,13 +75,6 @@ define([
   };
 
   var classMethods = {
-    instantiate: function(options){
-      var tubeInstance = BaseResource.instantiate(options);
-      $.extend(tubeInstance, instanceMethods);
-      $.extend(tubeInstance, Labellable);
-      return tubeInstance;
-    },
-
     findByEan13Barcode: function(ean13){
 
 
