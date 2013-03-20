@@ -35,9 +35,6 @@ define([], function() {
 
     },
 
-
-
-
     setTestJson: function(workflow){
       // Fixme Not working ideally yet still having to require
       // the package on module load.
