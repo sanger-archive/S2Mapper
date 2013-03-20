@@ -28,8 +28,8 @@ define([], function() {
 
       // Ensures that before and after each test the results are properly reset
       lifeCycle: function() {
-        beforeEach(function() { results = {}; console.log("BEFORE: Reset results"); });
-        afterEach(function()  { results = {}; console.log("AFTER: Reset results");  });
+        beforeEach(function() { results = {};  });
+        afterEach(function()  { results = {};  });
       },
 
       // Resets the results
