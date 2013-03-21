@@ -110,7 +110,7 @@ define([
 					 s2);
 	  
 	  // Take advantage of memoisation
-	  spyOn(order, "update");
+	  spyOn(order, "update").andCallThrough();
 	  
 	  config.setupTest(batchJson);
 	});
