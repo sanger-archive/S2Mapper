@@ -1,8 +1,9 @@
 define([
+       'config',
        'mapper/s2_ajax',
        'mapper/resources',
        'mapper/support/pluralization'
-], function(S2Ajax, Resources) {
+], function(config, S2Ajax, Resources) {
   'use strict';
 
   // register resources with root.
@@ -33,8 +34,8 @@ define([
     },
 
     retrieve: function(options) {
-      var resourceDeferred = $.Deferred();      
-      var url              = options.uuid? ('/'+options.uuid) : options.url;
+      var resourceDeferred = $.Deferred();
+      var url              = options.uuid? (config.apiUrl+'/'+options.uuid) : options.url;
       var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred);
 
 
@@ -79,7 +80,7 @@ define([
       var rootDeferred = $.Deferred();
 
       // Make a call for the S2 root...
-      s2_ajax.send().done(function(response){
+      s2_ajax.send('read', config.apiUrl).done(function(response){
         var rootInstance = processRootJson(response);
         rootInstance.user = options.user;
         $.extend(rootInstance, instanceMethods);
