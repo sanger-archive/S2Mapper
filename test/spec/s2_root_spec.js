@@ -32,13 +32,31 @@ define([
           expect(resourceType).toBe('search');
         });
 
-        it("resolves to a hash of S2Resources.", function(){
-          var diffExpectedWithRoot = _.difference(
-            Object.keys(rawRootJson),
-            Object.keys(results.get('root'))
-          );
+        // All of these are supposed to be actions, not root level resources.
+        var resourcesThatAreActions = [
+           'create_batches',          'create_flowcells', 'create_gels',         'create_labels',             'create_labellables',
+           'create_orders',           'create_plates',    'create_searches',     'create_spin_columns',       'create_tubes',
+           'create_tube_racks',       'plate_transfers',  'tag_wells',           'transfer_plates_to_plates', 'transfer_tubes_to_tubes',
+           'transfer_wells_to_tubes', 'tube_rack_moves',  'tube_rack_transfers', 'update_orders',             'update_plates',
+           'update_tubes',            'update_tube_racks'
+        ];
 
-          expect(diffExpectedWithRoot).toEqual([]);
+        function bidirectionalDifference(a,b) {
+          return _.union(_.difference(a, b), _.difference(b, a));
+        }
+
+        it("has the appropriate root level resourcs", function() {
+          expect(bidirectionalDifference(
+            _.union(_.difference(_.keys(rawRootJson), resourcesThatAreActions), ['actions','user']),
+            _.keys(results.get('root'))
+          )).toEqual([]);
+        });
+
+        it("has the appropriate actions", function() {
+          expect(bidirectionalDifference(
+            resourcesThatAreActions,
+            _.keys(results.get('root').actions)
+          )).toEqual([]);
         });
       });
 
