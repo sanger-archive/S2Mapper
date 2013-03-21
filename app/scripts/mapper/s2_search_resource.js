@@ -13,7 +13,7 @@ define([
           function(resourceJson) {
             var rawJson = {}; rawJson[resultModel.resourceType] = resourceJson;
             // TODO: remove 'root' here once Ian's changes come in to fix the BaseResource reference
-            return resultModel.instantiate({root: resultModel.root, rawJson: rawJson});
+            return resultModel.instantiate({rawJson: rawJson});
           }
         ));
       };
