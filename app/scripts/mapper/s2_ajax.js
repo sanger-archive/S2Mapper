@@ -19,14 +19,17 @@ define(['config'], function(config) {
 
   return function () {
     // Returns an jqXHR promise or a dummy
-    this.send = function (action, actionPath, data) {
-      return config.ajax ({
-        type:       actionMethods[action],
-        url:        actionPath,
-        contentType:"json",
-        dataType:   "json",
-        data:       data
-      });
+    this.send = function(action, actionPath, data) {
+      var options = {
+        type:     actionMethods[action],
+        url:      actionPath,
+        dataType: "json"
+      };
+      if (data) {
+        options.headers = { 'Content-Type': 'application/json' };
+        options.data    = JSON.stringify(data);
+      }
+      return config.ajax(options);
     };
   };
 });
