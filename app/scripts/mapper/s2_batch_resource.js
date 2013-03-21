@@ -52,12 +52,10 @@ define(['mapper/s2_base_resource'], function(BaseResource){
   }
 
   function handleBatchCreate(seedBatch, createdBatch, deferred) {
-    var batchUuid,
-    orderUpdatePromises = [],
-    items;
+    var orderUpdatePromises = [],
+    resources;
 
     seedBatch.isNew = false;
-    batchUuid       = createdBatch.uuid
 
     // To get an update order we need to chain 3 promises:
     // 1st promise -> order
@@ -68,22 +66,17 @@ define(['mapper/s2_base_resource'], function(BaseResource){
 
     // We need to store all of each.
 
-    items = seedBatch.resources.
+    resources = seedBatch.resources.
       filter(function(resource) {
       return resource !== undefined;
-    }).map(function(resource) {
-      return {
-        resource: resource,
-        order: null,
-      };
     });
 
-    orderUpdatePromises = items.map(function(itemData) {
-      return itemData.resource.order().then(function(order) {
-        itemData.order = order;
-        return handleItemOrderRetrieved(itemData.order, itemData.resource.uuid);
+    orderUpdatePromises = resources.map(function(resource) {
+      return resource.order().then(function(order) {
+        resource._order = order;
+        return handleItemOrderRetrieved(order, resource.uuid);
       }).then(function(items) {
-        return handleItemMatchingFilter(itemData.order, items, itemData.resource.uuid, batchUuid);
+        return handleItemMatchingFilter(resource._order, items, resource.uuid, createdBatch.uuid);
       });
     });
 
@@ -92,6 +85,12 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     $.when(orderUpdatePromises).
       done(function() { deferred.resolve(createdBatch) }).
       fail(deferred.reject);
+  }
+
+  function handleItemOrderRetrieved(order, itemUuid) {
+    return order.items.filter(function(item) {
+      return item.uuid === itemUuid && item.status === "done";
+    });
   }
 
   function handleItemMatchingFilter(order, items, itemUuid, batchUuid) {
@@ -115,11 +114,7 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     return order.update(updateJson);
   }
 
-  function handleItemOrderRetrieved(order, itemUuid) {
-    return order.items.filter(function(item) {
-      return item.uuid === itemUuid && item.status === "done";
-    });
-  }
+
   var instanceMethods = {
     save: function() {
       var batchInstance = this,
