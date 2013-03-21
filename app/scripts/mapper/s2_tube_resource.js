@@ -86,7 +86,7 @@ define([
           "label":  {
             "position":  "barcode",
             "type":      "ean13-barcode",
-            "value":     [ean13]
+            "value":     ean13
           }
         }
 
