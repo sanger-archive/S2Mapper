@@ -21,7 +21,7 @@ define(['config'
       beforeEach(function(){
         rawRootJson         = config.setupTest(integrationTestJson);
         results             = {};
-        S2Root.load({username:"username"}).done(assignResultTo('root'));
+        S2Root.load({user:"username"}).done(assignResultTo('root'));
       });
 
       it("passes all required Mapper API calls.", function(){

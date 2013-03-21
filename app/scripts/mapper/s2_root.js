@@ -81,7 +81,7 @@ define([
       // Make a call for the S2 root...
       s2_ajax.send().done(function(response){
         var rootInstance = processRootJson(response);
-        rootInstance.username = options.username;
+        rootInstance.user = options.user;
         $.extend(rootInstance, instanceMethods);
         rootDeferred.resolve(rootInstance);
       });
