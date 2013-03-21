@@ -19,7 +19,7 @@ define([
       beforeEach(function() {
         var expectedResponse = config.setupTest(testData);
 
-        Root.load().done(results.assignTo('root'));
+        Root.load({username:"username"}).done(results.assignTo('root'));
         s2 = results.get('root');
       });
 

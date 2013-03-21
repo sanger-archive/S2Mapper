@@ -2,7 +2,7 @@ define([
        'mapper/s2_base_resource',
        'mapper/s2_batch_resource',
        'mapper/s2_order_resource',
-       'mapper/s2_labellable',
+       'mapper/s2_labellable'
 ], function(BaseResource, BatchResource, Order, Labellable){
   'use strict';
 
@@ -51,13 +51,15 @@ define([
         orderDeferred.resolve(thisTube._order);
       } else {
         thisTube.root.searches.create({
-            "description":"search for order",
-            "model":      "order",
-            "criteria":   {
-              "item":{
-                "uuid": thisTube.rawJson.tube.uuid
-              }
+          "user":       root.username,
+          "description":"search for order",
+          "model":      "order",
+          "criteria":   {
+            "item":{
+              "uuid": thisTube.rawJson.tube.uuid,
+              "role":"tube_to_be_extracted"
             }
+          }
         }).done(function(searchResult){
           searchResult.first(undefined, processor(root, 'orders', 'order'))
           .done(function(order){
@@ -80,6 +82,7 @@ define([
       var tubesDeferred = $.Deferred();
       var root          = this.root;
       root.searches.create({
+        "user":root.username,
         "description":  "search for barcoded tube",
         "model":        "tube",
         "criteria":     {
