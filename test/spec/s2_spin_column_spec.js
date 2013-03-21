@@ -1,4 +1,4 @@
-define(['config','text!json/spin_column_data_1.json'], function(config, testJSON){
+define(['config'], function(config, testJSON){
   'use strict';
   var expectedResponse = config.setupTest(testJSON,0);
   xdescribe('S2 Spin Column',function(){
