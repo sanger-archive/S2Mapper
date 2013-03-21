@@ -8,6 +8,7 @@
     "url":"/searches",
     "request":{
       "search":{
+        "user":"username",
         "description":"search for barcoded tube",
         "model":"tube",
         "criteria":{

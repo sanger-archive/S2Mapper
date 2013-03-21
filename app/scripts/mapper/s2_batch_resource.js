@@ -69,6 +69,7 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     var instanceMethods = {
       orders: function() {
         return batch.root.searches.handling(batch.root.orders).first({
+          "user": batch.root.username,
           "description": "search order by batch",
           "model": "order",
           "criteria": {

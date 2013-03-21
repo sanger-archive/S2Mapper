@@ -28,7 +28,7 @@ define([
 
       beforeEach(function () {
 	config.setupTest(rootTestJson);
-	Root.load().done(results.assignTo('root'));
+	Root.load({username:"username"}).done(results.assignTo('root'));
 	s2 = results.get('root');
 	config.setupTest(orderWithoutBatchJson);
 	s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));

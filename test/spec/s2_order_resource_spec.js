@@ -16,7 +16,7 @@ define([
 
       beforeEach(function() {
         config.setupTest(rootTestJson);
-        Root.load().done(results.assignTo('root'));
+        Root.load({username:"username"}).done(results.assignTo('root'));
         s2 = results.get('root');
       });
 

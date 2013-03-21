@@ -51,14 +51,15 @@ define([
         orderDeferred.resolve(thisTube._order);
       } else {
         thisTube.root.searches.create({
-            "description":"search for order",
-            "model":      "order",
-            "criteria":   {
-              "item":{
-                "uuid": thisTube.rawJson.tube.uuid,
-                "role":"tube_to_be_extracted"
-              }
+          "user":       root.username,
+          "description":"search for order",
+          "model":      "order",
+          "criteria":   {
+            "item":{
+              "uuid": thisTube.rawJson.tube.uuid,
+              "role":"tube_to_be_extracted"
             }
+          }
         }).done(function(searchResult){
           searchResult.first(undefined, processor(root, 'orders', 'order'))
           .done(function(order){
@@ -81,6 +82,7 @@ define([
       var tubesDeferred = $.Deferred();
       var root          = this.root;
       root.searches.create({
+        "user":root.username,
         "description":  "search for barcoded tube",
         "model":        "tube",
         "criteria":     {

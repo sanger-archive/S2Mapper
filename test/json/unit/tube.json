@@ -42,6 +42,7 @@
     "url":"/searches",
     "request":{
       "search":{
+        "user":"username",
         "description":"search for order",
         "model":"order",
         "criteria":{

@@ -19,7 +19,7 @@ define([
 
         beforeEach(function(){
           rawRootJson = config.setupTest(rootTestJson);
-          rootPromise         = S2Root.load();
+          rootPromise         = S2Root.load({username:"username"});
           rootPromise.done(results.assignTo('root'));
         });
 
@@ -55,7 +55,7 @@ define([
 
             beforeEach(function() {
               expectedResponse = config.setupTest(resourceTest.data);
-              S2Root.load().done(results.assignTo('root'));
+              S2Root.load({username:"username"}).done(results.assignTo('root'));
               results.get('root').find(resourceTest.uuid).done(results.assignTo('resource'));
             });
 
