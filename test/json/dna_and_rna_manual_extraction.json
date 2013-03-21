@@ -511,8 +511,7 @@
           "model":"order",
           "criteria":{
             "item":{
-              "uuid":"4382d7b0-738b-0130-e198-282066132de2",
-              "role":"tube_to_be_extracted_na+p"
+              "uuid":"4382d7b0-738b-0130-e198-282066132de2"
             }
           },
           "user":"username"
@@ -1031,8 +1030,7 @@
           "model":"order",
           "criteria":{
             "item":{
-              "uuid":"43859ef0-738b-0130-e198-282066132de2",
-              "role":"tube_to_be_extracted_na+p"
+              "uuid":"43859ef0-738b-0130-e198-282066132de2"
             }
           },
           "user":"username"
