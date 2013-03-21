@@ -225,7 +225,7 @@ module.exports = function (grunt) {
             for(var stepNum in json[stageNum].steps){
               json[stageNum].steps[stepNum].stepNum = parseFloat(stepNum);
             };
-            grunt.file.write(newFilename, JSON.stringify(json[stageNo], undefined, 2));
+            grunt.file.write(newFilename, JSON.stringify(json[stageNum], undefined, 2));
           }
         }
       }
