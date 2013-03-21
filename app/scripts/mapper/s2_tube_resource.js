@@ -56,8 +56,7 @@ define([
           "model":      "order",
           "criteria":   {
             "item":{
-              "uuid": thisTube.rawJson.tube.uuid,
-              "role":"tube_to_be_extracted"
+              "uuid": thisTube.rawJson.tube.uuid
             }
           }
         }).done(function(searchResult){
