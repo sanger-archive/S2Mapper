@@ -6,41 +6,76 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     itemUuid,
     currentItem,
     i,
-    orderUpdateJson;
-    // TODO : temporary fixed
-    var role = "tube_to_be_extracted";
+    orderUpdateJson,
+    orderUpdatePromises = [],
+    itemUuids = [],
+    orders = [];
+
 
     that.isNew = false;
     batchUuid = batch.rawJson && batch.rawJson.batch && batch.rawJson.batch.uuid;
+    
+    // To get an update order we need to chain 3 promises:
+    // 1st promise -> order
+    // 2nd promise -> filtered items on order
+    // 3rd promise -> updated order
+
+    // We then need to store the overall promise in an array
+
+    // We need to store all of each. 
 
     for(i = 0; i < that.resources.length; i++) {
-      orderUpdateJson = {
-        "items" : {
-        }
-      };
-      orderUpdateJson.items[role] = [];
       currentItem = that.resources[i];
-      if(currentItem) {
-        itemUuid = currentItem.rawJson[currentItem.resourceType].uuid;
-        currentItem.order().done(function(order) {
-          var itemsInRole = order.items[role],
-          itemInRole,
-          j;
-          for(j = 0; j < itemsInRole.length; j++) {
-            itemInRole = itemsInRole[j];
-            if(itemInRole.uuid === itemUuid) {
-              addBatchToItem(batch, itemInRole);
-              orderUpdateJson.items[role].push({batch: { uuid: batchUuid } });
-            }
-          }
-
-          order.update(orderUpdateJson);
-
-        });
+      if (currentItem) {
+	orderUpdatePromises.push(currentItem.order().then(function(order) {
+	  orders[i] = order;
+	  itemUuids[i] = currentItem.rawJson[currentItem.resourceType].uuid;
+	  return handleItemOrderDone(order,itemUuids[i]);
+	}).then(function(items) {
+	  return handleMatchingItemDone(orders[i], items, itemUuids[i], batchUuid);
+	}));
       }
     }
 
-    deferred.resolve(batch);
+    // Now run when on all of the atomized promises
+
+    $.when(orderUpdatePromises).
+      done(function() { 
+	console.log("final when");
+	deferred.resolve(batch) }).
+      fail(function() { deferred.reject });
+  }
+
+  function handleMatchingItemDone(order, items, itemUuid, batchUuid) {
+    var 
+    item,
+    i,
+    role,
+    updateJson = { "items" : {} };
+
+    console.log("items");
+    console.log(items);
+
+    for(i = 0; i < items.length; i++) {
+      item = items[i];
+      console.log("would add batch to item:");
+      console.log(item);
+      role = item.role;
+      if (updateJson.items[role] === undefined) {
+	updateJson.items[role] = {}
+      }
+      updateJson.items[role][itemUuid] = { "batch_uuid" : batchUuid };
+    }
+    
+    var result = order.update(updateJson);
+    return result;
+    return order.update(updateJson);
+  }
+
+  function handleItemOrderDone(order, itemUuid) {
+    return order.items.filter(function(item) { 
+      return item.uuid === itemUuid && item.status === "done";
+    });
   }
 
   function addBatchToItem(batch, itemInRole) {

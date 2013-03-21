@@ -8,3 +8,5 @@ app/components/**
 components/**
 *.orig
 test/json/unit/batch.json~
+test/json/unit/#batch.json#
+test/json/unit/.#batch.json
