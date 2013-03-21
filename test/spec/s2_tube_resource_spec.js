@@ -24,7 +24,7 @@ define([ 'resource_test_helper'
         describe("and the tube IS on the system,", function(){
           beforeEach(function(){
             config.setupTest(rootTestJson)
-            Root.load({username:"username"}).done(results.assignTo('root'))
+            Root.load({user:"username"}).done(results.assignTo('root'))
 
             s2 = results.get('root')
             config.setupTest(tubeByBarcodeJson)
@@ -40,7 +40,7 @@ define([ 'resource_test_helper'
         describe("and tube IS NOT on the system,", function(){
           beforeEach(function(){
             config.setupTest(rootTestJson)
-            Root.load({username:"username"}).done(results.assignTo('root'))
+            Root.load({user:"username"}).done(results.assignTo('root'))
             s2 = results.get('root')
             config.setupTest(tubeByBarcodeJson)
             tubePromise = s2.tubes.findByEan13Barcode('6666666666666')
@@ -56,7 +56,7 @@ define([ 'resource_test_helper'
       describe("once a tube has been loaded", function() {
         beforeEach(function(){
           config.setupTest(rootTestJson)
-          Root.load({username:"username"}).done(results.assignTo('root'))
+          Root.load({user:"username"}).done(results.assignTo('root'))
           s2 = results.get('root')
 
           config.setupTest(tubeByBarcodeJson)

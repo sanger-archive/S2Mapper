@@ -51,7 +51,7 @@ define([
         orderDeferred.resolve(thisTube._order);
       } else {
         thisTube.root.searches.create({
-          "user":       root.username,
+          "user":       root.user,
           "description":"search for order",
           "model":      "order",
           "criteria":   {
@@ -82,7 +82,7 @@ define([
       var tubesDeferred = $.Deferred();
       var root          = this.root;
       root.searches.create({
-        "user":root.username,
+        "user": root.user,
         "description":  "search for barcoded tube",
         "model":        "tube",
         "criteria":     {
