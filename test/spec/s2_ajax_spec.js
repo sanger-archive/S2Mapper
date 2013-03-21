@@ -1,6 +1,6 @@
 define (['config',
         'mapper/s2_ajax',
-        'text!json/unit/ajax.json',
+        'text!json/unit/ajax.json'
 ], function (config, S2Ajax, ajaxTestJson) {
   'use strict';
   //load appropriate JSON for this workflow
