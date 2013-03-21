@@ -75,12 +75,13 @@ define([
   }
 
   var classMethods = {
-    load: function(){
+    load: function(options){
       var rootDeferred = $.Deferred();
 
       // Make a call for the S2 root...
       s2_ajax.send().done(function(response){
         var rootInstance = processRootJson(response);
+        rootInstance.user = options.user;
         $.extend(rootInstance, instanceMethods);
         rootDeferred.resolve(rootInstance);
       });

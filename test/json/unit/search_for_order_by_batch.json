@@ -25,6 +25,7 @@
       "url":"/searches",
       "request":{
         "search":{
+          "user":"username",
           "description":"search order by batch",
           "model":"order",
           "criteria":{

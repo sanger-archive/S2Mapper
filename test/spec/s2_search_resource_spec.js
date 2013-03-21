@@ -16,7 +16,7 @@ define([
 
       beforeEach(function() {
         config.setupTest(rootData);
-        Root.load().done(results.assignTo('root'));
+        Root.load({user:"username"}).done(results.assignTo('root'));
         s2 = results.get('root');
 
         handler = s2.searches.handling(s2.batches);
