@@ -99,8 +99,7 @@
           "model":"order",
           "criteria":{
             "item":{
-              "uuid":"3bcf8010-68ac-0130-9163-282066132de2",
-              "role":"tube_to_be_extracted"
+              "uuid":"3bcf8010-68ac-0130-9163-282066132de2"
             }
           }
         }
