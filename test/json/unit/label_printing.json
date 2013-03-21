@@ -5,6 +5,7 @@
       "description": "Print a single label",
       "method": "post",
       "url": "/services/print",
+      "format": "xml",
       "request": "<?xml version = \"1.0\" encoding=\"UTF-8\"?><env:Envelope xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:n1=\"urn:Barcode/Service\" xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"><env:Body><n1:printLabels><printer>Tube printer</printer><type>2</type><headerLabel>1</headerLabel><footerLabel>1</footerLabel><labels n2:arrayType=\"n1:BarcodeLabelDTO[1]\" xmlns:n2=\"http://schemas.xmlsoap.org/soap/encoding/\" xsi:type=\"n2:Array\"><item><barcode>B</barcode><desc>D</desc><name>N</name><prefix>P</prefix><project>PR</project><suffix>S</suffix></item></labels></n1:printLabels></env:Body></env:Envelope>",
       "response": {"Ok!":"Ok!"}
     },
@@ -12,6 +13,7 @@
       "description": "Print multiple labels",
       "method": "post",
       "url": "/services/print",
+      "format": "xml",
       "request": "<?xml version = \"1.0\" encoding=\"UTF-8\"?><env:Envelope xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:n1=\"urn:Barcode/Service\" xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"><env:Body><n1:printLabels><printer>Tube printer</printer><type>2</type><headerLabel>1</headerLabel><footerLabel>1</footerLabel><labels n2:arrayType=\"n1:BarcodeLabelDTO[2]\" xmlns:n2=\"http://schemas.xmlsoap.org/soap/encoding/\" xsi:type=\"n2:Array\"><item><barcode>B1</barcode><desc>D1</desc><name>N1</name><prefix>P1</prefix><project>PR1</project><suffix>S1</suffix></item><item><barcode>B2</barcode><desc>D2</desc><name>N2</name><prefix>P2</prefix><project>PR2</project><suffix>S2</suffix></item></labels></n1:printLabels></env:Body></env:Envelope>",
       "response": {"Ok!":"Ok!"}
     }
