@@ -8,13 +8,14 @@
       "url":"/searches",
       "request":{
         "search":{
+          "user":"username",
           "description":"search for barcoded tube",
           "model":"tube",
           "criteria":{
             "label":{
               "position":"barcode",
               "type":"ean13-barcode",
-              "value":["2345678901234"]
+              "value":"2345678901234"
             }
           }
         }
@@ -95,12 +96,12 @@
       "url":"/searches",
       "request":{
         "search":{
+          "user":"username",
           "description":"search for order",
           "model":"order",
           "criteria":{
             "item":{
-              "uuid":"3bcf8010-68ac-0130-9163-282066132de2",
-              "role":"tube_to_be_extracted"
+              "uuid":"3bcf8010-68ac-0130-9163-282066132de2"
             }
           }
         }

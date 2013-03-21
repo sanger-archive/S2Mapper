@@ -8,13 +8,14 @@
     "url":"/searches",
     "request":{
       "search":{
+        "user":"username",
         "description":"search for barcoded tube",
         "model":"tube",
         "criteria":{
           "label":{
             "position":"barcode",
             "type":"ean13-barcode",
-            "value":["2345678901234"]
+            "value":"2345678901234"
           }
         }
       }

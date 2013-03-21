@@ -2,7 +2,7 @@ define([
        'mapper/s2_base_resource',
        'mapper/s2_batch_resource',
        'mapper/s2_order_resource',
-       'mapper/s2_labellable',
+       'mapper/s2_labellable'
 ], function(BaseResource, BatchResource, Order, Labellable){
   'use strict';
 
@@ -47,22 +47,29 @@ define([
       var orderDeferred = $.Deferred();
       var root = this.root;
 
-      this.root.searches.handling(this.root.orders).first({
-        "description":"search for order",
-        "model":      "order",
-        "criteria":   {
-          "item":{
-            "uuid": thisTube.rawJson.tube.uuid,
-            "role":"tube_to_be_extracted"
+      if (thisTube._order) {
+        orderDeferred.resolve(thisTube._order);
+      } else {
+        thisTube.root.searches.create({
+          "user":       root.user,
+          "description":"search for order",
+          "model":      "order",
+          "criteria":   {
+            "item":{
+              "uuid": thisTube.rawJson.tube.uuid,
+              "role":"tube_to_be_extracted"
+            }
           }
-        }
-      }).done(function(orders) {
-        var order = orders[0];
-        order.root = root;
-//        thisTube._order = order;
-        orderDeferred.resolve(order);
-      }).fail(orderDeferred.reject);
-      /*}*/
+        }).done(function(searchResult){
+          searchResult.first(undefined, processor(root, 'orders', 'order'))
+          .done(function(order){
+
+            order.root = root;
+            thisTube._order = order;
+            orderDeferred.resolve(order);
+          });
+        });
+      }
 
       return orderDeferred.promise();
     }
@@ -75,13 +82,14 @@ define([
       var tubesDeferred = $.Deferred();
       var root          = this.root;
       root.searches.create({
+        "user": root.user,
         "description":  "search for barcoded tube",
         "model":        "tube",
         "criteria":     {
           "label":  {
             "position":  "barcode",
             "type":      "ean13-barcode",
-            "value":     [ean13]
+            "value":     ean13
           }
         }
 

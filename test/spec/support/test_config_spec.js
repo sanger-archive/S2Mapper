@@ -20,7 +20,7 @@ define([ 'resource_test_helper'
         beforeEach(function(){
           config.setupTest(rootTestJson)
 
-          Root.load().done(results.assignTo('root'))
+          Root.load({user:"username"}).done(results.assignTo('root'))
           s2 = results.get('root')
 
           tubePromise = s2.find('NOT-A-VALID-UUID')
@@ -37,7 +37,7 @@ define([ 'resource_test_helper'
         beforeEach(function(){
           config.setupTest(rootTestJson)
 
-          Root.load().done(results.assignTo('root'))
+          Root.load({user:"username"}).done(results.assignTo('root'))
           s2 = results.get('root')
 
           ajaxPromise = s2.searches.create({
@@ -48,7 +48,7 @@ define([ 'resource_test_helper'
                 "label":  {
                   "position":  "barcode",
                   "type":      "ean13-barcode",
-                  "value":     ["6666666666666"]
+                  "value":     "6666666666666"
                 }
               }
             }
