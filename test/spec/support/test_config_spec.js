@@ -48,7 +48,7 @@ define([ 'resource_test_helper'
                 "label":  {
                   "position":  "barcode",
                   "type":      "ean13-barcode",
-                  "value":     ["6666666666666"]
+                  "value":     "6666666666666"
                 }
               }
             }
