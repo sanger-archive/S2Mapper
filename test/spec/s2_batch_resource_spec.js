@@ -3,23 +3,16 @@ define([
        'config',
        'mapper/s2_root',
        'text!json/unit/root.json',
-       'text!json/unit/tube_by_barcode.json',
        'text!json/unit/order_without_batch.json',
        'text!json/unit/search_for_order_by_batch.json',
        'text!json/unit/batch.json'
-], function(TestHelper, config, Root, rootTestJson, tubeByBarcodeJson, orderWithoutBatchJson, testDataOrder, batchJson){
+], function(TestHelper, config, Root, rootTestJson, orderWithoutBatchJson, testDataOrder, batchJson){
   'use strict';
 
   TestHelper(function(results) {
+    config.logToConsole = true;
     describe("Batch Resource:-",function(){
 
-
-      function assignResultTo(target){
-        return function(source){
-          // Assignment through side effect; simultates callback.
-          results[target] = source;
-        }
-      }
 
 
       results.lifeCycle();
@@ -30,8 +23,8 @@ define([
         config.setupTest(rootTestJson);
         Root.load({user:"username"}).done(results.assignTo('root'));
         s2 = results.get('root');
-        config.setupTest(orderWithoutBatchJson);
-        s2.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
+        config.setupTest(batchJson);
+        s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube1'));
       });
 
       describe("orders", function() {
@@ -83,7 +76,7 @@ define([
           expect(results.batch.save).toThrow();
         });
 
-        it("has root element set", function() {	
+        it("has root element set", function() {
           expect(results.batch.root).toBeDefined();
         });
       });
@@ -92,41 +85,50 @@ define([
 
         var order = undefined;
         var mockOrderPromise;
+        var tube1;
+        var batch;
 
         beforeEach(function() {
           mockOrderPromise = $.Deferred();
-          results.tube.order().done(function(theOrder) {
+          s2.tubes.findByEan13Barcode('2345678901234').done(
+            function(tube) {
+              console.log("done");
+              console.log("tube");
+              results.assignTo('tube1')}).
+              fail(function() {
+                console.log("failure");
+              } );
+          tube1 = results.get('tube1');
+          tube1.order().done(function(theOrder) {
             order = theOrder;
             mockOrderPromise.resolve(order);
           });
 
           // We need to make sure that the order we get is always the
           // one we are spying on
-          spyOn(results.tube, "order").andReturn(mockOrderPromise);
+          spyOn(tube1, "order").andReturn(mockOrderPromise);
 
-          results.batch = s2.batches.new({
-            resources : [ results.tube ]
-          },
-          s2);
+          batch = s2.batches.new({
+            resources : [ tube1 ]
+          });
 
           spyOn(order, "update").andCallThrough();
 
-          config.setupTest(batchJson);
         });
 
         it("has one item", function() {
-          expect(results.batch.resources.length).toEqual(1);
+          expect(batch.resources.length).toBe(1);
         });
 
 
-        describe("default saving behaviour", function() {
+        describe("saving", function() {
           var expectedBatchUuid = "47608460-68ac-0130-7ac8-282066132de2",
           expectedRole = "tube_to_be_extracted",
           savedBatch = undefined;
 
           beforeEach(function() {
             spyOn(s2.batches, "create").andCallThrough();
-            results.batch.save().
+            batch.save().
               done(function(batch) {
               savedBatch = batch;
             });
@@ -138,7 +140,7 @@ define([
           });
 
           it("extracts the order from the tube", function() {
-            expect(results.tube.order).toHaveBeenCalled();
+            expect(tube1.order).toHaveBeenCalled();
           });
 
           it("sets the uuid of the saved batch", function() {
@@ -161,6 +163,80 @@ define([
             });
           });
         });
+      });
+
+
+      describe("New unsaved batch with two tube items", function() {
+
+	var batch,
+        orders = [],
+	mockOrderPromises = [],
+	tubes = [];
+
+	beforeEach(function() {
+	  var i;
+	  s2.tubes.findByEan13Barcode('9876543210987').done(results.assignTo('tube2'));
+
+	  tubes = [ results.get('tube1'), results.get('tube2') ];
+
+	  mockOrderPromises = [ $.Deferred(), $.Deferred() ];
+	  for(i = 0; i < 1; i++) {
+	    tubes[i].order().done(function(order) {
+	      orders[i] = order;
+	      mockOrderPromises[i].resolve(order);
+	    });
+
+	  }
+          spyOn(tubes[0], "order").andReturn(mockOrderPromises[0]);
+          spyOn(tubes[1], "order").andReturn(mockOrderPromises[1]);
+          batch = s2.batches.new({
+            resources: tubes
+          });
+
+	});
+
+	it("can find first and second tubes", function() {
+          expect(results.get('tube1')).toBeDefined();
+          expect(results.get('tube2')).toBeDefined();
+	});
+
+	it("has two items", function() {
+	  expect(batch.resources.length).toBe(2);
+	});
+
+	describe("saving", function() {
+          var expectedBatchUuid = "47608460-68ac-0130-7ac8-282066132de2",
+          expectedRole = "tube_to_be_extracted",
+	  savedBatch;
+
+	  beforeEach(function() {
+	    spyOn(s2.batches, "create").andCallThrough();
+	    batch.save().
+	      done(function(batch) {
+		savedBatch = batch;
+	      });
+	  });
+
+	  it("creates a new batch", function() {
+	    expect(s2.batches.create).toHaveBeenCalledWith();
+	  });
+
+          it("extracts both orders from both tubes", function() {
+            expect(tubes[0].order).toHaveBeenCalled();
+            expect(tubes[1].order).toHaveBeenCalled();
+          });
+
+          it("sets the uuid of the saved batch", function() {
+            expect(savedBatch).toBeDefined();
+            expect(savedBatch.uuid).toBe(expectedBatchUuid);
+          });
+
+          xit("calls update on each order correctly", function() {
+            expect(orders[0].update).toHaveBeenCalledWith({});
+            expect(orders[1].update).toHaveBeenCalledWith({});
+          });
+	});
+
       });
     });
   });

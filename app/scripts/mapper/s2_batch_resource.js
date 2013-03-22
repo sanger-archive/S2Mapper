@@ -111,7 +111,7 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       var batchInstance = this,
       deferred = $.Deferred();
 
-      if (!batchInstance.items || batchInstance.items.length === 0) {
+      if (!batchInstance.resources || batchInstance.resources.length === 0) {
         throw { type : "PersistenceError", message : "Empty batches cannot be saved" };
       }
 
