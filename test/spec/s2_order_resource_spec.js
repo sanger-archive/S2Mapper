@@ -1,10 +1,10 @@
 define([
-       'resource_test_helper',
-       'config',
-       'mapper/s2_root',
-       'text!json/unit/root.json',
-       'text!json/unit/order_without_batch.json',
-       'text!json/unit/order_with_batch.json'
+  'resource_test_helper',
+  'config',
+  'mapper/s2_root',
+  'text!json/unit/root.json',
+  'text!json/unit/order_without_batch.json',
+  'text!json/unit/order_with_batch.json'
 ], function(TestHelper, config, Root, rootTestJson, orderWithoutBatchJson, orderWithBatchJson){
   'use strict';
 
@@ -41,9 +41,9 @@ define([
           });
 
           it("returns a promise that resolves to the batch object", function(){
-	    var order = results.get('order');
-	    var tube = results.get('tube');
-	    expect(order.batchFor(function(item, order) { item.uuid == tube.uuid }).done).toBeDefined();
+            var order = results.get('order');
+            var tube = results.get('tube');
+            expect(order.batchFor(function(item, order) { item.uuid == tube.uuid }).done).toBeDefined();
           });
         });
 
