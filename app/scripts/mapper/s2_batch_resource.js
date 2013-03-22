@@ -107,16 +107,15 @@ define(['mapper/s2_base_resource'], function(BaseResource){
 
 
   var instanceMethods = {
-    save: function() {
-      var batchInstance = this,
-      deferred = $.Deferred();
+    save: function(batchInstance) {
+      var deferred = $.Deferred();
 
       if (!batchInstance.resources || batchInstance.resources.length === 0) {
         throw { type : "PersistenceError", message : "Empty batches cannot be saved" };
       }
 
       if (batchInstance.isNew) {
-        batchInstance.root.batches.create().done(function(result) {
+        batchInstance.root.batches.create({user:batchInstance.root.user}).done(function(result) {
           handleBatchCreate(batchInstance, result, deferred);
         });
       }
@@ -126,7 +125,9 @@ define(['mapper/s2_base_resource'], function(BaseResource){
   };
 
   var Batch = BaseResource.extendAs('batch', function(batchInstance, options) {
-    $.extend(batchInstance, instanceMethods);
+    batchInstance.save = function() {
+      return instanceMethods.save(batchInstance);
+    };
     batchInstance.resources = options.resources;
     return extendProxy(proxyFor(batchInstance), batchInstance);
   });

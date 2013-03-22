@@ -266,7 +266,11 @@
       "description":"Create a new batch",
       "method":"post",
       "url":"/batches",
-      "request":null,
+      "request": {
+        "batch": {
+          "user" : "username"
+        }
+      },
       "response":{
         "batch":{
           "actions":{

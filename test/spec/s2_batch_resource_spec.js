@@ -136,7 +136,7 @@ define([
 
 
           it("creates a new batch", function() {
-            expect(s2.batches.create).toHaveBeenCalledWith();
+            expect(s2.batches.create).toHaveBeenCalledWith({user:"username"});
           });
 
           it("extracts the order from the tube", function() {
@@ -218,7 +218,7 @@ define([
 	  });
 
 	  it("creates a new batch", function() {
-	    expect(s2.batches.create).toHaveBeenCalledWith();
+	    expect(s2.batches.create).toHaveBeenCalledWith({user:"username"});
 	  });
 
           it("extracts both orders from both tubes", function() {
