@@ -50,10 +50,15 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
       return resultFromJson;
     },
 
-    log: function(message){
-      if (message) log = log + "\n"+ message;
+    logToConsole: false,
 
-      console.log(arguments);
+    log: function(message){
+      if(config.logToConsole) {
+	console.log(arguments);
+      }
+      if (message) {
+	log = log + "\n"+ message;
+      }
       return log;
     },
 
@@ -75,7 +80,6 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
 
       config.reqParams = options.url + options.type.toLowerCase() + JSON.stringify(options.data);
       config.log(config.reqParams);
-      console.log(config.reqParams)
 
       // The real $.ajax returns a promise.  Please leave this as a defered as
       // it lets us spy on reject and resolve.
