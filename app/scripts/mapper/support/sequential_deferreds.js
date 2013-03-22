@@ -3,6 +3,9 @@
  * normally nest the code.  Instead we work with a state and the current promise.
  */
 define([], function() {
+  function enact(fn, state, args) {
+    return _.partial(fn, state).apply(null, args || []);
+  }
   return function SequentialDeferred(initialState) {
     var outside  = $.Deferred();
     var deferred = undefined;
@@ -15,23 +18,23 @@ define([], function() {
         // on the first call.
         this.then = function(callback) {
           deferred.done(function() {
-            deferred = callback(state, arguments).fail(outside.reject);
+            deferred = enact(callback, state, arguments).fail(outside.reject);
           });
           return this;
         };
-        deferred = callback(state).fail(outside.reject);
+        deferred = enact(callback, state).fail(outside.reject);
         return this;
       },
       resolve: function(callback) {
         // Ensure that the callback is hooked into the current promise, and then unhook
         // us so that further calls do nothing.
-        deferred.done(function() { outside.resolve(callback(state, arguments)); });
+        deferred.done(function() { outside.resolve(enact(callback, state, arguments)); });
         this.resolve = function(callback) { };
         return this;
       },
       fail: function(callback) {
         deferred.fail(function() {
-          outside.reject(callback(state, arguments));
+          outside.reject(enact(callback, state, arguments));
         });
         return this;
       },
