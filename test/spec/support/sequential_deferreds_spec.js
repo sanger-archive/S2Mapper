@@ -44,6 +44,21 @@ define([
           SequentialDeferred().then(succeed).then(fail).resolve(state).promise().done(results.unexpected).fail(results.expected);
           results.expectToBeCalled();
         });
+
+        it("passes arguments flatly", function() {
+          SequentialDeferred().then(function(state) {
+            return $.Deferred().resolve('first').promise();
+          }).then(function(state, arg1) {
+            state.arg1 = arg1;
+            return $.Deferred().resolve('second', 'third').promise();
+          }).resolve(function(state, arg2, arg3) {
+            state.arg2 = arg2;
+            state.arg3 = arg3;
+            return state;
+          }).promise().done(results.assignTo('result'));
+
+          expect(results.get('result')).toEqual({ arg1: 'first', arg2: 'second', arg3: 'third' });
+        });
       });
     });
   });
