@@ -180,18 +180,26 @@ define([
 	  tubes = [ results.get('tube1'), results.get('tube2') ];
 
 	  mockOrderPromises = [ $.Deferred(), $.Deferred() ];
-	  for(i = 0; i < 1; i++) {
-	    tubes[i].order().done(function(order) {
-	      orders[i] = order;
-	      mockOrderPromises[i].resolve(order);
-	    });
 
-	  }
+
+          tubes[0].order().done(function(order) {
+            orders[0] = order;
+            mockOrderPromises[0].resolve(order);
+	  })
+
+          tubes[1].order().done(function(order) {
+            orders[1] = order;
+            mockOrderPromises[1].resolve(order);
+	  });
+
           spyOn(tubes[0], "order").andReturn(mockOrderPromises[0]);
           spyOn(tubes[1], "order").andReturn(mockOrderPromises[1]);
           batch = s2.batches.new({
             resources: tubes
           });
+
+          spyOn(orders[0], "update").andCallThrough();
+          spyOn(orders[1], "update").andCallThrough();
 
 	});
 
@@ -231,9 +239,21 @@ define([
             expect(savedBatch.uuid).toBe(expectedBatchUuid);
           });
 
-          xit("calls update on each order correctly", function() {
-            expect(orders[0].update).toHaveBeenCalledWith({});
-            expect(orders[1].update).toHaveBeenCalledWith({});
+          it("calls update on each order correctly", function() {
+            expect(orders[0].update).toHaveBeenCalledWith({
+              items: {
+                tube_to_be_extracted: {
+                  "3bcf8010-68ac-0130-9163-282066132de2" :
+                    { batch_uuid : "47608460-68ac-0130-7ac8-282066132de2" }
+                }
+              }});
+            expect(orders[1].update).toHaveBeenCalledWith({
+              items: {
+                tube_to_be_extracted: {
+                  "3bcf8010-0000-0000-9163-282066132de2" :
+                    { batch_uuid : "47608460-68ac-0130-7ac8-282066132de2" }
+                }
+              }});
           });
 	});
 
