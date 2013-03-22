@@ -29,7 +29,17 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
         var step = testData.steps[stepNo]
         output += '<br/>Step' + stepNo + ':' + step.description +'. Needs a ' + step.method + '. Responds with ' +
           Object.keys(step.response)[0];
-        config.stepJson[step.url + step.method + JSON.stringify(step.request)] = step.response;
+
+        var key = step.url + step.method;
+        if (step.request) {
+          var extension;
+          switch(step.format) {
+            case 'xml': extension = step.request;                 break;
+            default:    extension = JSON.stringify(step.request); break;
+          }
+          key = key + extension;
+        }
+        config.stepJson[key] = step.response;
       }
     },
 
@@ -86,7 +96,8 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
       config.log('------------------------');
       config.log('Sending ajax message for ' + config.stage);
 
-      config.reqParams = options.url + options.type.toLowerCase() + JSON.stringify(options.data);
+      config.reqParams = options.url + options.type.toLowerCase();
+      if (options.data) { config.reqParams = config.reqParams + options.data; }
       config.log(config.reqParams);
 
       // The real $.ajax returns a promise.  Please leave this as a defered as

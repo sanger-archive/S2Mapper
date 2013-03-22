@@ -4,7 +4,7 @@ define([
        'mapper/s2_root',
        'text!json/unit/root.json',
        'text!json/unit/order_without_batch.json',
-       'text!json/unit/order_with_batch.json',
+       'text!json/unit/order_with_batch.json'
 ], function(TestHelper, config, Root, rootTestJson, orderWithoutBatchJson, orderWithBatchJson){
   'use strict';
 

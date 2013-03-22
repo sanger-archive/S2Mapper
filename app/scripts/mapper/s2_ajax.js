@@ -1,4 +1,4 @@
-define (['config'], function (config) {
+define(['config'], function(config) {
   'use strict';
 
   // actionMethods maps the ajax request type to RESTful CRUD operations,
@@ -17,19 +17,19 @@ define (['config'], function (config) {
     'delete':'DELETE' // Update maps to PUT
   };
 
-
   return function () {
     // Returns an jqXHR promise or a dummy
-    this.send = function (action, actionPath, data) {
-      return config.ajax ({
-        type:       actionMethods[action],
-        url:        config.apiUrl + (actionPath || ''),
-        contentType:"json",
-        dataType:   "json",
-        data:       data
-      });
+    this.send = function(action, actionPath, data) {
+      var options = {
+        type:     actionMethods[action],
+        url:      actionPath,
+        dataType: "json"
+      };
+      if (data) {
+        options.headers = { 'Content-Type': 'application/json' };
+        options.data    = JSON.stringify(data);
+      }
+      return config.ajax(options);
     };
-
   };
-
 });
