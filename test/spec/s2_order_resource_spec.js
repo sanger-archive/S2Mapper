@@ -41,7 +41,9 @@ define([
           });
 
           it("returns a promise that resolves to the batch object", function(){
-            expect(results.get('order').getBatchFor(results.get('tube')).done).toBeDefined();
+	    var order = results.get('order');
+	    var tube = results.get('tube');
+	    expect(order.batchFor(function(item, order) { item.uuid == tube.uuid }).done).toBeDefined();
           });
         });
 
@@ -67,22 +69,18 @@ define([
             tube = results.get('tube');
           });
 
-          it("calls the done case when roles found", function() {
-            order.items.filter(function(item) { return true; }).done(expectedCall).fail(unexpectedCall);
-            expect(results.get('result')[0].length).toBe(2);
+          it("returns items array if items found", function() {
+            expect(order.items.filter(function(item) { return true; }).length).toBe(2);
           });
 
-          it("calls the failure case if no roles found", function() {
-            order.items.filter(function(item) { return false; }).done(unexpectedCall).fail(expectedCall);
-            expect(results.get('result')[0]).toBeUndefined();
+          it("returns and empty array if no roles found", function() {
+            expect(order.items.filter(function(item) { return false; })).toEqual([]);
           });
 
           it("enables filtering of the items", function() {
-            order.items.filter(function(item) { return item.uuid === tube.uuid; }).done(expectedCall).fail(unexpectedCall);
-
-            var calledWithArguments = results.get('result')[0];
-            expect(calledWithArguments.length).toBe(1);
-            expect(calledWithArguments).toContain({ uuid: tube.uuid, order: order, role: 'tube_to_be_extracted', status: 'done', batch: null });
+            var results = order.items.filter(function(item) { return item.uuid === tube.uuid; })
+            expect(results.length).toBe(1);
+            expect(results).toContain({ uuid: tube.uuid, order: order, role: 'tube_to_be_extracted', status: 'done', batch: null });
           });
         });
       });
