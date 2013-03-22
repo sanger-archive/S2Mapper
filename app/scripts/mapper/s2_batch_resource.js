@@ -73,10 +73,8 @@ define(['mapper/s2_base_resource'], function(BaseResource){
 
     orderUpdatePromises = resources.map(function(resource) {
       return resource.order().then(function(order) {
-        resource._order = order;
-        return handleItemOrderRetrieved(order, resource.uuid);
-      }).then(function(items) {
-        return handleItemMatchingFilter(resource._order, items, resource.uuid, createdBatch.uuid);
+	var items = handleItemOrderRetrieved(order, resource.uuid);
+        return handleItemMatchingFilter(order, items, resource.uuid, createdBatch.uuid);
       });
     });
 
