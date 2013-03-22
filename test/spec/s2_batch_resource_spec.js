@@ -98,15 +98,15 @@ define([
             mockOrderPromise.resolve(order);
           });
 
-            // We need to make sure that the order we get is always the
-            // one we are spying on
-            spyOn(tube1, "order").andReturn(mockOrderPromise);
+          // We need to make sure that the order we get is always the
+          // one we are spying on
+          spyOn(tube1, "order").andReturn(mockOrderPromise);
 
-            batch = s2.batches.new({
-              resources : [ tube1 ]
-            });
+          batch = s2.batches.new({
+            resources : [ tube1 ]
+          });
 
-            spyOn(order, "update").andCallThrough();
+          spyOn(order, "update").andCallThrough();
 
         });
 
