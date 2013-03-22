@@ -34,8 +34,8 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
         if (step.request) {
           var extension;
           switch(step.format) {
-            case 'xml': extension = step.request;                 break;
-            default:    extension = JSON.stringify(step.request); break;
+          case 'xml': extension = step.request;                 break;
+          default:    extension = JSON.stringify(step.request); break;
           }
           key = key + extension;
         }
@@ -55,7 +55,7 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
 
       if (resultFromJson === undefined)
         throw "Path: '"+path+"' not found in test JSON for stage: "
-      +config.currentStage;
+        +config.currentStage;
 
       return resultFromJson;
     },
@@ -64,18 +64,18 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
 
     log: function(message){
       if(config.logToConsole) {
-	if(arguments.length < 2) {
-	  console.log(arguments[0]);
-	}
-	else if (arguments.length < 3) {
-	  console.log(arguments[0], arguments[1]);
-	}
-	else {
-	  console.log(arguments);
-	}
+        if(arguments.length < 2) {
+          console.log(arguments[0]);
+        }
+        else if (arguments.length < 3) {
+          console.log(arguments[0], arguments[1]);
+        }
+        else {
+          console.log(arguments);
+        }
       }
       if (message) {
-	log = log + "\n"+ message;
+        log = log + "\n"+ message;
       }
       return log;
     },
@@ -114,7 +114,7 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
         // it means that the system couldn't find the data.
 
         config.log("AJAX[" + config.reqParams + "]: not found in ", config.stepJson);
-          // Check whether this is a search we need to fake.
+        // Check whether this is a search we need to fake.
         if (options.url === '/searches' && options.type.toLowerCase() === 'post') {
           config.log('But we are searching for a ' + options.data.search.model  + ', so need to return the empty data');
 

@@ -1,5 +1,5 @@
 define([
-       'mapper/s2_base_resource'
+  'mapper/s2_base_resource'
 ], function(BaseResource){
   'use strict';
 
@@ -32,16 +32,13 @@ define([
       var deferredObject = $.Deferred()
       var root = this.root, order = this.order,
       results = this.items
-          .filter(function(item) { return (item.batch !== null) && criteria(item, order); });
+        .filter(function(item) { return (item.batch !== null) && criteria(item, order); });
       if(results.length > 0) {
-	deferredObject.resolve(results);
+        deferredObject.resolve(results);
       } else {
-	deferredObject.reject(results);
+        deferredObject.reject(results);
       }
-/*          .done(function(items) { deferredObject.resolve(root.batches.instantiate({rawJson: {batch: items[0].batch}}).read()); })
-          .fail(deferredObject.reject);*/
-
-       return deferredObject.promise();
+      return deferredObject.promise();
     }
   };
 
@@ -58,7 +55,7 @@ define([
     order.items = $.extend(Object.create({
       filter: function(fn) {
         var results = _.chain(this).values().flatten().filter(fn).value();
-	return results;
+        return results;
 
         var deferredObject = $.Deferred();
         if (results.length == 0) {
