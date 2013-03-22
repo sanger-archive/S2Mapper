@@ -60,11 +60,26 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
       return resultFromJson;
     },
 
-    log: function(message){
-      if (message) log = log + "\n"+ message;
+    logToConsole: false,
 
+    log: function(message){
+      if(config.logToConsole) {
+	if(arguments.length < 2) {
+	  console.log(arguments[0]);
+	}
+	else if (arguments.length < 3) {
+	  console.log(arguments[0], arguments[1]);
+	}
+	else {
+	  console.log(arguments);
+	}
+      }
+      if (message) {
+	log = log + "\n"+ message;
+      }
       return log;
     },
+
 
     // Dummy out the ajax call returned by S2Ajax to test from file.
     // Returns a Deferred instead of jqXHR.
@@ -85,7 +100,6 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
       if (options.data) { config.reqParams = config.reqParams + options.data; }
       config.log(config.reqParams);
 
-
       // The real $.ajax returns a promise.  Please leave this as a defered as
       // it lets us spy on reject and resolve.
       var fakeAjaxDeferred = $.Deferred();
@@ -99,7 +113,7 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
         // if the stored result can't be found in the data but the url is in the root then
         // it means that the system couldn't find the data.
 
-        config.log("AJAX[" + config.reqParams + "]: not found in " + config.stepJson);
+        config.log("AJAX[" + config.reqParams + "]: not found in ", config.stepJson);
           // Check whether this is a search we need to fake.
         if (options.url === '/searches' && options.type.toLowerCase() === 'post') {
           config.log('But we are searching for a ' + options.data.search.model  + ', so need to return the empty data');

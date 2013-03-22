@@ -29,13 +29,17 @@ define([
      * should none be found.
      */
     batchFor: function(criteria) {
-      var deferredObject = $.Deferred();
-
-      var root = this.root, order = this.order;
-      this.items
-          .filter(function(item) { return (item.batch !== null) && criteria(item, order); })
-          .done(function(items) { deferredObject.resolve(root.batches.instantiate({rawJson: {batch: items[0].batch}}).read()); })
-          .fail(deferredObject.reject);
+      var deferredObject = $.Deferred()
+      var root = this.root, order = this.order,
+      results = this.items
+          .filter(function(item) { return (item.batch !== null) && criteria(item, order); });
+      if(results.length > 0) {
+	deferredObject.resolve(results);
+      } else {
+	deferredObject.reject(results);
+      }
+/*          .done(function(items) { deferredObject.resolve(root.batches.instantiate({rawJson: {batch: items[0].batch}}).read()); })
+          .fail(deferredObject.reject);*/
 
        return deferredObject.promise();
     }
@@ -54,6 +58,7 @@ define([
     order.items = $.extend(Object.create({
       filter: function(fn) {
         var results = _.chain(this).values().flatten().filter(fn).value();
+	return results;
 
         var deferredObject = $.Deferred();
         if (results.length == 0) {

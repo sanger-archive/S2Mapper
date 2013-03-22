@@ -52,11 +52,10 @@ define(['mapper/s2_base_resource'], function(BaseResource){
   }
 
   function handleBatchCreate(seedBatch, createdBatch, deferred) {
-    var batchUuid,
-    orderUpdatePromises = [],
-    items;
+    var orderUpdatePromises = [],
+    resources;
+
     seedBatch.isNew = false;
-    batchUuid = createdBatch.rawJson && createdBatch.rawJson.batch && createdBatch.rawJson.batch.uuid;
 
     // To get an update order we need to chain 3 promises:
     // 1st promise -> order
@@ -67,54 +66,23 @@ define(['mapper/s2_base_resource'], function(BaseResource){
 
     // We need to store all of each.
 
-    items = seedBatch.resources.filter(
-      function(item) {
-	return item !== undefined;
-      }).map(
-      function(item) {
-	return { item: item,
-		 order: null,
-		 uuid : null };
-      });
+    resources = seedBatch.resources.
+      filter(function(resource) {
+      return resource !== undefined;
+    });
 
-    orderUpdatePromises = items.map(
-      function(itemData) {
-	return itemData.item.order().then(function(order) {
-	  itemData.order = order;
-	  itemData.uuid = itemData.item.rawJson[itemData.item.resourceType].uuid;
-	  return handleItemOrderRetrieved(itemData.order, itemData.uuid);
-	}).then(function(items) {
-	  return handleItemMatchingFilter(itemData.order, items, itemData.uuid, batchUuid);
-	});
+    orderUpdatePromises = resources.map(function(resource) {
+      return resource.order().then(function(order) {
+        var items = handleItemOrderRetrieved(order, resource.uuid);
+        return handleItemMatchingFilter(order, items, resource.uuid, createdBatch.uuid);
       });
+    });
 
     // Now run when on all of the atomized promises
 
     $.when(orderUpdatePromises).
-      done(function() {
-	deferred.resolve(createdBatch) }).
-      fail(function() { deferred.reject });
-  }
-
-  function handleItemMatchingFilter(order, items, itemUuid, batchUuid) {
-    var
-    item,
-    i,
-    role,
-    updateJson = { "items" : {} };
-
-    for(i = 0; i < items.length; i++) {
-      item = items[i];
-      role = item.role;
-      if (updateJson.items[role] === undefined) {
-        updateJson.items[role] = {}
-      }
-      updateJson.items[role][itemUuid] = { "batch_uuid" : batchUuid };
-    }
-
-    var result = order.update(updateJson);
-    return result;
-    return order.update(updateJson);
+      done(function() { deferred.resolve(createdBatch) }).
+      fail(deferred.reject);
   }
 
   function handleItemOrderRetrieved(order, itemUuid) {
@@ -122,17 +90,32 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       return item.uuid === itemUuid && item.status === "done";
     });
   }
-  var instanceMethods = {
-    save: function() {
-      var i,
-      batchInstance = this,
-      deferred = $.Deferred();
 
-      if(!this.items || this.items.length === 0) {
+  function handleItemMatchingFilter(order, items, itemUuid, batchUuid) {
+    var updateJson = { "items" : {} };
+
+    _.each(items, function(item, index, list) {
+      var role = item.role;
+      if (!updateJson.items[role]) {
+        updateJson.items[role] = {};
+      }
+      updateJson.items[role][itemUuid] = { "batch_uuid" : batchUuid };
+    });
+
+    return order.update(updateJson);
+  }
+
+
+  var instanceMethods = {
+    save: function(batchInstance) {
+      var deferred = $.Deferred();
+
+      if (!batchInstance.resources || batchInstance.resources.length === 0) {
         throw { type : "PersistenceError", message : "Empty batches cannot be saved" };
       }
-      if(this.isNew) {
-        this.root.batches.create({}).done(function(result) {
+
+      if (batchInstance.isNew) {
+        batchInstance.root.batches.create({user:batchInstance.root.user}).done(function(result) {
           handleBatchCreate(batchInstance, result, deferred);
         });
       }
@@ -142,7 +125,9 @@ define(['mapper/s2_base_resource'], function(BaseResource){
   };
 
   var Batch = BaseResource.extendAs('batch', function(batchInstance, options) {
-    $.extend(batchInstance, instanceMethods);
+    batchInstance.save = function() {
+      return instanceMethods.save(batchInstance);
+    };
     batchInstance.resources = options.resources;
     return extendProxy(proxyFor(batchInstance), batchInstance);
   });
