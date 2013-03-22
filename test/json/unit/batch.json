@@ -5,9 +5,7 @@
       "description":"Create a new batch",
       "method":"post",
       "url":"/batches",
-      "request":{
-        "batch":{}
-      },
+      "request":null,
       "response":{
         "batch":{
           "actions":{

@@ -15,9 +15,9 @@ define([
 
 
       function assignResultTo(target){
-        return function(source){ 
+        return function(source){
           // Assignment through side effect; simultates callback.
-          results[target] = source;	  
+          results[target] = source;
         }
       }
 
@@ -37,7 +37,7 @@ define([
       describe("orders", function() {
         var batch;
 
-        beforeEach(function() {	  
+        beforeEach(function() {
           config.setupTest(testDataOrder);
           s2.find("47608460-68ac-0130-7ac8-282066132de2").done(results.assignTo('batch')).fail(results.unexpected);
           batch = results.get('batch');
@@ -46,7 +46,7 @@ define([
         it("yields the orders found", function() {
           batch.orders.done(results.assignTo('orders')).fail(results.unexpected);
           expect(results.get('orders').length).toBe(2);
-        });	
+        });
       });
 
       describe("items", function() {
@@ -102,11 +102,11 @@ define([
 
           // We need to make sure that the order we get is always the
           // one we are spying on
-          spyOn(results.tube, "order").andReturn(mockOrderPromise); 
+          spyOn(results.tube, "order").andReturn(mockOrderPromise);
 
           results.batch = s2.batches.new({
             resources : [ results.tube ]
-          }, 
+          },
           s2);
 
           spyOn(order, "update").andCallThrough();
@@ -134,14 +134,14 @@ define([
 
 
           it("creates a new batch", function() {
-            expect(s2.batches.create).toHaveBeenCalledWith({});
+            expect(s2.batches.create).toHaveBeenCalledWith();
           });
 
           it("extracts the order from the tube", function() {
             expect(results.tube.order).toHaveBeenCalled();
           });
 
-          it("sets the uuid of the saved batch", function() {	  
+          it("sets the uuid of the saved batch", function() {
             expect(savedBatch).toBeDefined();
             expect(savedBatch.uuid).toBe(expectedBatchUuid);
           });
@@ -155,7 +155,7 @@ define([
               items: {
                 tube_to_be_extracted: {
                   "3bcf8010-68ac-0130-9163-282066132de2" :
-                    { batch_uuid : "47608460-68ac-0130-7ac8-282066132de2" } 
+                    { batch_uuid : "47608460-68ac-0130-7ac8-282066132de2" }
                 }
               }
             });

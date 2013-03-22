@@ -94,23 +94,16 @@ define(['mapper/s2_base_resource'], function(BaseResource){
   }
 
   function handleItemMatchingFilter(order, items, itemUuid, batchUuid) {
-    var
-    item,
-    i,
-    role,
-    updateJson = { "items" : {} };
+    var updateJson = { "items" : {} };
 
-    for(i = 0; i < items.length; i++) {
-      item = items[i];
-      role = item.role;
-      if (updateJson.items[role] === undefined) {
-        updateJson.items[role] = {}
+    _.each(items, function(item, index, list) {
+      var role = item.role;
+      if (!updateJson.items[role]) {
+	updateJson.items[role] = {};
       }
       updateJson.items[role][itemUuid] = { "batch_uuid" : batchUuid };
-    }
+    });
 
-    var result = order.update(updateJson);
-    return result;
     return order.update(updateJson);
   }
 
@@ -125,7 +118,7 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       }
 
       if (batchInstance.isNew) {
-        batchInstance.root.batches.create({}).done(function(result) {
+        batchInstance.root.batches.create().done(function(result) {
           handleBatchCreate(batchInstance, result, deferred);
         });
       }
