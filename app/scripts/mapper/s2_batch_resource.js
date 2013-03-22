@@ -35,10 +35,10 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       items: function() {
         return this.orders.then(function(orders) {
           return _.chain(orders)
-          .map(function(order) { return _.values(order.items); })
-          .flatten()
-          .filter(function(item) { return item.batch.uuid === batch.uuid; })
-          .value();
+            .map(function(order) { return _.values(order.items); })
+            .flatten()
+            .filter(function(item) { return item.batch.uuid === batch.uuid; })
+            .value();
         });
       }
     };
@@ -68,8 +68,8 @@ define(['mapper/s2_base_resource'], function(BaseResource){
 
     resources = seedBatch.resources.
       filter(function(resource) {
-      return resource !== undefined;
-    });
+        return resource !== undefined;
+      });
 
     orderUpdatePromises = resources.map(function(resource) {
       return resource.order().then(function(order) {
