@@ -28,7 +28,9 @@ define([
 
   }
 
-  var instanceMethods = {
+  // Each instance of the root is a specialised class
+  function S2RootInstance() { }
+  $.extend(S2RootInstance.prototype, {
     find: function(uuid){
       return this.retrieve({ uuid: uuid });
     },
@@ -37,7 +39,6 @@ define([
       var resourceDeferred = $.Deferred();
       var url              = options.uuid? (config.apiUrl+'/'+options.uuid) : options.url;
       var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred);
-
 
       var ajax = s2_ajax.send(
         options.sendAction || 'read',
@@ -50,29 +51,43 @@ define([
       // Calling promise makes the defferd object readonly
       return resourceDeferred.promise();
     }
-  };
+  });
 
+  // Builds a root instance from the root JSON, ensuring that all of the resource types are
+  // appropriately setup.
   function processRootJson(response){
-    var rawJson  = response.responseText;
-    var rootInstance = {};
+    return _.chain(response.responseText)
+            .pairs()
+            .map(buildResourceDetails)                // Build the details of resource types to create
+            .reduce(createResourceType, $.extend(new S2RootInstance(), {actions:{}})) // Create the individual resource types
+            .value();
 
-    for (var resource in rawJson){
-      var resourceJson       = {};
-      // wrap the json so that it looks like any other resource
-      resourceJson[resource] = rawJson[resource];
+    // Handles creating the appropriate resource type from the entry in the root JSON
+    function createResourceType(root, details) {
+      var json = {}; json[details.name] = details.json;
 
-      // We need to create a BaseResource that handles the individual resource models.  It's at this point that
-      // we define the 'root' instance that will be bound to all instances created from these resource models.
-      rootInstance[resource] = Resources.base.instantiate({
-        root: rootInstance,
-        rawJson: resourceJson
-      });
-
-      // Extend the class if it has specialisation set up above.
-      $.extend(rootInstance[resource], Resources.get(resource));
+      details.nesting(root)[details.name] = $.extend(
+        Resources.base.instantiate({ root: root, rawJson: json }),
+        Resources.get(details.name)
+      );
+      return root;
     }
 
-    return rootInstance;
+    // Maps the name and resource details in the root JSON so that they can be turned into
+    // resource classes, and at the appropriate nesting.
+    function buildResourceDetails(pair) {
+      // TODO: Refactor this once the root JSON from S2 has been fixed
+      var nester = function(root) { return root; };   // Default to top-level nesting
+      if (pair[0].match(/^(create|update|transfer)_|_(transfers|moves)$|^tag_wells$/)) {
+        nester = function(root) { return root.actions; };
+      }
+
+      return {
+        name:pair[0],
+        json:pair[1],
+        nesting:nester
+      };
+    }
   }
 
   var classMethods = {
@@ -83,7 +98,6 @@ define([
       s2_ajax.send('read', config.apiUrl).done(function(response){
         var rootInstance = processRootJson(response);
         rootInstance.user = options.user;
-        $.extend(rootInstance, instanceMethods);
         rootDeferred.resolve(rootInstance);
       });
 
