@@ -92,27 +92,27 @@ define([
           mockOrderPromise = $.Deferred();
           s2.tubes.findByEan13Barcode('2345678901234').done(
             function(tube) {
-              console.log("done");
-              console.log("tube");
-              results.assignTo('tube1')}).
+            console.log("done");
+            console.log("tube");
+            results.assignTo('tube1')}).
               fail(function() {
-                console.log("failure");
-              } );
-          tube1 = results.get('tube1');
-          tube1.order().done(function(theOrder) {
-            order = theOrder;
-            mockOrderPromise.resolve(order);
-          });
+              console.log("failure");
+            } );
+            tube1 = results.get('tube1');
+            tube1.order().done(function(theOrder) {
+              order = theOrder;
+              mockOrderPromise.resolve(order);
+            });
 
-          // We need to make sure that the order we get is always the
-          // one we are spying on
-          spyOn(tube1, "order").andReturn(mockOrderPromise);
+            // We need to make sure that the order we get is always the
+            // one we are spying on
+            spyOn(tube1, "order").andReturn(mockOrderPromise);
 
-          batch = s2.batches.new({
-            resources : [ tube1 ]
-          });
+            batch = s2.batches.new({
+              resources : [ tube1 ]
+            });
 
-          spyOn(order, "update").andCallThrough();
+            spyOn(order, "update").andCallThrough();
 
         });
 
@@ -168,29 +168,29 @@ define([
 
       describe("New unsaved batch with two tube items", function() {
 
-	var batch,
+        var batch,
         orders = [],
-	mockOrderPromises = [],
-	tubes = [];
+        mockOrderPromises = [],
+        tubes = [];
 
-	beforeEach(function() {
-	  var i;
-	  s2.tubes.findByEan13Barcode('9876543210987').done(results.assignTo('tube2'));
+        beforeEach(function() {
+          var i;
+          s2.tubes.findByEan13Barcode('9876543210987').done(results.assignTo('tube2'));
 
-	  tubes = [ results.get('tube1'), results.get('tube2') ];
+          tubes = [ results.get('tube1'), results.get('tube2') ];
 
-	  mockOrderPromises = [ $.Deferred(), $.Deferred() ];
+          mockOrderPromises = [ $.Deferred(), $.Deferred() ];
 
 
           tubes[0].order().done(function(order) {
             orders[0] = order;
             mockOrderPromises[0].resolve(order);
-	  })
+          })
 
           tubes[1].order().done(function(order) {
             orders[1] = order;
             mockOrderPromises[1].resolve(order);
-	  });
+          });
 
           spyOn(tubes[0], "order").andReturn(mockOrderPromises[0]);
           spyOn(tubes[1], "order").andReturn(mockOrderPromises[1]);
@@ -201,33 +201,33 @@ define([
           spyOn(orders[0], "update").andCallThrough();
           spyOn(orders[1], "update").andCallThrough();
 
-	});
+        });
 
-	it("can find first and second tubes", function() {
+        it("can find first and second tubes", function() {
           expect(results.get('tube1')).toBeDefined();
           expect(results.get('tube2')).toBeDefined();
-	});
+        });
 
-	it("has two items", function() {
-	  expect(batch.resources.length).toBe(2);
-	});
+        it("has two items", function() {
+          expect(batch.resources.length).toBe(2);
+        });
 
-	describe("saving", function() {
+        describe("saving", function() {
           var expectedBatchUuid = "47608460-68ac-0130-7ac8-282066132de2",
           expectedRole = "tube_to_be_extracted",
-	  savedBatch;
+          savedBatch;
 
-	  beforeEach(function() {
-	    spyOn(s2.batches, "create").andCallThrough();
-	    batch.save().
-	      done(function(batch) {
-		savedBatch = batch;
-	      });
-	  });
+          beforeEach(function() {
+            spyOn(s2.batches, "create").andCallThrough();
+            batch.save().
+              done(function(batch) {
+              savedBatch = batch;
+            });
+          });
 
-	  it("creates a new batch", function() {
-	    expect(s2.batches.create).toHaveBeenCalledWith({user:"username"});
-	  });
+          it("creates a new batch", function() {
+            expect(s2.batches.create).toHaveBeenCalledWith({user:"username"});
+          });
 
           it("extracts both orders from both tubes", function() {
             expect(tubes[0].order).toHaveBeenCalled();
@@ -247,15 +247,15 @@ define([
                     { batch_uuid : "47608460-68ac-0130-7ac8-282066132de2" }
                 }
               }});
-            expect(orders[1].update).toHaveBeenCalledWith({
-              items: {
-                tube_to_be_extracted: {
-                  "3bcf8010-0000-0000-9163-282066132de2" :
-                    { batch_uuid : "47608460-68ac-0130-7ac8-282066132de2" }
-                }
-              }});
+              expect(orders[1].update).toHaveBeenCalledWith({
+                items: {
+                  tube_to_be_extracted: {
+                    "3bcf8010-0000-0000-9163-282066132de2" :
+                      { batch_uuid : "47608460-68ac-0130-7ac8-282066132de2" }
+                  }
+                }});
           });
-	});
+        });
 
       });
     });

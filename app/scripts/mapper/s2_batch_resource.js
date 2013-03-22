@@ -73,7 +73,7 @@ define(['mapper/s2_base_resource'], function(BaseResource){
 
     orderUpdatePromises = resources.map(function(resource) {
       return resource.order().then(function(order) {
-	var items = handleItemOrderRetrieved(order, resource.uuid);
+        var items = handleItemOrderRetrieved(order, resource.uuid);
         return handleItemMatchingFilter(order, items, resource.uuid, createdBatch.uuid);
       });
     });
@@ -97,7 +97,7 @@ define(['mapper/s2_base_resource'], function(BaseResource){
     _.each(items, function(item, index, list) {
       var role = item.role;
       if (!updateJson.items[role]) {
-	updateJson.items[role] = {};
+        updateJson.items[role] = {};
       }
       updateJson.items[role][itemUuid] = { "batch_uuid" : batchUuid };
     });
