@@ -5,34 +5,44 @@ define([], function(){
   // resource types such as tube, order and spin column.
   var BaseResource = Object.create(null);
 
-  function actionHelper(name) {
+  function actionIsIdempotent(name) {
+    return actionHelper(name, function(options) {
+      return options;
+    });
+  }
+  function actionChangesState(name, dataHandler) {
+    dataHandler = dataHandler || function(data) { return data; }
+    return actionHelper(name, function(options, sendData) {
+      sendData = $.extend({user: this.root.user}, sendData || {});
+      options['data']  = dataHandler.apply(this, [sendData]);
+      return options
+    });
+  }
+  function actionHelper(name, setup) {
     return function(sendData, resourceProcessor) {
       var actionUrl = this.actions[name];
       if (actionUrl === undefined) { throw 'No ' + name + ' action URL'; }
 
-      var actionOptions = {
+      return this.root.retrieve(setup.apply(this, [{
         url:                actionUrl,
         sendAction:         name,
         resourceProcessor:  resourceProcessor
-      };
-      if ((sendData !== undefined) && (sendData !== null)) {
-        actionOptions['data'] = {}
-        actionOptions['data'][this.resourceType] = sendData;
-      }
-      return this.root.retrieve(actionOptions);
+      }, sendData]));
     }
   };
 
   var instanceMethods = {
     // Standard actions for all resources
-    create: actionHelper('create'),
-    read:   actionHelper('read'),
-    update: actionHelper('update'),
-    delete: actionHelper('delete'),
+    create: actionChangesState('create', function(data) {
+      var d = {}; d[this.resourceType] = data; return d;
+    }),
+    read:   actionIsIdempotent('read'),
+    update: actionChangesState('update'),
+    delete: actionChangesState('delete'),
 
     // Pagination and searching
-    first: actionHelper('first'),
-    last:  actionHelper('last')
+    first: actionIsIdempotent('first'),
+    last:  actionIsIdempotent('last')
   };
 
   $.extend(BaseResource, {
