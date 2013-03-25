@@ -26,6 +26,7 @@
       "url":"/barcodes",
       "request":{
         "barcode": {
+          "user": "username",
           "labware": "tube",
           "role": "stock",
           "contents": "DNA"
@@ -49,6 +50,7 @@
       "url":"/labellables",
       "request":{
         "labellable": {
+          "user": "username",
           "name": "UUID OF RESOURCE",
           "type": "resource",
           "labels": {
