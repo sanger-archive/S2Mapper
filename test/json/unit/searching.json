@@ -6,7 +6,9 @@
       "method":"post",
       "url":"/searches",
       "request":{
-        "search":{ }
+        "search":{
+          "user": "username"
+        }
       },
       "response":{
         "search":{
