@@ -18,19 +18,19 @@ define([], function() {
      * - sequentially(state, [function, ...])
      */
     sequentially: function() {
-      var initial_state = {};
-      var functions     = _.chain(arguments);
+      var state     = {};
+      var functions = _.chain(arguments);
       if ((typeof arguments[0] !== 'function') && !(arguments[0] instanceof Array)) {
-        initial_state = arguments[0];
-        functions     = functions.drop(1);
+        state     = arguments[0];
+        functions = functions.drop(1);
       }
 
       functions = functions.flatten();
       return functions.drop(1).reduce(
-        function(m,f) { return m.then(_.partial(f, initial_state)); },
-        functions.first().value()(initial_state)
+        function(m,f) { return m.then(_.partial(f, state)); },
+        functions.first().value()(state)
       ).value().then(function() {
-        return initial_state;
+        return state;
       });
     },
 
@@ -48,18 +48,18 @@ define([], function() {
      * - in_parallel(state, [function,...], [function,...])
      */
     in_parallel: function() {
-      var initial_state = {};
-      var chains        = _.chain(arguments);
+      var state  = {};
+      var chains = _.chain(arguments);
       if (typeof arguments[0] !== 'function') {
-        initial_state = arguments[0];
-        chains        = chains.drop(1);
+        state  = arguments[0];
+        chains = chains.drop(1);
       }
 
       var self = this;
       return $.when.apply(null, chains.map(function(f) {
-        return self.sequentially(initial_state, f).promise();
+        return self.sequentially(state, f).promise();
       }).value()).then(function() {
-        return initial_state;
+        return state;
       });
     }
   };
