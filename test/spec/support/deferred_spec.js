@@ -68,12 +68,12 @@ define([
               }, function(state, arg1) {
                 state.arg1 = arg1;
                 return $.Deferred().resolve('second', 'third').promise();
+              }, function(state, arg2, arg3) {
+                state.arg2 = arg2;
+                state.arg3 = arg3;
+                return state;
               }
-            ).resolve(function(state, arg2, arg3) {
-              state.arg2 = arg2;
-              state.arg3 = arg3;
-              return state;
-            }).promise().done(results.assignTo('result'));
+            ).promise().done(results.assignTo('result'));
 
             expect(results.get('result')).toEqual({ arg1: 'first', arg2: 'second', arg3: 'third' });
           });
