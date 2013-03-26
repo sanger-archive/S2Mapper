@@ -4,12 +4,8 @@ define([
   'mapper/s2_root',
   'text!json/unit/batch_resource_spec_data/data_for_orders.json',
   'text!json/unit/batch_resource_spec_data/data_for_unsaved_batch_one_tube.json',
-  'text!json/unit/batch_resource_spec_data/data_for_unsaved_batch_two_tubes.json',
-  'text!json/unit/root.json',
-  'text!json/unit/batch_resource_spec_data/order_without_batch.json',
-  'text!json/unit/batch_resource_spec_data/search_for_order_by_batch.json',
-  'text!json/unit/batch_resource_spec_data/batch.json'
-], function (TestHelper, config, Root, dataForOrder, dataForBatchOneTube, dataForBatchTwoTubes, rootTestJson, orderWithoutBatchJson, testDataOrder, batchJson) {
+  'text!json/unit/batch_resource_spec_data/data_for_unsaved_batch_two_tubes.json'
+], function (TestHelper, config, Root, dataForOrder, dataForBatchOneTube, dataForBatchTwoTubes ) {
   'use strict';
 
   TestHelper(function (results) {
@@ -19,14 +15,13 @@ define([
 
       var s2;
 
-      xdescribe("orders & items : ", function () {
+      describe("orders & items : ", function () {
         var batch;
 
         beforeEach(function () {
           config.setupTest(dataForOrder);
           Root.load({user:"username"}).done(results.assignTo('root'));
           s2 = results.get('root');
-          //s2.tubes.findByEan13Barcode('tube1_BC').done(results.assignTo('tube1'));
 
           s2.find("batch_UUID").done(results.assignTo('batch')).fail(results.unexpected);
           batch = results.get('batch');
@@ -44,7 +39,7 @@ define([
 
       });
 
-      xdescribe("New unsaved empty batch", function () {
+      describe("New unsaved empty batch", function () {
         beforeEach(function () {
           results.batch = s2.batches.new();
         });
@@ -104,117 +99,101 @@ define([
 
         describe("saving", function () {
           var expectedBatchUuid = "batch_UUID",
-              expectedRole = "tube_to_be_extracted",
               savedBatch = undefined;
+
+          var savingPromise;
 
           beforeEach(function () {
             spyOn(s2.batches, "create").andCallThrough();
-            batch.save().
+            spyOn(config, "ajax").andCallThrough();
+            savingPromise = batch.save().
                 done(function (batch) {
                   savedBatch = batch;
                 });
           });
 
-          xit("creates a new batch", function () {
+          it("the saving promise is a success", function () {
+            expect(savingPromise.state()).toEqual("resolved");
+          });
+
+          it("creates a new batch", function () {
             expect(s2.batches.create).toHaveBeenCalledWith({user:"username"});
           });
 
-          xit("extracts the order from the tube", function () {
+          it("extracts the order from the tube", function () {
             expect(tube1.order).toHaveBeenCalled();
           });
 
-          xit("sets the uuid of the saved batch", function () {
+          it("sets the uuid of the saved batch", function () {
             expect(savedBatch).toBeDefined();
             expect(savedBatch.uuid).toBe(expectedBatchUuid);
           });
 
-          it("calls update on order", function () {
-
-            // We can't test that the order has been updated
-            // using static test json ( the request would always be
-            // the same, so we'd always get the same result back )
-            expect(order.update).toHaveBeenCalledWith({
-              //user:"username",
-              items:{
-                tube_to_be_extracted:{
-                  "tube1_UUID":{ batch_uuid:"batch_UUID" }
-                }
-              }
-            });
+          it("calls update on each order correctly", function () {
+            var expectedOptions = {type:"PUT",
+              url:                      "/order1_UUID",
+              dataType:                 'json',
+              headers:                  {"Content-Type":'application/json'},
+              data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
+            };
+            expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });
+
+
         });
       });
 
       describe("New unsaved batch with two tube items", function () {
 
         var batch,
-            orders = [],
-            mockOrderPromises = [],
-            tubes = [];
+            order1, order2,
+            mockOrderPromise1,
+            mockOrderPromise2,
+            tube1, tube2;
 
         beforeEach(function () {
 
-          mockOrderPromises = [ $.Deferred(), $.Deferred() ];
+          mockOrderPromise1 = $.Deferred();
+          mockOrderPromise2 = $.Deferred();
 
           config.setupTest(dataForBatchTwoTubes);
           Root.load({user:"username"}).done(results.assignTo('root'));
           s2 = results.get('root');
           s2.tubes.findByEan13Barcode('tube1_BC').done(
               function (tube) {
-                tubes[0] = tube;
+                tube1 = tube;
               }).then(function () {
-                tubes[0].order().done(function (theOrder) {
-                  orders[0] = theOrder;
-//                  debugger;
-                  spyOn(orders[0], "update").andCallThrough();
-
-                  mockOrderPromises[0].resolve(orders[0]);
+                tube1.order().done(function (theOrder) {
+                  order1 = theOrder;
+                  mockOrderPromise1.resolve(order1);
                 })
               });
           s2.tubes.findByEan13Barcode('tube2_BC').done(
-              function (tube) {
-                tubes[1] = tube;
+              function (atube) {
+                tube2 = atube;
               }).then(function () {
-                tubes[1].order().done(function (theOrder) {
-                  orders[1] = theOrder;
-                  spyOn(orders[1], "update").andCallThrough();
-                  mockOrderPromises[1].resolve(orders[1]);
+                tube2.order().done(function (theOrder2) {
+                  order2 = theOrder2;
+                  mockOrderPromise2.resolve(order2);
                 })
               });
 
-//
-//          var i;
-//          //s2.tubes.findByEan13Barcode('9876543210987').done(results.assignTo('tube2'));
-//
-//          tubes = [ results.get('tube1'), results.get('tube2') ];
-//
-//          mockOrderPromises = [ $.Deferred(), $.Deferred() ];
-//
-//          tubes[0].order().done(function (order) {
-//            orders[0] = order;
-//            mockOrderPromises[0].resolve(order);
-//          })
-//
-//          tubes[1].order().done(function (order) {
-//            orders[1] = order;
-//            mockOrderPromises[1].resolve(order);
-//          });
+          spyOn(tube1, "order").andReturn(mockOrderPromise1);
+          spyOn(tube2, "order").andReturn(mockOrderPromise2);
 
-          spyOn(tubes[0], "order").andReturn(mockOrderPromises[0]);
-          spyOn(tubes[1], "order").andReturn(mockOrderPromises[1]);
           batch = s2.batches.new({
-            resources:tubes
+            resources:[tube1, tube2]
           });
-          debugger;
 
+          spyOn(order1, "update").andCallThrough();
+          spyOn(order2, "update").andCallThrough();
         });
 
         it("can find first and second tubes", function () {
-          mockOrderPromises[0].then(function(){
-          expect(tubes[0]).toBeDefined();
-          expect(tubes[1]).toBeDefined();
+          $.when(mockOrderPromise1, mockOrderPromise2).then(function () {
+            expect(tube1).toBeDefined();
+            expect(tube2).toBeDefined();
           });
-//          expect(results.get('tube2')).toBeDefined();
         });
 
         it("has two items", function () {
@@ -222,8 +201,8 @@ define([
         });
 
         it(", both of the same order (making sure the test data are correct)", function () {
-          $.when($.apply(null,mockOrderPromises)).then(function(){
-            expect(orders[0].uuid).toEqual(orders[1].uuid);
+          $.when(mockOrderPromise1, mockOrderPromise2).then(function () {
+            expect(order1.uuid).toEqual(order2.uuid);
           });
 
         });
@@ -234,38 +213,43 @@ define([
 
           beforeEach(function () {
             spyOn(s2.batches, "create").andCallThrough();
-
+            spyOn(config, "ajax").andCallThrough();
             batch.save().
                 done(function (batch) {
                   savedBatch = batch;
-                }).fail(function(){debugger;});
+                }).fail(function () {
+                  //debugger;
+                });
           });
 
-          xit("creates a new batch", function () {
-            expect(s2.batches.create).toHaveBeenCalledWith({user:"username"});
+          it("creates a new batch", function () {
+            var expectedOptions = {type:"POST",
+              url:                      "/batches",
+              dataType:                 'json',
+              headers:                  {"Content-Type":'application/json'},
+              data:                     '{"batch":{"user":"username"}}'
+            };
+            expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });
 
-          xit("extracts both orders from both tubes", function () {
-            expect(tubes[0].order).toHaveBeenCalled();
-//            expect(tubes[1].order).toHaveBeenCalled();
+          it("extracts both orders from both tubes", function () {
+            expect(tube1.order).toHaveBeenCalled();
+            expect(tube2.order).toHaveBeenCalled();
           });
 
-          xit("sets the uuid of the saved batch", function () {
+          it("sets the uuid of the saved batch", function () {
             expect(savedBatch).toBeDefined();
             expect(savedBatch.uuid).toBe(expectedBatchUuid);
           });
 
-          it("calls update on each order correctly", function () {
-            debugger;
-            expect(orders[0].update).toHaveBeenCalledWith({
-              //user:"username",
-              items:{
-                tube_to_be_extracted:{
-                  "tube1_UUID":{ batch_UUID:"batch_UUID" },
-                  "tube2_UUID":{ batch_UUID:"batch_UUID" }
-                }
-              }
-            });
+          it("calls update on each order correctly (which means only one here)", function () {
+            var expectedOptions = {type:"PUT",
+              url:                      "/order1_UUID",
+              dataType:                 'json',
+              headers:                  {"Content-Type":'application/json'},
+              data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"},"tube2_UUID":{"batch_uuid":"batch_UUID"}}}}'
+            };
+            expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });
         });
 

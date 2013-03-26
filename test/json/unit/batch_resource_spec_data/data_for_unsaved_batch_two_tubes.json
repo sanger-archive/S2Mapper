@@ -692,6 +692,29 @@
           "process":null
         }
       }
+    },
+
+    {
+      "description":"update order",
+      "method":     "put",
+      "url":        "/order1_UUID",
+      "request":    {
+        "user":"username",
+        "items":{
+          "tube_to_be_extracted":{
+            "tube1_UUID":{
+              "batch_uuid":"batch_UUID"
+            },
+            "tube2_UUID":{
+              "batch_uuid":"batch_UUID"
+            }
+          }
+
+        }
+      },
+      "response":   {
+        "user":"username"
+      }
     }
   ]
 }

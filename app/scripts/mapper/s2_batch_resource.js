@@ -56,50 +56,61 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
   }
 
   function updateItemsInOrdersAfterBatchCreation(seedBatch, createdBatch, deferred) {
-//    debugger;
     var orderUpdatePromises = [],
         resources;
 
     seedBatch.isNew = false;
 
-    resources = seedBatch.resources.
-        filter(function (resource) {
-          return resource !== undefined;
-        });
+    resources = seedBatch.resources.filter(function (resource) {
+      return resource !== undefined;
+    });
 
     var ordersHashedByUUID = {};
-
     var listOfPromisesForOrders = [];
 
+    // search for the *unique* orders related to the batch
     resources.map(function (rsc) {
       var promise = $.Deferred();
       listOfPromisesForOrders.push(promise);
       rsc.order().then(function (order) {
-            debugger;
             ordersHashedByUUID[order.uuid] = order;
             promise.resolve();
           }
-      ).fail(promise.fail());
+      ).fail(function () {
+            promise.reject();
+            deferred.reject();
+          });
     });
 
-    $.when.apply(null, listOfPromisesForOrders)
-        .then(function () {
-          debugger;
-          var orders = _.values(ordersHashedByUUID);
+    // when all found
+    $.when.apply(null, listOfPromisesForOrders).then(function () {
+      var orders = _.values(ordersHashedByUUID);
 
-          orderUpdatePromises = orders.map(function (order) {
-            return updateItemsInOrderWithBatch(order, createdBatch, "done");
+      // for each unique order
+      orderUpdatePromises = orders.map(function (order) {
+        // update items
+        return updateItemsInOrderWithBatch(order, createdBatch, "done");
+      });
+
+      // then, when all updated...
+      $.when.apply(null, orderUpdatePromises)
+          .done(function () {
+            deferred.resolve(createdBatch)
+          }).fail(function () {
+            deferred.reject();
           });
-          $.when(orderUpdatePromises)
-              .done(function () {
-                deferred.resolve(createdBatch)
-              });
-        }).fail(deferred.reject);
+    }).fail(function () {
+          deferred.reject();
+        });
   }
 
   function updateItemsInOrderWithBatch(order, batch, filteringStatus) {
+    // for one order, update the role status of the items, inserting the batch UUID
+    // If a filteringStatus is given, it only applies to the role with this status.
     var updateJson = { "items":{} };
+    // for each role
     _.each(order.items, function (labwares, role, list) {
+      // for each labware (ie tube)
       _.each(labwares, function (labware) {
             if (!filteringStatus || labware.status === filteringStatus) {
               if (!updateJson.items[role]) {
@@ -110,22 +121,18 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
           }
       );
     });
-    debugger;
     return order.update(updateJson);
   }
 
   var instanceMethods = {
     save:function (unsavedBatch) {
       var deferred = $.Deferred();
-      debugger;
       if (!unsavedBatch.resources || unsavedBatch.resources.length === 0) {
         throw { type:"PersistenceError", message:"Empty batches cannot be saved" };
       }
 
       if (unsavedBatch.isNew) {
         unsavedBatch.root.batches.create({user:unsavedBatch.root.user}).done(function (persistingBatch) {
-          console.log(" # batch created");
-          debugger;
           updateItemsInOrdersAfterBatchCreation(unsavedBatch, persistingBatch, deferred);
         });
       }
