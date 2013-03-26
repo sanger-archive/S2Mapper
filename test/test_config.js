@@ -1,5 +1,5 @@
 define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
-  'use strict';
+  //'use strict';
 
   var log = "";
 
@@ -62,20 +62,25 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
 
     logToConsole: false,
 
-    log: function(message){
+    log: function(message, level){
+      var formats = [
+          'background-color:white; color:red; font-size:120%',
+          'background-color:blue; color:orange; font-size:110%',
+          'background-color:red; color:white; font-size:110%'
+      ];
       if(config.logToConsole) {
-        if(arguments.length < 2) {
-          console.log(arguments[0]);
-        }
-        else if (arguments.length < 3) {
-          console.log(arguments[0], arguments[1]);
-        }
-        else {
-          console.log(arguments);
-        }
-      }
-      if (message) {
-        log = log + "\n"+ message;
+          if(typeof arguments[0] === 'object'){
+            for (prop in message){
+              if(typeof message[prop] === 'object') {
+                console.log(prop + ' is an object (shown below)');
+                console.log(message[prop])
+              } else {
+                console.log(prop + ' : ' + message[prop]);
+              }
+            }
+          } else {
+            console.log('%c' + arguments[0], formats[level]);
+          }
       }
       return log;
     },
@@ -93,12 +98,12 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
         options.data = null
       }
 
-      config.log('------------------------');
-      config.log('Sending ajax message for ' + config.stage);
+      config.log('------------------------', 0);
+      config.log('Sending ajax message for ' + config.stage, 1);
 
       config.reqParams = options.url + options.type.toLowerCase();
       if (options.data) { config.reqParams = config.reqParams + options.data; }
-      config.log(config.reqParams);
+      config.log(config.reqParams, 2);
 
       // The real $.ajax returns a promise.  Please leave this as a defered as
       // it lets us spy on reject and resolve.
@@ -147,6 +152,7 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
     printServiceUrl: 'http://localhost:9292/services/print',
     printers: [ {name: 'Tube printer', type: 2} ]
   };
+
   return config;
 });
 
