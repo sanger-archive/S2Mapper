@@ -25,10 +25,13 @@ define([], function() {
         functions     = functions.drop(1);
       }
 
-      return functions.flatten().reduce(
-        function(m,f) { return m.then(f); },
-        build(initial_state)
-      ).value();
+      functions = functions.flatten();
+      return functions.drop(1).reduce(
+        function(m,f) { return m.then(enact(f, initial_state)); },
+        functions.first().value()(initial_state)
+      ).value().then(function() {
+        return initial_state;
+      });
     },
 
     /*
@@ -61,8 +64,8 @@ define([], function() {
     }
   };
 
-  function enact(fn, state, args) {
-    return _.partial(fn, state).apply(null, args || []);
+  function enact(fn, state) {
+    return _.partial(fn, state);
   }
   function build(state) {
     var outside  = $.Deferred();
