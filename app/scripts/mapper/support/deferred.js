@@ -27,7 +27,7 @@ define([], function() {
 
       functions = functions.flatten();
       return functions.drop(1).reduce(
-        function(m,f) { return m.then(enact(f, initial_state)); },
+        function(m,f) { return m.then(_.partial(f, initial_state)); },
         functions.first().value()(initial_state)
       ).value().then(function() {
         return initial_state;
@@ -63,46 +63,4 @@ define([], function() {
       });
     }
   };
-
-  function enact(fn, state) {
-    return _.partial(fn, state);
-  }
-  function build(state) {
-    var outside  = $.Deferred();
-    var deferred = undefined;
-
-    return {
-      then: function(callback) {
-        // On the first call to then() we start the deferred sequence.  On subsequent calls,
-        // though, we need to hook in the deferred, so we replace the implementation of then()
-        // on the first call.
-        this.then = function(callback) {
-          deferred.done(function() {
-            deferred = enact(callback, state, arguments).fail(outside.reject);
-          });
-          return this;
-        };
-        deferred = enact(callback, state).fail(outside.reject);
-        return this;
-      },
-      resolve: function(callback) {
-        // Ensure that the callback is hooked into the current promise, and then unhook
-        // us so that further calls do nothing.
-        deferred.done(function() { outside.resolve(enact(callback, state, arguments)); });
-        this.resolve = function(callback) { };
-        return this;
-      },
-      fail: function(callback) {
-        deferred.fail(function() {
-          outside.reject(enact(callback, state, arguments));
-        });
-        return this;
-      },
-      promise: function() {
-        // Ensure that the deferred will be properly resolved, if it's not already been.
-        this.resolve(function(state) { return state; });
-        return outside.promise();
-      }
-    };
-  }
 });
