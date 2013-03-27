@@ -39,6 +39,36 @@ define([
         deferredObject.reject(results);
       }
       return deferredObject.promise();
+    },
+
+    setBatchForResources: function (batch, resourceUUIDs, filteringStatus) {
+      // updates the role status of the items, inserting the batch UUID
+      // but ONLY if the items is one of the concerned ones, ie one of the labware added to the batch
+      // If a filteringStatus is given, it only applies to the role with this status.
+      var updateJson = { "items":{} };
+      // for each role
+      _.each(this.items, function (labwares, role, list) {
+        // for each labware (ie tube)
+        debugger;
+        var labwaresInBatch = labwares.filter(function(labware){
+          // filtering the unnecessary tubes
+          return _.contains(resourceUUIDs,labware.uuid);
+        });
+        // well... for each labware concerned (ie tube added to the batch)
+        _.each(labwaresInBatch, function (labware) {
+              debugger;
+              // we update a piece of JSON
+              if (!filteringStatus || labware.status === filteringStatus) {
+                if (!updateJson.items[role]) {
+                  updateJson.items[role] = {};
+                }
+                updateJson.items[role][labware.uuid] = { "batch_uuid":batch.uuid };
+              }
+            }
+        );
+      });
+      // and then pass it to the order for update
+      return this.update(updateJson);
     }
   };
 

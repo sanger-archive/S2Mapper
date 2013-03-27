@@ -66,7 +66,7 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
     });
 
     var ordersHashedByUUID = {};
-    var resourceUUIDs = []
+    var resourceUUIDs = [];
     var listOfPromisesForOrders = [];
 
     // search for the *unique* orders related to the batch
@@ -91,7 +91,7 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       // for each unique order
       orderUpdatePromises = orders.map(function (order) {
         // update items
-        return updateItemsInOrderWithBatch(order, createdBatch, resourceUUIDs, "done");
+        return order.setBatchForResources(createdBatch, resourceUUIDs, "done");
       });
 
       // then, when all updated...
@@ -105,52 +105,6 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
           deferred.reject();
         });
   }
-
-  function updateItemsInOrderWithBatch(order, batch, concernedLabwareUUIDs, filteringStatus) {
-    // for one order, update the role status of the items, inserting the batch UUID
-    // but ONLY if the items is one of the concerned ones, ie one of the labware added to the batch
-    // If a filteringStatus is given, it only applies to the role with this status.
-    var updateJson = { "items":{} };
-    // for each role
-    _.each(order.items, function (labwares, role, list) {
-      // for each labware (ie tube)
-      var labwaresInBatch = labwares.filter(function(labware){
-        // filtering the unnecessary tubes
-        return _.contains(concernedLabwareUUIDs,labware.uuid);
-      });
-      // well... for each labware concerned (ie tube added to the batch)
-      _.each(labwaresInBatch, function (labware) {
-            // we update a piece of JSON
-            if (!filteringStatus || labware.status === filteringStatus) {
-              if (!updateJson.items[role]) {
-                updateJson.items[role] = {};
-              }
-              updateJson.items[role][labware.uuid] = { "batch_uuid":batch.uuid };
-            }
-          }
-      );
-    });
-    // and then pass it to the order for update
-    return order.update(updateJson);
-  }
-
-  function updateItemsInOrderWithNewRole(order, batch, filteringStatus) {
-
-    var updateJson = { "items":{} };
-    _.each(order.items, function (labwares, role, list) {
-      _.each(labwares, function (labware) {
-            if (!filteringStatus || labware.status === filteringStatus) {
-              if (!updateJson.items[role]) {
-                updateJson.items[role] = {};
-              }
-              updateJson.items[role][labware.uuid] = { "batch_uuid":batch.uuid };
-            }
-          }
-      );
-    });
-    return order.update(updateJson);
-  }
-
 
   var instanceMethods = {
     save:function (unsavedBatch) {
