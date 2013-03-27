@@ -4,8 +4,9 @@ define([
   'mapper/s2_root',
   'text!json/unit/batch_resource_spec_data/data_for_orders.json',
   'text!json/unit/batch_resource_spec_data/data_for_unsaved_batch_one_tube.json',
-  'text!json/unit/batch_resource_spec_data/data_for_unsaved_batch_two_tubes.json'
-], function (TestHelper, config, Root, dataForOrder, dataForBatchOneTube, dataForBatchTwoTubes ) {
+  'text!json/unit/batch_resource_spec_data/data_for_unsaved_batch_two_tubes.json',
+  'text!json/unit/batch_resource_spec_data/data_for_unsaved_batch_one_tube_in_order_with_two.json'
+], function (TestHelper, config, Root, dataForOrder, dataForBatchOneTube, dataForBatchTwoTubes, dataForBatchOneTubeOneOrderWithTwoTubes ) {
   'use strict';
 
   TestHelper(function (results) {
@@ -143,7 +144,7 @@ define([
         });
       });
 
-      describe("New unsaved batch with two tube items", function () {
+      describe("New unsaved batch with two tube items in one order", function () {
 
         var batch,
             order1, order2,
@@ -248,6 +249,119 @@ define([
               dataType:                 'json',
               headers:                  {"Content-Type":'application/json'},
               data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"},"tube2_UUID":{"batch_uuid":"batch_UUID"}}}}'
+            };
+            expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
+          });
+        });
+
+      });
+
+      describe("New unsaved batch with one tube from an order with two items", function () {
+
+        var batch,
+            order1, order2,
+            mockOrderPromise1,
+            mockOrderPromise2,
+            tube1, tube2;
+
+        beforeEach(function () {
+
+          mockOrderPromise1 = $.Deferred();
+          mockOrderPromise2 = $.Deferred();
+
+          config.setupTest(dataForBatchOneTubeOneOrderWithTwoTubes);
+          Root.load({user:"username"}).done(results.assignTo('root'));
+          s2 = results.get('root');
+          s2.tubes.findByEan13Barcode('tube1_BC').done(
+              function (tube) {
+                tube1 = tube;
+              }).then(function () {
+                tube1.order().done(function (theOrder) {
+                  order1 = theOrder;
+                  mockOrderPromise1.resolve(order1);
+                })
+              });
+          s2.tubes.findByEan13Barcode('tube2_BC').done(
+              function (atube) {
+                tube2 = atube;
+              }).then(function () {
+                tube2.order().done(function (theOrder2) {
+                  order2 = theOrder2;
+                  mockOrderPromise2.resolve(order2);
+                })
+              });
+
+          spyOn(tube1, "order").andReturn(mockOrderPromise1);
+          spyOn(tube2, "order").andReturn(mockOrderPromise2);
+
+          // there's only one tube in the batch !
+          batch = s2.batches.new({
+            resources:[tube1]
+          });
+
+          spyOn(order1, "update").andCallThrough();
+          spyOn(order2, "update").andCallThrough();
+        });
+
+        it("can find first and second tubes", function () {
+          $.when(mockOrderPromise1, mockOrderPromise2).then(function () {
+            expect(tube1).toBeDefined();
+            expect(tube2).toBeDefined();
+          });
+        });
+
+        it("has one item", function () {
+          expect(batch.resources.length).toBe(1);
+        });
+
+        it(", both tube of the same order (making sure the test data are correct)", function () {
+          $.when(mockOrderPromise1, mockOrderPromise2).then(function () {
+            expect(order1.uuid).toEqual(order2.uuid);
+          });
+
+        });
+
+        describe("saving", function () {
+          var expectedBatchUuid = "batch_UUID",
+              savedBatch;
+
+          beforeEach(function () {
+            spyOn(s2.batches, "create").andCallThrough();
+            spyOn(config, "ajax").andCallThrough();
+            batch.save().
+                done(function (batch) {
+                  savedBatch = batch;
+                }).fail(function () {
+                  //debugger;
+                });
+          });
+
+          it("creates a new batch", function () {
+            var expectedOptions = {type:"POST",
+              url:                      "/batches",
+              dataType:                 'json',
+              headers:                  {"Content-Type":'application/json'},
+              data:                     '{"batch":{"user":"username"}}'
+            };
+            expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
+          });
+
+          it("extracts only one order because there's only one tube concerned", function () {
+            expect(tube1.order).toHaveBeenCalled();
+            expect(tube2.order).not.toHaveBeenCalled();
+          });
+
+          it("sets the uuid of the saved batch", function () {
+            expect(savedBatch).toBeDefined();
+            expect(savedBatch.uuid).toBe(expectedBatchUuid);
+          });
+
+          it("calls update on one order correctly (which means only one call here, with only one tube)", function () {
+            var expectedOptions = {type:"PUT",
+              url:                      "/order1_UUID",
+              dataType:                 'json',
+              headers:                  {"Content-Type":'application/json'},
+              data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
             };
             expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });
