@@ -7,7 +7,6 @@ define([
   'use strict';
 
   var Tube = BaseResource.extendAs('tube', function(tubeInstance, options) {
-    var tubeInstance = BaseResource.instantiate(options);
     $.extend(tubeInstance, instanceMethods);
     $.extend(tubeInstance, Labellable);
     return tubeInstance;

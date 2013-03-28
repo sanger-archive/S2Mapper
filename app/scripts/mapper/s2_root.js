@@ -14,7 +14,7 @@ define([
   function resourceProcessor(rootInstance, resourceDeferred) {
     return function(response){
       var resourceType  = Object.keys(response.responseText)[0];
-      var resourceClass = rootInstance[resourceType.pluralize()];
+      var resourceClass = rootInstance[resourceType.pluralize()] || rootInstance.actions[resourceType.pluralize()];
       var resource      = resourceClass.instantiate({ rawJson: response.responseText });
 
       resourceDeferred.resolve(resource);
