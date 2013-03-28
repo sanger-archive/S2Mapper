@@ -23,7 +23,13 @@ define(['mapper/s2_base_resource'], function(BaseResource) {
 
   // Post processing of the raw JSON that will setup the correct attributes on the barcode instance.
   function setupInstanceAttributes(barcodeInstance) {
-    barcodeInstance.sangerBarcode = barcodeInstance.sanger.prefix + barcodeInstance.sanger.number + barcodeInstance.sanger.suffix;
+    Object.defineProperties(barcodeInstance, {
+      sangerBarcode: {
+        get: function() {
+          return barcodeInstance.sanger.prefix + barcodeInstance.sanger.number + barcodeInstance.sanger.suffix;
+        }
+      }
+    });
   }
 
   var instanceMethods = {

@@ -49,6 +49,13 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       it('ensures instances have actions', function() {
         expect(model.new().actions).toEqual({});
       });
+
+      it('can change the rawJson in the background', function() {
+        var instance = model.new({rawJson:{foo:{uuid: 'bar'}}});
+        expect(instance.uuid).toEqual('bar');
+        instance.rawJson.foo.uuid = 'foobar';
+        expect(instance.uuid).toEqual('foobar');
+      });
     });
 
     describe("actions", function() {
