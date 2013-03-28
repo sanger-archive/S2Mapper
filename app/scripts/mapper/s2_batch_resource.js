@@ -10,7 +10,8 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
    */
   function proxyFor(batch) {
     // Create a proxy that mimics the behaviour of the batch
-    var proxy = Object.create(Object.getPrototypeOf(batch), {});
+//    var proxy = Object.create(Object.getPrototypeOf(batch), {});
+    var proxy = batch;
     Object.getOwnPropertyNames(batch).forEach(function (name) {
       var propertyOnBatch = Object.getOwnPropertyDescriptor(batch, name);
       Object.defineProperty(proxy, name, propertyOnBatch);
@@ -35,14 +36,10 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       items:function () {
         return this.orders.then(function (orders) {
           return _.chain(orders)
-              .map(function (order) {
-                return _.values(order.items);
-              })
-              .flatten()
-              .filter(function (item) {
-                return item.batch.uuid === batch.uuid;
-              })
-              .value();
+                  .map(function (order) { return _.values(order.items); })
+                  .flatten()
+                  .filter(function (item) { return item.batch.uuid === batch.uuid; })
+                  .value();
         });
       }
     };

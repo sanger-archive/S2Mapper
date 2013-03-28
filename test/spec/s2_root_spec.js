@@ -41,13 +41,18 @@ define([
            'update_tubes',            'update_tube_racks'
         ];
 
+        // These resources are removed or dropped
+        var resourcesThatAreDropped = [
+          'revision'
+        ];
+
         function bidirectionalDifference(a,b) {
           return _.union(_.difference(a, b), _.difference(b, a));
         }
 
         it("has the appropriate root level resourcs", function() {
           expect(bidirectionalDifference(
-            _.union(_.difference(_.keys(rawRootJson), resourcesThatAreActions), ['actions','user']),
+            _.union(_.difference(_.difference(_.keys(rawRootJson), resourcesThatAreActions), resourcesThatAreDropped), ['actions','user']),
             _.keys(results.get('root'))
           )).toEqual([]);
         });
