@@ -45,6 +45,21 @@ define([], function(){
     last:  actionIsIdempotent('last')
   };
 
+  // Proxy the raw JSON so that we can change that behind the scenes if required and it
+  // magically applies to all calling code.  We do not override any behaviour that
+  // already exists in the instance..
+  function injectRawJsonProxy(instance, rawJson) {
+    if (rawJson === undefined) return;
+
+    Object.defineProperties(
+      instance, 
+      _.chain(rawJson).keys().difference(Object.getOwnPropertyNames(instance)).reduce(function(proxyMethods, name) {
+        proxyMethods[name] = { get: function() { return rawJson[name]; } };
+        return proxyMethods;
+      }, {}).value()
+    );
+  }
+
   $.extend(BaseResource, {
     // Convenience method for creating extensions of the base resource class.
     extendAs: function(resourceType, constructor) {
@@ -67,13 +82,16 @@ define([], function(){
         resourceInstance.isNew        = false;
         resourceInstance.rawJson      = rawJson;
         resourceInstance.resourceType = Object.keys(rawJson)[0];
-        $.extend(resourceInstance, rawJson[resourceInstance.resourceType]);
       } else {
+        resourceInstance.rawJson      = {}
         resourceInstance.resourceType = this.resourceType;
+        resourceInstance.rawJson[resourceInstance.resourceType] = {};
       }
 
       $.extend(resourceInstance, instanceMethods);
-      return this.constructor(resourceInstance, options);
+      resourceInstance = this.constructor(resourceInstance, options);
+      injectRawJsonProxy(resourceInstance, resourceInstance.rawJson[resourceInstance.resourceType]);
+      return resourceInstance;
     },
 
     new: function(options){
