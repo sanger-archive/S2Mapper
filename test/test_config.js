@@ -1,5 +1,5 @@
 define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
-  //'use strict';
+  'use strict';
 
   var log = "";
 
@@ -26,11 +26,12 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
     createTestData: function(testData){
       var output = '';
       for(var stepNo in testData.steps) {
-        var step = testData.steps[stepNo]
+        var step = testData.steps[stepNo];
+        step.method = step.method.toUpperCase();
         output += '<br/>Step' + stepNo + ':' + step.description +'. Needs a ' + step.method + '. Responds with ' +
           Object.keys(step.response)[0];
 
-        var key = step.url + step.method;
+        var key = step.method +':'+step.url;
         if (step.request) {
           var extension;
           switch(step.format) {
@@ -63,79 +64,45 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
     logToConsole: false,
 
     log: function(message, level){
+      if (!config.logToConsole) return; // do nothing
+
       var formats = [
-          'background-color:white; color:red; font-size:120%',
-          'background-color:blue; color:orange; font-size:110%',
-          'background-color:red; color:white; font-size:110%'
+        'background-color:darkgreen; color:white;',
+        'background-color:darkblue; color:white;',
+        'background-color:red; color:white;'
       ];
-      if(config.logToConsole) {
-          if(typeof arguments[0] === 'object'){
-            for (prop in message){
-              if(typeof message[prop] === 'object') {
-                console.log(prop + ' is an object (shown below)');
-                console.log(message[prop])
-              } else {
-                console.log(prop + ' : ' + message[prop]);
-              }
-            }
-          } else {
-            console.log('%c' + arguments[0], formats[level]);
-          }
-      }
-      return log;
+
+      if (typeof message === 'object') console.log(message);
+      else console.log('%c' + message, formats[level]);
+
     },
 
 
     // Dummy out the ajax call returned by S2Ajax to test from file.
     // Returns a Deferred instead of jqXHR.
     ajax: function (options){
+      var fakeAjaxDeferred = $.Deferred();
+
       // a blank options.url should default to '/'
       options.url = options.url.replace(/http:\/\/localhost:\d+/,'');
 
       if (options.url.length === 0){
         options.url  = '/'
-        options.type = 'get'
+        options.type = 'GET'
         options.data = null
       }
 
-      config.log('------------------------', 0);
-      config.log('Sending ajax message for ' + config.stage, 1);
+      options.type = options.type.toUpperCase();
 
-      config.reqParams = options.url + options.type.toLowerCase();
+      config.reqParams = options.type +':'+options.url;
       if (options.data) { config.reqParams = config.reqParams + options.data; }
-      config.log(config.reqParams, 2);
+      config.log(config.reqParams, 1);
 
-      // The real $.ajax returns a promise.  Please leave this as a defered as
-      // it lets us spy on reject and resolve.
-      var fakeAjaxDeferred = $.Deferred();
 
-      // We resolve the Deferred object before return so any callbacks added
-      // with .done() are called as soon as they're added, which should solve
-      // testing latency issues.
-
+      config.log('Sending ajax message for "' + config.stage+'"');
       var response = config.stepJson[config.reqParams];
-      if (response === undefined) {
-        // if the stored result can't be found in the data but the url is in the root then
-        // it means that the system couldn't find the data.
-
-        config.log("AJAX[" + config.reqParams + "]: not found in ", config.stepJson);
-        // Check whether this is a search we need to fake.
-        if (options.url === '/searches' && options.type.toLowerCase() === 'post') {
-          config.log('But we are searching for a ' + options.data.search.model  + ', so need to return the empty data');
-
-          fakeAjaxDeferred.resolve({
-            url:           options.url,
-            'status':      200,
-            responseTime:  750,
-            responseText:  JSON.parse(emptyTubeData).steps[0].response
-          });
-
-        } else {
-
-          fakeAjaxDeferred.reject(fakeAjaxDeferred, '404 error');
-        }
-      } else {
-        config.log("AJAX[" + config.reqParams + "]: responding with:");
+      if (response !== undefined) {
+        config.log("Responding with:", 0);
         config.log(response);
 
         fakeAjaxDeferred.resolve({
@@ -145,7 +112,37 @@ define(['text!json/unit/empty_tube_search.json'], function(emptyTubeData) {
           responseText:  response
         });
 
+      } else if (options.type === 'POST' && options.url === '/searches') {
+        config.log('\nSearch for: ' + JSON.parse(options.data).search.model
+          + ' not found in test data.', 2);
+
+        config.log('\nSimulating search not found on S2...');
+        config.log('Returning: '+options.url, 0);
+
+        fakeAjaxDeferred.resolve({
+          url:           options.url,
+          'status':      200,
+          responseTime:  750,
+          responseText:  JSON.parse(emptyTubeData).steps[0].response
+        });
+      } else if (options.type === 'GET' && options.url === '/EMPTY_SEARCH_RESULT_UUID/page=1') {
+        config.log('\nSimulating empty search result search page...');
+        config.log('Returning: '+options.url, 0);
+
+        fakeAjaxDeferred.resolve({
+          url:           options.url,
+          'status':      200,
+          responseTime:  750,
+          responseText:  JSON.parse(emptyTubeData).steps[1].response
+        });
+
+      } else {
+        config.log('\nRequest for: ' + config.reqParams + ' not found in test data.', 2);
+        config.log('Simulating a 404 error!', 2);
+        fakeAjaxDeferred.reject(fakeAjaxDeferred, '404 error');
       }
+
+      config.log('_________________________________________________________\n');
       return fakeAjaxDeferred;
     },
 

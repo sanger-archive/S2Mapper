@@ -10,15 +10,6 @@ define([
   });
 
   var instanceMethods = {
-    /* DEPRECATED: Call batchFor(predicate) to find batch
-     * Returns null if searchItem is not in a batch (undefined is too vague).
-     */
-    getBatchFor: function(searchItem){
-      var result = null;
-      this.batchFor(function(item) { return item.uuid === searchItem.uuid; }).done(function(batch) { result = batch; });
-      return result;
-    },
-
     /*
      * Asynchronously find the batch based on the given predicate.  The predicate takes two arguments:
      *
