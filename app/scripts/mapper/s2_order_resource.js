@@ -76,26 +76,22 @@ define([
     // Helper functions for dealing with the items structure
     function notFunction(x) { return typeof x !== 'function'; }
 
-    // Ensure that the items in an order have a hook back into the order & the role
-    _.chain(order.items).each(function(items, role) {
-      _.each(items, function(item) { $.extend(item, { order: order, role: role }); });
-    });
-
-    // Instance methods for the items structure
-    order.items = $.extend(Object.create({
-      filter: function(fn) {
-        var results = _.chain(this).values().flatten().filter(fn).value();
-        return results;
-
-        var deferredObject = $.Deferred();
-        if (results.length == 0) {
-          deferredObject.reject();
-        } else {
-          deferredObject.resolve(results);
+    Object.defineProperties(order, {
+      items: {
+        get: function() {
+          // Instance methods for the items structure
+          return $.extend(Object.create({
+            filter: function(fn) {
+              var results = _.chain(this).values().flatten().filter(fn).value();
+              return results;
+            }
+          }), _.chain(order.rawJson.order.items).pairs().reduce(function(items, pair) {
+            items[pair[0]] = _.map(pair[1], function(item) { return $.extend({ order: order, role: pair[0] }, item); });
+            return items;
+          }, {}).value());
         }
-        return deferredObject.promise();
       }
-    }), order.items);
+    });
   }
 
   return Order;

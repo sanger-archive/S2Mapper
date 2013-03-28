@@ -14,7 +14,7 @@ define([
   function resourceProcessor(rootInstance, resourceDeferred) {
     return function(response){
       var resourceType  = Object.keys(response.responseText)[0];
-      var resourceClass = rootInstance[resourceType.pluralize()];
+      var resourceClass = rootInstance[resourceType.pluralize()] || rootInstance.actions[resourceType.pluralize()];
       var resource      = resourceClass.instantiate({ rawJson: response.responseText });
 
       resourceDeferred.resolve(resource);
@@ -64,12 +64,14 @@ define([
 
     // Handles creating the appropriate resource type from the entry in the root JSON
     function createResourceType(root, details) {
-      var json = {}; json[details.name] = details.json;
+      if (typeof details.json === 'object') {
+        var json = {}; json[details.name] = details.json;
 
-      details.nesting(root)[details.name] = $.extend(
-        Resources.base.instantiate({ root: root, rawJson: json }),
-        Resources.get(details.name)
-      );
+        details.nesting(root)[details.name] = $.extend(
+          Resources.base.instantiate({ root: root, rawJson: json }),
+          Resources.get(details.name)
+        );
+      }
       return root;
     }
 

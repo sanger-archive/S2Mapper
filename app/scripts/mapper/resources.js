@@ -8,6 +8,8 @@ define([
   'mapper/s2_barcode_resource',
   'mapper/s2_batch_resource',
   'mapper/s2_search_resource',
+  'mapper/s2_transfer_resources',
+  'mapper/s2_movement_resources'
 ], function(ignoreStringStuff, BaseResource) {
   'use strict';
 
