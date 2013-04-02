@@ -5,8 +5,14 @@ define(['text!json/unit/empty_tube_search.json'], function (emptyTubeData) {
 
   var config = {
     apiUrl:   '', // NOT USED IN TESTING
-    setupTest:function (testData, stepNo) {
+    setupTest:function (testData, stepNo, noReload) {
+      // if noReload is true, then the config.stepJson is NOT
+      // erased, and the testData are added to the actual one.
+
       var step = stepNo || 0;
+      if (!noReload){
+        config.stepJson = {};
+      }
 
       testData = $.parseJSON(testData);
       config.createTestData(testData);
@@ -106,13 +112,12 @@ define(['text!json/unit/empty_tube_search.json'], function (emptyTubeData) {
       if (options.data) {
         config.reqParams = config.reqParams + options.data;
       }
-      config.log(config.reqParams, 1);
 
-      config.log('Sending ajax message for "' + config.stage + '"');
+//      config.log('Sending ajax message for "' + config.stage + '"');
       var response = config.stepJson[config.reqParams];
       if (response !== undefined) {
-        config.log("Responding with:", 0);
-        config.log(response);
+//        config.log("Responding with:", 0);
+//        config.log(response);
 
         fakeAjaxDeferred.resolve({
           url:         options.url,
@@ -122,12 +127,14 @@ define(['text!json/unit/empty_tube_search.json'], function (emptyTubeData) {
         });
 
       } else if (options.type === 'POST' && options.url === '/searches') {
+        config.log(config.reqParams, 1);
+
+        config.log('Sending ajax message for "' + config.stage + '"');
         config.log('\nSearch for: ' + JSON.parse(options.data).search.model
             + ' not found in test data.', 2);
 
         config.log('\nSimulating search not found on S2...');
         config.log('Returning: ' + options.url, 0);
-
         fakeAjaxDeferred.resolve({
           url:         options.url,
           'status':    200,
@@ -135,8 +142,8 @@ define(['text!json/unit/empty_tube_search.json'], function (emptyTubeData) {
           responseText:JSON.parse(emptyTubeData).steps[0].response
         });
       } else if (options.type === 'GET' && options.url === '/EMPTY_SEARCH_RESULT_UUID/page=1') {
-        config.log('\nSimulating empty search result search page...');
-        config.log('Returning: ' + options.url, 0);
+//        config.log('\nSimulating empty search result search page...');
+//        config.log('Returning: ' + options.url, 0);
 
         fakeAjaxDeferred.resolve({
           url:         options.url,
@@ -146,12 +153,13 @@ define(['text!json/unit/empty_tube_search.json'], function (emptyTubeData) {
         });
 
       } else {
+        config.log(config.reqParams, 1);
         config.log('\nRequest for: ' + config.reqParams + ' not found in test data.', 2);
         config.log('Simulating a 404 error!', 2);
         fakeAjaxDeferred.reject(fakeAjaxDeferred, '404 error');
       }
 
-      config.log('_________________________________________________________\n');
+//      config.log('_________________________________________________________\n');
       return fakeAjaxDeferred;
     },
 

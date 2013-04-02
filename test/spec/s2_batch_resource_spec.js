@@ -365,6 +365,61 @@ define([
             };
             expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });
+
+        });
+
+        describe("update roles", function () {
+          var expectedBatchUuid = "batch_UUID",
+              savedBatch,
+              tubesByOrders;
+
+          beforeEach(function () {
+            spyOn(s2.batches, "create").andCallThrough();
+            spyOn(config, "ajax").andCallThrough();
+            batch.save().done(function (resultbatch) {
+
+              console.log(">> ",batch);
+              console.log(">>> ",resultbatch);
+
+              savedBatch = resultbatch;
+//              debugger;
+
+                }).then(function(){
+                  console.log(">>> ",savedBatch);
+//                  debugger;
+                  return savedBatch.items;
+                }).then(function(items){
+                  console.log(">>> ",items);
+
+                  return savedBatch.getResourcesGroupedByOrders();
+                }).then(function(result){
+                  tubesByOrders = result;
+                  console.log(" %%%%% ",tubesByOrders);
+                }).fail(function () {
+                  //debugger;
+                });
+          });
+
+          it("finds the correct 'tubes by orders'", function () {
+//            var expectedOptions = {type:"PUT",
+//              url:                      "/order1_UUID",
+//              dataType:                 'json',
+//              headers:                  {"Content-Type":'application/json'},
+//              data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
+//            };
+
+            expect(tubesByOrders["order1_UUID"]).toBeDefined();
+            expect(tubesByOrders["order1_UUID"].items.length).toEqual(2);
+            expect(tubesByOrders["order1_UUID"].items[0].uuid).toBeDefined();
+
+            if(tubesByOrders["order1_UUID"].items[0].uuid == "tube1_UUID"){
+              expect(tubesByOrders["order1_UUID"].items[1].uuid).toEqual("tube2_UUID");
+            } else {
+              expect(tubesByOrders["order1_UUID"].items[0].uuid).toEqual("tube2_UUID");
+              expect(tubesByOrders["order1_UUID"].items[1].uuid).toEqual("tube1_UUID");
+            }
+          });
+
         });
 
       });

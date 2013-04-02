@@ -34,12 +34,19 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       },
 
       items:function () {
-        return this.orders.then(function (orders) {
+        return batch.orders.then(function (orders) {
           return _.chain(orders)
-                  .map(function (order) { return _.values(order.items); })
-                  .flatten()
-                  .filter(function (item) { return item.batch.uuid === batch.uuid; })
-                  .value();
+              .map(function (order) {
+                return _.values(order.items);
+              })
+              .flatten()
+              .filter(function (item) {
+                if (item.batch.uuid) { // if the batch is the full object
+                  return item.batch.uuid === batch.uuid;
+                } // otherwise, it is only the UUID of the batch...
+                return item.batch === batch.uuid;
+              })
+              .value();
         });
       }
     };
@@ -117,12 +124,35 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       }
 
       return deferred.promise();
+    },
+
+    getResourcesGroupedByOrders:function (batch) {
+      var defferedForGroupedResources = $.Deferred();
+      var ordersHashedByUUID = {};
+
+
+
+      batch.items.then(function (items) {
+        _.each(items, function (rsc) {
+          //resourceUUIDs.push(rsc.uuid); // saving the rscs' uuids
+          if (!ordersHashedByUUID[rsc.order.uuid]) {
+            ordersHashedByUUID[rsc.order.uuid] = {order:rsc.order, items:[]};
+          }
+          ordersHashedByUUID[rsc.order.uuid].items.push(rsc);
+        });
+      });
+      defferedForGroupedResources.resolve(ordersHashedByUUID);
+
+      return defferedForGroupedResources.promise();
     }
   };
 
   return BaseResource.extendAs('batch', function (batchInstance, options) {
     batchInstance.save = function () {
       return instanceMethods.save(batchInstance);
+    };
+    batchInstance.getResourcesGroupedByOrders = function () {
+      return instanceMethods.getResourcesGroupedByOrders(batchInstance);
     };
     batchInstance.resources = options.resources;
     return extendProxy(proxyFor(batchInstance), batchInstance);
