@@ -66,7 +66,7 @@ define(['text!json/unit/empty_tube_search.json'], function (emptyTubeData) {
       return resultFromJson;
     },
 
-    logToConsole:false,
+    logToConsole:true,
 
     log: function (message, level) {
       if (!config.logToConsole) return; // do nothing

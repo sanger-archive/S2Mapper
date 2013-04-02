@@ -52,7 +52,7 @@ define(['mapper/support/deferred'], function(Deferred) {
     betweenLabware: function(model, preparation) {
       return $.extend(this.stateManagement(), {
         prepare: function(state) {
-          state['operations'] = []
+          state['operations'] = [];
 
           return _.partial(Deferred.in_parallel, state).apply(
             Deferred,
