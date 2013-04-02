@@ -417,7 +417,7 @@
         "items":{
           "binding_tube_to_be_extracted":{
             "tube1_UUID":{
-              "state":"started"
+              "event":"start"
             }
           }
         }

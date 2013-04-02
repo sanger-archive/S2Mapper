@@ -263,14 +263,13 @@ define([
             .then(
               function(){
                 return Operations.stateManagement().complete(changingRoles);
-              }
-              )
+              })
             .then( function (order) {
               var startingOptions = {type:"PUT",
                 url:                      "/order1_UUID",
                 dataType:                 'json',
                 headers:                  {"Content-Type":'application/json'},
-                data:                     '{"user":"username","items":{"binding_tube_to_be_extracted":{"tube1_UUID":{"state":"started"}}}}'
+                data:                     '{"user":"username","items":{"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"start"}}}}'
               };
               expect(config.ajax).toHaveBeenCalledWith(startingOptions);
 
