@@ -52,7 +52,7 @@ define(['mapper/support/deferred'], function(Deferred) {
     betweenLabware: function(model, preparation) {
       return $.extend(this.stateManagement(), {
         prepare: function(state) {
-          state['operations'] = []
+          state['operations'] = [];
 
           return _.partial(Deferred.in_parallel, state).apply(
             Deferred,
@@ -90,7 +90,7 @@ define(['mapper/support/deferred'], function(Deferred) {
         start: function(state) {
           return updateItemsInOrders(
             _.chain(state.updates).map(function(update) {
-              return { order: update.input.order, resource: update.output.resource, role: update.output.role, update: { state: 'started' } };
+              return { order: update.input.order, resource: update.output.resource, role: update.output.role, update: { event: 'start' } };
             }).value()
           );
         },
