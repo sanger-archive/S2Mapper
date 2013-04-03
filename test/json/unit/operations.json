@@ -127,7 +127,7 @@
         "user": "username",
         "items": {
           "outputRole": {
-            "output-tube-1": { "state": "started" }
+            "output-tube-1": { "event":"start" }
           }
         }
       },
@@ -164,8 +164,8 @@
         "user": "username",
         "items": {
           "outputRole": {
-            "output-tube-2": { "state": "started" },
-            "output-tube-3": { "state": "started" }
+            "output-tube-2": { "event":"start" },
+            "output-tube-3": { "event":"start" }
           }
         }
       },
@@ -204,9 +204,9 @@
         "user": "username",
         "items": {
           "outputRole": {
-            "output-tube-2": { "state": "started" },
-            "output-tube-3": { "state": "started" },
-            "output-tube-4": { "state": "started" }
+            "output-tube-2": { "event":"start" },
+            "output-tube-3": { "event":"start" },
+            "output-tube-4": { "event":"start" }
           }
         }
       },

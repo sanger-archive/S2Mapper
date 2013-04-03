@@ -69,7 +69,8 @@ define([
         var resourceTests = [
           { resourceType: 'tube',  uuid: '3bcf8010-68ac-0130-9163-282066132de2', data: tubeTestJson  },
           { resourceType: 'order', uuid: '25ec5e30-67b1-0130-915d-282066132de2', data: orderTestJson }
-        ]
+        ];
+
         for (var index in resourceTests) {
           var resourceTest = resourceTests[index];
 
@@ -77,7 +78,7 @@ define([
             var expectedResponse;
 
             beforeEach(function() {
-              expectedResponse = config.setupTest(resourceTest.data);
+              expectedResponse = config.setupTest(resourceTest.data,0,true);
               S2Root.load({user:"username"}).done(results.assignTo('root'));
               results.get('root').find(resourceTest.uuid).done(results.assignTo('resource'));
             });
