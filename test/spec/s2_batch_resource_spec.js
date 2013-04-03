@@ -6,7 +6,7 @@ define([
   'text!json/unit/batch_resource_spec_data/data_for_unsaved_batch_one_tube.json',
   'text!json/unit/batch_resource_spec_data/data_for_unsaved_batch_two_tubes.json',
   'text!json/unit/batch_resource_spec_data/data_for_unsaved_batch_one_tube_in_order_with_two.json'
-], function (TestHelper, config, Root, dataForOrder, dataForBatchOneTube, dataForBatchTwoTubes, dataForBatchOneTubeOneOrderWithTwoTubes ) {
+], function (TestHelper, config, Root, dataForOrder, dataForBatchOneTube, dataForBatchTwoTubes, dataForBatchOneTubeOneOrderWithTwoTubes) {
   'use strict';
 
   TestHelper(function (results) {
@@ -139,7 +139,6 @@ define([
             };
             expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });
-
 
         });
       });
@@ -376,43 +375,29 @@ define([
           beforeEach(function () {
             spyOn(s2.batches, "create").andCallThrough();
             spyOn(config, "ajax").andCallThrough();
-            batch.save().done(function (resultbatch) {
-
-              console.log(">> ",batch);
-              console.log(">>> ",resultbatch);
-
-              savedBatch = resultbatch;
-//              debugger;
-
-                }).then(function(){
-                  console.log(">>> ",savedBatch);
-//                  debugger;
+            batch.save()
+                .then(function (resultbatch) {
+                  savedBatch = resultbatch;
                   return savedBatch.items;
-                }).then(function(items){
-                  console.log(">>> ",items);
-
+                })
+                .then(function (items) {
                   return savedBatch.getResourcesGroupedByOrders();
-                }).then(function(result){
+                })
+                .then(function (result) {
                   tubesByOrders = result;
-                  console.log(" %%%%% ",tubesByOrders);
-                }).fail(function () {
-                  //debugger;
+                })
+                .fail(function () {
+                  debugger;
                 });
           });
 
           it("finds the correct 'tubes by orders'", function () {
-//            var expectedOptions = {type:"PUT",
-//              url:                      "/order1_UUID",
-//              dataType:                 'json',
-//              headers:                  {"Content-Type":'application/json'},
-//              data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
-//            };
 
             expect(tubesByOrders["order1_UUID"]).toBeDefined();
             expect(tubesByOrders["order1_UUID"].items.length).toEqual(2);
             expect(tubesByOrders["order1_UUID"].items[0].uuid).toBeDefined();
 
-            if(tubesByOrders["order1_UUID"].items[0].uuid == "tube1_UUID"){
+            if (tubesByOrders["order1_UUID"].items[0].uuid == "tube1_UUID") {
               expect(tubesByOrders["order1_UUID"].items[1].uuid).toEqual("tube2_UUID");
             } else {
               expect(tubesByOrders["order1_UUID"].items[0].uuid).toEqual("tube2_UUID");
