@@ -19,17 +19,24 @@ define([
      * Calls the 'done' handler on the returned promise with the first batch found, and the 'fail' handler
      * should none be found.
      */
-    batchFor:   function (criteria) {
-      var deferredObject = $.Deferred()
-      var root = this.root, order = this.order,
-          results = this.items
-              .filter(function (item) {
-                return (item.batch !== null) && criteria(item, order);
-              });
-      if (results.length > 0) {
-        deferredObject.resolve(results);
+    batchFor:function (criteria) {
+      var deferredObject = $.Deferred();
+
+      var root = this.root, order = this.order, batch = null;
+
+      var filteredItems = this.items.filter(function (item) {
+        return (item.batch !== null) && criteria(item, order);
+      });
+
+      if(filteredItems.length > 0){
+        root.batches.instantiate({rawJson:{batch:filteredItems[0].batch}}).read()
+            .then(function(batch){
+              deferredObject.resolve(batch);
+            }).fail(function(){
+              deferredObject.reject();
+            });
       } else {
-        deferredObject.reject(results);
+        deferredObject.reject();
       }
       return deferredObject.promise();
     },
@@ -79,7 +86,8 @@ define([
         oldRoleJson = generateJsonEventForResourcesAndRole(this, eventForOld, resourceUUIDs, oldRole, "done");
         $.extend(true, updateJson, oldRoleJson);
       }
-      var newRoleJson = {};      newRoleJson = generateJsonEventForResourcesAndRole(this, eventForNew, resourceUUIDs, newRole);
+      var newRoleJson = {};
+      newRoleJson = generateJsonEventForResourcesAndRole(this, eventForNew, resourceUUIDs, newRole);
       $.extend(true, updateJson, newRoleJson);
       return this.update(updateJson);
     }
@@ -87,18 +95,22 @@ define([
 
   function extendItemBehaviour(order) {
     // Helper functions for dealing with the items structure
-    function notFunction(x) { return typeof x !== 'function'; }
+    function notFunction(x) {
+      return typeof x !== 'function';
+    }
 
     Object.defineProperties(order, {
-      items: {
-        get: function() {
+      items:{
+        get:function () {
           // Instance methods for the items structure
           return $.extend(Object.create({
-            filter: function(fn) {
+            filter:function (fn) {
               return _.chain(this).values().flatten().filter(fn).value();
             }
-          }), _.chain(order.rawJson.order.items).pairs().reduce(function(items, pair) {
-            items[pair[0]] = _.map(pair[1], function(item) { return $.extend({ order: order, role: pair[0] }, item); });
+          }), _.chain(order.rawJson.order.items).pairs().reduce(function (items, pair) {
+            items[pair[0]] = _.map(pair[1], function (item) {
+              return $.extend({ order:order, role:pair[0] }, item);
+            });
             return items;
           }, {}).value());
         }
@@ -106,34 +118,33 @@ define([
     });
   }
 
-
-function generateJsonEventForResourcesAndRole(order, event, resourceUUIDs, filteringRole, filteringStatus) {
-  var JSONForEvent = { "items":{} };
-  // for each role
-  _.each(order.items, function (labwares, role, list) {
-    // for each labware (ie tube)
-    if (!filteringRole || role === filteringRole) {
-      var labwaresInBatch = labwares.filter(function (labware) {
-        // filtering the unnecessary tubes
-        return _.contains(resourceUUIDs, labware.uuid);
-      });
-      // well... for each labware concerned (ie tube added to the batch)
-      _.each(labwaresInBatch, function (labware) {
-            // we update a piece of JSON
-            if (!filteringStatus || labware.status === filteringStatus) {
-              if (!JSONForEvent.items[filteringRole]) {
-                JSONForEvent.items[filteringRole] = {};
+  function generateJsonEventForResourcesAndRole(order, event, resourceUUIDs, filteringRole, filteringStatus) {
+    var JSONForEvent = { "items":{} };
+    // for each role
+    _.each(order.items, function (labwares, role, list) {
+      // for each labware (ie tube)
+      if (!filteringRole || role === filteringRole) {
+        var labwaresInBatch = labwares.filter(function (labware) {
+          // filtering the unnecessary tubes
+          return _.contains(resourceUUIDs, labware.uuid);
+        });
+        // well... for each labware concerned (ie tube added to the batch)
+        _.each(labwaresInBatch, function (labware) {
+              // we update a piece of JSON
+              if (!filteringStatus || labware.status === filteringStatus) {
+                if (!JSONForEvent.items[filteringRole]) {
+                  JSONForEvent.items[filteringRole] = {};
+                }
+                JSONForEvent.items[filteringRole][labware.uuid] = { "event":event };
               }
-              JSONForEvent.items[filteringRole][labware.uuid] = { "event":event };
             }
-          }
-      );
-    }
-  });
-  return JSONForEvent;
-}
+        );
+      }
+    });
+    return JSONForEvent;
+  }
 
-return Order;
+  return Order;
 });
 
 
