@@ -1,4 +1,5 @@
-[
+{
+  "default":
   {
     "description":"Testing operations",
     "calls":[
@@ -441,4 +442,5 @@
       }
     ]
   }
-]
+}
+

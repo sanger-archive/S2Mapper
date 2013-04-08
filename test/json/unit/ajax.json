@@ -1,5 +1,5 @@
-[
-  {
+{
+  "default":{
     "description":"Get the root JSON",
     "calls":[
       {
@@ -328,4 +328,4 @@
       }
     ]
   }
-]
+}
