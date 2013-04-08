@@ -151,6 +151,21 @@ define([
             };
           },
 
+          'single input-output pair setting batch':function () {
+            root.find('order-with-single-item').done(results.assignTo('order')).fail(results.unexpected);
+            root.find('input-tube-1').done(results.assignTo('inputTube')).fail(results.unexpected);
+            root.find('output-tube-1').done(results.assignTo('outputTube')).fail(results.unexpected);
+
+            return {
+              updates:[
+                {
+                  input:{ resource:results.get('inputTube'), role:'inputRole', order:results.get('order') },
+                  output:{ resource:results.get('outputTube'), role:'outputRole', batch:'batch_uuid' }
+                }
+              ]
+            };
+          },
+
           'single order with multiple input-output pairs':function () {
             root.find('order-with-two-items').done(results.assignTo('order')).fail(results.unexpected);
             root.find('input-tube-2').done(results.assignTo('inputTube2')).fail(results.unexpected);
