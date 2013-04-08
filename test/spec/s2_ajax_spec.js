@@ -34,10 +34,10 @@ define(['config',
       beforeEach(function () {
         //pass stage, step to config.setupTest
         config.loadTestData(ajaxTestJson);
-        expectedResponse = config.testData[0]["calls"][0].response;
-        config.method = getActionMethod(config.testData[0]["calls"][0]);
-        config.url = config.testData[0]["calls"][0].url;
-        config.params = config.testData[0]["calls"][0].request;
+        expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
+        config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
+        config.url = config.testData[config.defaultStage]["calls"][0].url;
+        config.params = config.testData[config.defaultStage]["calls"][0].request;
 
         s2ajax.send(
             config.method,
@@ -60,10 +60,10 @@ define(['config',
       var s2root, expectedResponse;
       beforeEach(function () {
         config.loadTestData(ajaxTestJson);
-        expectedResponse = config.testData[0]["calls"][0].response;
-        config.method = getActionMethod(config.testData[0]["calls"][0]);
-        config.url = config.testData[0]["calls"][0].url;
-        config.params = config.testData[0]["calls"][0].request;
+        expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
+        config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
+        config.url = config.testData[config.defaultStage]["calls"][0].url;
+        config.params = config.testData[config.defaultStage]["calls"][0].request;
 
         s2ajax.send(
             config.method,

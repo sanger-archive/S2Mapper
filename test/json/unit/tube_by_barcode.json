@@ -1,4 +1,5 @@
-[
+{
+  "default":
   {
     "description":"find a tube by barcode",
 
@@ -94,4 +95,4 @@
       }
     ]
   }
-]
+}

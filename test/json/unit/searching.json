@@ -1,5 +1,5 @@
-[
-  {
+{
+  "default":{
     "description":"searching for pages",
     "calls":[
       {
@@ -62,4 +62,4 @@
       }
     ]
   }
-]
+}

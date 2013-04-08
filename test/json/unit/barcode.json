@@ -1,5 +1,5 @@
-[
-  {
+{
+  "default":{
     "description":"Labelling a resource with a new barcode",
     "calls":[
       {
@@ -75,4 +75,4 @@
       }
     ]
   }
-]
+}
