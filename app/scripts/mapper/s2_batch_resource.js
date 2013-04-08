@@ -41,7 +41,7 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
               })
               .flatten()
               .filter(function (item) {
-                if (item.batch.uuid) { // if the batch is the full object
+                if (item.batch && item.batch.uuid) { // if the batch is the full object
                   return item.batch.uuid === batch.uuid;
                 } // otherwise, it is only the UUID of the batch...
                 return item.batch === batch.uuid;

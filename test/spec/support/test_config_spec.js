@@ -35,6 +35,13 @@ define([
           });
     });
 
+
+    it("testData is complete", function () {
+      expect(config.testData["default"]).toBeDefined();
+      expect(config.testData["after"]).toBeDefined();
+      expect(config.testData["even_later"]).toBeDefined();
+    });
+
     it("changes the hashedData when changing stage.", function () {
       var key = "GET:/";
       expect(config.hashedTestData[key].response.value).toEqual(0);
