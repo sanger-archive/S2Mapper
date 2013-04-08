@@ -149,6 +149,26 @@
         }
       },
       {
+        "description":"Update single-item order on start including a batch UUID",
+        "method":"put",
+        "url":"/order-with-single-item",
+        "request":{
+          "user":"username",
+          "items":{
+            "outputRole":{
+              "output-tube-1":{
+                "event":"start",
+                "batch":"batch_uuid"
+              }
+            }
+          }
+        },
+        "response":{
+          "order":{
+          }
+        }
+      },
+      {
         "description":"Update single-item order on complete",
         "method":"put",
         "url":"/order-with-single-item",
