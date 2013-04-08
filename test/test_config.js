@@ -1,4 +1,4 @@
-define(['text!json/unit/empty_search.json'], function (emptySearch) {
+define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
   'use strict';
 
   function cleanupCall(options) {
