@@ -55,7 +55,7 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
       config.hashedTestData = undefined;
       config.stage = 0;
       config.normalLoadingTestData(testDataFile);
-      config.cummulativeLoadingTestDataInCurrentStage(emptySearch);
+      config.cummulativeLoadingTestDataInFirstStage(emptySearch);
     },
 
     normalLoadingTestData:function (testDataFile) {
@@ -67,7 +67,7 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
       config.transformTestDataIntoHashForStage(0);
     },
 
-    cummulativeLoadingTestDataInCurrentStage:function (testDataFile) {
+    cummulativeLoadingTestDataInFirstStage:function (testDataFile) {
       if (!config.testData) {
         config.testData = [];
         config.testData.push({"calls":[]});

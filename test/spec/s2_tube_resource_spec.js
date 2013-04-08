@@ -27,7 +27,7 @@ define([ 'resource_test_helper'
             Root.load({user:"username"}).done(results.assignTo('root'))
 
             s2 = results.get('root')
-            config.cummulativeLoadingTestDataInCurrentStage(tubeByBarcodeJson)
+            config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson)
 
             s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'))
           })
@@ -42,7 +42,7 @@ define([ 'resource_test_helper'
             config.loadTestData(rootTestJson)
             Root.load({user:"username"}).done(results.assignTo('root'))
             s2 = results.get('root')
-            config.cummulativeLoadingTestDataInCurrentStage(tubeByBarcodeJson)
+            config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson)
             tubePromise = s2.tubes.findByEan13Barcode('6666666666666')
 
           })
@@ -59,7 +59,7 @@ define([ 'resource_test_helper'
           Root.load({user:"username"}).done(results.assignTo('root'))
           s2 = results.get('root')
 
-          config.cummulativeLoadingTestDataInCurrentStage(tubeByBarcodeJson)
+          config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson)
           s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'))
         })
 

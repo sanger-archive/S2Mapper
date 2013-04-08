@@ -45,7 +45,7 @@ define([
           Root.load({user:"username"}).done(results.assignTo('root')).fail(results.unexpected);
           root = results.get('root');
 
-          config.cummulativeLoadingTestDataInCurrentStage(testDataOrders);
+          config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
         });
 
         describe("performs create labware -> create barcode -> label labware", function () {
@@ -88,7 +88,7 @@ define([
           Root.load({user:"username"}).done(results.assignTo('root')).fail(results.unexpected);
           root = results.get('root');
 
-          config.cummulativeLoadingTestDataInCurrentStage(testDataOrders);
+          config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
 
           root.find('order-with-single-item').done(results.assignTo('order')).fail(results.unexpected);
           root.find('input-tube-1').done(results.assignTo('inputTube')).fail(results.unexpected);
@@ -241,7 +241,7 @@ define([
                   Root.load({user:"username"}).done(results.assignTo('root')).fail(results.unexpected);
                   root = results.get('root');
 
-                  config.cummulativeLoadingTestDataInCurrentStage(testDataOrders);
+                  config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
                   state = setup();
                 });
 

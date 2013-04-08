@@ -27,7 +27,7 @@ define([
       xdescribe("Calling order.getBatchFor(item), where item is a tube in the order,", function () {
         describe("and the item IS NOT in a batch,", function () {
           beforeEach(function () {
-            config.cummulativeLoadingTestDataInCurrentStage(orderWithoutBatchJson);
+            config.cummulativeLoadingTestDataInFirstStage(orderWithoutBatchJson);
             s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'));
             results.get('tube').order().done(results.assignTo('order'));
           });
@@ -39,7 +39,7 @@ define([
 
         describe("and the item IS in a batch,", function () {
           beforeEach(function () {
-            config.cummulativeLoadingTestDataInCurrentStage(orderWithBatchJson);
+            config.cummulativeLoadingTestDataInFirstStage(orderWithBatchJson);
             s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'));
             results.get('tube').order().done(results.assignTo('order'));
           });
@@ -58,7 +58,7 @@ define([
 
       describe("items", function () {
         beforeEach(function () {
-          config.cummulativeLoadingTestDataInCurrentStage(orderWithoutBatchJson);
+          config.cummulativeLoadingTestDataInFirstStage(orderWithoutBatchJson);
           s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'));
           results.get('tube').order().done(results.assignTo('order'));
         });
@@ -106,7 +106,7 @@ define([
 
       var order;
       beforeEach(function () {
-        config.cummulativeLoadingTestDataInCurrentStage(dataForOrderWithTwoTubesUpdate);
+        config.cummulativeLoadingTestDataInFirstStage(dataForOrderWithTwoTubesUpdate);
         Root.load({user:"username"}).done(results.assignTo('root'));
         s2 = results.get('root');
         s2.find("order1_UUID").done(results.assignTo('order')).fail(results.unexpected);

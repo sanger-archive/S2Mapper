@@ -20,7 +20,7 @@ define([
         s2 = results.get('root');
 
         handler = s2.searches.handling(s2.batches);
-        config.cummulativeLoadingTestDataInCurrentStage(searchData);
+        config.cummulativeLoadingTestDataInFirstStage(searchData);
       });
 
       describe('handling resource', function () {
