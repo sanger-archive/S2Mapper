@@ -41,10 +41,7 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
               })
               .flatten()
               .filter(function (item) {
-                if (item.batch.uuid) { // if the batch is the full object
-                  return item.batch.uuid === batch.uuid;
-                } // otherwise, it is only the UUID of the batch...
-                return item.batch === batch.uuid;
+                return item.batch && (item.batch.uuid === batch.uuid);
               })
               .value();
         });
@@ -140,8 +137,8 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
           }
           ordersHashedByUUID[rsc.order.uuid].items.push(rsc);
         });
+        defferedForGroupedResources.resolve(ordersHashedByUUID);
       });
-      defferedForGroupedResources.resolve(ordersHashedByUUID);
 
       return defferedForGroupedResources.promise();
     }

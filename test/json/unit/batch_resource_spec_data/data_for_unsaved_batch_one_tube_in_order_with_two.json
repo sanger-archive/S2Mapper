@@ -749,12 +749,16 @@
                   {
                     "uuid":"tube1_UUID",
                     "status":"done",
-                    "batch":"batch_UUID"
+                    "batch":{
+                      "uuid":"batch_UUID"
+                    }
                   },
                   {
                     "uuid":"tube2_UUID",
                     "status":"done",
-                    "batch":"batch_UUID"
+                    "batch":{
+                      "uuid":"batch_UUID"
+                    }
                   }
                 ]
               }
