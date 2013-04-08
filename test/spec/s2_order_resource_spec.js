@@ -18,7 +18,7 @@ define([
       results.lifeCycle();
 
       beforeEach(function () {
-        config.setupTest(rootTestJson);
+        config.loadTestData(rootTestJson);
         Root.load({user:"username"}).done(results.assignTo('root'));
         s2 = results.get('root');
       });
@@ -27,7 +27,7 @@ define([
       xdescribe("Calling order.getBatchFor(item), where item is a tube in the order,", function () {
         describe("and the item IS NOT in a batch,", function () {
           beforeEach(function () {
-            config.setupTest(orderWithoutBatchJson);
+            config.cummulativeLoadingTestDataInFirstStage(orderWithoutBatchJson);
             s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'));
             results.get('tube').order().done(results.assignTo('order'));
           });
@@ -39,7 +39,7 @@ define([
 
         describe("and the item IS in a batch,", function () {
           beforeEach(function () {
-            config.setupTest(orderWithBatchJson);
+            config.cummulativeLoadingTestDataInFirstStage(orderWithBatchJson);
             s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'));
             results.get('tube').order().done(results.assignTo('order'));
           });
@@ -58,7 +58,7 @@ define([
 
       describe("items", function () {
         beforeEach(function () {
-          config.setupTest(orderWithoutBatchJson);
+          config.cummulativeLoadingTestDataInFirstStage(orderWithoutBatchJson);
           s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'));
           results.get('tube').order().done(results.assignTo('order'));
         });
@@ -106,7 +106,7 @@ define([
 
       var order;
       beforeEach(function () {
-        config.setupTest(dataForOrderWithTwoTubesUpdate);
+        config.cummulativeLoadingTestDataInFirstStage(dataForOrderWithTwoTubesUpdate);
         Root.load({user:"username"}).done(results.assignTo('root'));
         s2 = results.get('root');
         s2.find("order1_UUID").done(results.assignTo('order')).fail(results.unexpected);
@@ -126,10 +126,10 @@ define([
         order.setBatchForResources(batch, ['tube1_UUID'], 'done');
 
         var expectedOptions = {type:"PUT",
-          url:                      "/order1_UUID",
-          dataType:                 'json',
-          headers:                  {"Content-Type":'application/json'},
-          data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
+          url:"/order1_UUID",
+          dataType:'json',
+          headers:{"Content-Type":'application/json'},
+          data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
         };
         expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
       });
@@ -147,10 +147,10 @@ define([
             });
 
         var expectedOptions = {type:"PUT",
-          url:                      "/order1_UUID",
-          dataType:                 'json',
-          headers:                  {"Content-Type":'application/json'},
-          data:                     '{"user":"username","items":{"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"start"}}}}'
+          url:"/order1_UUID",
+          dataType:'json',
+          headers:{"Content-Type":'application/json'},
+          data:'{"user":"username","items":{"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"start"}}}}'
         };
         expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
       });
@@ -169,10 +169,10 @@ define([
                   "tube_to_be_extracted", 'unuse');
             }).then(function (order) {
               var expectedOptions = {type:"PUT",
-                url:                      "/order1_UUID",
-                dataType:                 'json',
-                headers:                  {"Content-Type":'application/json'},
-                data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"event":"unuse"}},"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"complete"}}}}'
+                url:"/order1_UUID",
+                dataType:'json',
+                headers:{"Content-Type":'application/json'},
+                data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"event":"unuse"}},"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"complete"}}}}'
               };
               expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
             }).fail(function () {
@@ -194,8 +194,8 @@ define([
             }).then(function (order) {
               var roles = _.chain(order.items).keys().value();
 
-              expect(_.contains(roles,"tube_to_be_extracted")).toBeTruthy();
-              expect(_.contains(roles,"binding_tube_to_be_extracted")).toBeTruthy();
+              expect(_.contains(roles, "tube_to_be_extracted")).toBeTruthy();
+              expect(_.contains(roles, "binding_tube_to_be_extracted")).toBeTruthy();
 
               expect(order.items["tube_to_be_extracted"][0]["status"]).toEqual("unused");
               expect(order.items["binding_tube_to_be_extracted"][0]["status"]).toEqual("done");
@@ -214,20 +214,20 @@ define([
         expect(order).toBeDefined();
         expect(batch).toBeDefined();
         var state = {
-          updates: [
+          updates:[
             {
-              input:  { order: order },
-              output: { resource: tube, role: 'binding_tube_to_be_extracted' }
+              input:{ order:order },
+              output:{ resource:tube, role:'binding_tube_to_be_extracted' }
             }
           ]
         };
         Operations.stateManagement().start(state)
             .then(function (order) {
               var expectedOptions = {type:"PUT",
-                url:                      "/order1_UUID",
-                dataType:                 'json',
-                headers:                  {"Content-Type":'application/json'},
-                data:                     '{"user":"username","items":{"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"start"}}}}'
+                url:"/order1_UUID",
+                dataType:'json',
+                headers:{"Content-Type":'application/json'},
+                data:'{"user":"username","items":{"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"start"}}}}'
               };
               expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
             }).fail(function () {
@@ -244,40 +244,40 @@ define([
         expect(order).toBeDefined();
         expect(batch).toBeDefined();
         var startingRole = {
-          updates: [
+          updates:[
             {
-              input:  { order: order },
-              output: { resource: tube, role: 'binding_tube_to_be_extracted' }
+              input:{ order:order },
+              output:{ resource:tube, role:'binding_tube_to_be_extracted' }
             }
           ]
         };
         var changingRoles = {
-          updates: [
+          updates:[
             {
-              input:  { order: order, resource: tube, role: 'tube_to_be_extracted' },
-              output: {               resource: tube, role: 'binding_tube_to_be_extracted' }
+              input:{ order:order, resource:tube, role:'tube_to_be_extracted' },
+              output:{               resource:tube, role:'binding_tube_to_be_extracted' }
             }
           ]
         };
         Operations.stateManagement().start(startingRole)
             .then(
-              function(){
-                return Operations.stateManagement().complete(changingRoles);
-              })
-            .then( function (order) {
+            function () {
+              return Operations.stateManagement().complete(changingRoles);
+            })
+            .then(function (order) {
               var startingOptions = {type:"PUT",
-                url:                      "/order1_UUID",
-                dataType:                 'json',
-                headers:                  {"Content-Type":'application/json'},
-                data:                     '{"user":"username","items":{"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"start"}}}}'
+                url:"/order1_UUID",
+                dataType:'json',
+                headers:{"Content-Type":'application/json'},
+                data:'{"user":"username","items":{"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"start"}}}}'
               };
               expect(config.ajax).toHaveBeenCalledWith(startingOptions);
 
               var expectedOptions = {type:"PUT",
-                url:                      "/order1_UUID",
-                dataType:                 'json',
-                headers:                  {"Content-Type":'application/json'},
-                data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"event":"unuse"}},"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"complete"}}}}'
+                url:"/order1_UUID",
+                dataType:'json',
+                headers:{"Content-Type":'application/json'},
+                data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"event":"unuse"}},"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"complete"}}}}'
               };
               expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
             }).fail(function () {

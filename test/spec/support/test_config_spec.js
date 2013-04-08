@@ -1,65 +1,88 @@
-define([ 'resource_test_helper'
-       , 'config'
-       , 'mapper/s2_root'
-       , 'mapper/s2_tube_resource'
-       , 'text!json/unit/root.json'
-       , 'text!json/unit/tube.json'
-       , 'text!json/unit/empty_tube_search.json'
-]
+define([
+  'config'
+  , 'text!/json/unit/test_config_data.json'
+], function (config, minidb) {
 
-, function(TestHelper, config, Root, TubeResource, rootTestJson, tubeByBarcodeJson){
-  'use strict'
+  'use strict';
 
-  TestHelper(function(results){
-    describe("TestConfig:-", function(){
-      var s2, tubePromise, ajaxPromise
-      results.lifeCycle()
+  describe("the fake ajax call", function () {
+    var putCall = {
+      type:'PUT',
+      url:'/',
+      dataType:"json",
+      headers:{ 'Content-Type':'application/json' },
+      data:""
+    };
 
-      describe("When it can't find a resource by UUID,", function(){
+    beforeEach(function () {
+      config.loadTestData(minidb);
+    });
 
-        beforeEach(function(){
-          config.setupTest(rootTestJson)
+    it("changes the current stage when sending a 'PUT'.", function () {
+      spyOn(config, "progress").andCallThrough();
+      config.ajax(putCall)
+          .then(function () {
+            return expect(config.progress).toHaveBeenCalled();
+          }).fail(function () {
+            throw "oops";
+          });
+    });
 
-          Root.load({user:"username"}).done(results.assignTo('root'))
-          s2 = results.get('root')
-
-          tubePromise = s2.find('NOT-A-VALID-UUID')
-
-        })
-
-        it("returns a 404 status code.", function(){
-          expect(tubePromise.state()).toBe('rejected')
-        })
-
-      })
-
-      describe("Searching for a barcode that's not on the system,", function(){
-        beforeEach(function(){
-          config.setupTest(rootTestJson)
-
-          Root.load({user:"username"}).done(results.assignTo('root'))
-          s2 = results.get('root')
-
-          ajaxPromise = s2.searches.create({
-            "search":  {
-              "description":  "search for barcoded tube",
-              "model":        "tube",
-              "criteria":     {
-                "label":  {
-                  "position":  "barcode",
-                  "type":      "ean13-barcode",
-                  "value":     "6666666666666"
-                }
-              }
-            }
+    it("changes the hashedData when changing stage.", function () {
+      var key = "GET:/";
+      expect(config.hashedTestData[key].value).toEqual(0);
+      config.ajax(putCall)
+          .then(function () {
+            expect(config.hashedTestData[key].value).toEqual(1);
+            return config.ajax(putCall)
           })
-        })
+          .then(function () {
+            expect(config.hashedTestData[key].value).toEqual(2);
+          }).fail(function () {
+            throw "oops";
+          });
+    });
 
-        it("returns a resolved promise to simlutate the returned search response.", function(){
-          expect(ajaxPromise.state()).toBe('resolved')
-        })
+    it("return an empty thing when a search fails.", function () {
+      var searchCall = {
+        type:'POST',
+        url:'/searches',
+        dataType:"json",
+        headers:{ 'Content-Type':'application/json' },
+        data:{ 'what':'something impossible to find' }
+      };
 
-      })
-    })
-  })
-})
+      config.ajax(searchCall)
+          .then(function (response) {
+            expect(response).toBeDefined();
+            expect(response["responseText"]).toBeDefined();
+            expect(response["responseText"]["search"]).toBeDefined();
+            expect(response["responseText"]["search"]["actions"]).toBeDefined();
+            expect(response["responseText"]["search"]["actions"]["first"]).toBeDefined();
+
+            var URL_FOR_NO_RESULT = response["responseText"]["search"]["actions"]["first"];
+
+            var resultCall = {
+              type:'GET',
+              url:URL_FOR_NO_RESULT,
+              dataType:"json",
+              headers:{ 'Content-Type':'application/json' },
+              data:""
+            };
+
+            return config.ajax(resultCall);
+          })
+          .then(function (response) {
+            expect(response).toBeDefined();
+            expect(response["responseText"]).toBeDefined();
+            expect(response["responseText"]["size"]).toBeDefined();
+            expect(response["responseText"]["size"]).toEqual(0);
+
+          }).fail(function () {
+            throw "oops";
+          });
+    });
+
+  });
+
+});

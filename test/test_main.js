@@ -7,6 +7,7 @@ require.config({
     config:  'test_config',
     spec:    'spec',
     json:    'json',
+    testjson:'json',
     text:    'components/requirejs-text/text'
   }
 });
