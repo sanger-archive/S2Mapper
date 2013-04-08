@@ -1,49 +1,50 @@
-{
-  "stage" : "batch",
-  "steps": [
-    {
-      "description":"Find the tubes by barcodes for tube 1...",
-      "method":"post",
-      "url":"/searches",
-      "request":{
-        "search":{
-          "user":"username",
-          "description":"search for barcoded tube",
-          "model":"tube",
-          "criteria":{
-            "label":{
-              "position":"barcode",
-              "type":"ean13-barcode",
-              "value":"2345678901234"
+[
+  {
+    "description":"batch",
+    "calls":[
+      {
+        "description":"Find the tubes by barcodes for tube 1...",
+        "method":"post",
+        "url":"/searches",
+        "request":{
+          "search":{
+            "user":"username",
+            "description":"search for barcoded tube",
+            "model":"tube",
+            "criteria":{
+              "label":{
+                "position":"barcode",
+                "type":"ean13-barcode",
+                "value":"2345678901234"
+              }
             }
+          }
+        },
+        "response":{
+          "search":{
+            "actions":{
+              "read":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2",
+              "first":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2/page=1",
+              "last":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2/page=-1"
+            },
+            "uuid":"46ff7c00-68ac-0130-7ac8-282066132de2"
           }
         }
       },
-      "response":{
-        "search":{
+      {
+        "description":"Get the search results (tubes 1)",
+        "method":"get",
+        "url":"/46ff7c00-68ac-0130-7ac8-282066132de2/page=1",
+        "request":null,
+        "response":{
           "actions":{
-            "read":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2",
-            "first":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2/page=1",
-            "last":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2/page=-1"
+            "read":"http://localhost:9292/tubes/page=1",
+            "first":"http://localhost:9292/tubes/page=1",
+            "last":"http://localhost:9292/tubes/page=-1"
           },
-          "uuid":"46ff7c00-68ac-0130-7ac8-282066132de2"
-        }
-      }
-    },
-  {
-      "description":"Get the search results (tubes 1)",
-      "method":"get",
-      "url":"/46ff7c00-68ac-0130-7ac8-282066132de2/page=1",
-      "request":null,
-      "response":{
-        "actions":{
-          "read":"http://localhost:9292/tubes/page=1",
-          "first":"http://localhost:9292/tubes/page=1",
-          "last":"http://localhost:9292/tubes/page=-1"
-        },
-        "size":1,
-        "tubes":[
-          {
+          "size":1,
+          "tubes":[
+            {
               "actions":{
                 "read":"http://localhost:9292/3bcf8010-68ac-0130-9163-282066132de2",
                 "create":"http://localhost:9292/3bcf8010-68ac-0130-9163-282066132de2",
@@ -83,80 +84,80 @@
                   "type":"ean13-barcode"
                 }
               }
-          }
-        ]
-      }
-    },
-    {
-      "description":"Find the order by tube uuid and role for tube 1",
-      "method":"post",
-      "url":"/searches",
-      "request":{
-        "search":{
-          "user":"username",
-          "description":"search for order",
-          "model":"order",
-          "criteria":{
-            "item":{
-              "uuid":"3bcf8010-68ac-0130-9163-282066132de2"
             }
-          }
+          ]
         }
       },
-      "response":{
-        "search":{
-          "actions":{
-            "read":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2",
-            "first":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2/page=1",
-            "last":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2/page=-1"
-          },
-          "uuid":"473203b0-68ac-0130-7ac8-282066132de2"
-        }
-      }
-    },
-    {
-      "description":"Find the tubes by barcodes for tube 2...",
-      "method":"post",
-      "url":"/searches",
-      "request":{
-        "search":{
-          "user":"username",
-          "description":"search for barcoded tube",
-          "model":"tube",
-          "criteria":{
-            "label":{
-              "position":"barcode",
-              "type":"ean13-barcode",
-              "value":"9876543210987"
+      {
+        "description":"Find the order by tube uuid and role for tube 1",
+        "method":"post",
+        "url":"/searches",
+        "request":{
+          "search":{
+            "user":"username",
+            "description":"search for order",
+            "model":"order",
+            "criteria":{
+              "item":{
+                "uuid":"3bcf8010-68ac-0130-9163-282066132de2"
+              }
             }
           }
-        }
-      },
-      "response":{
-        "search":{
-          "actions":{
-            "read":"http://localhost:9292/46ff7c00-0000-0000-7ac8-282066132de2",
-            "first":"http://localhost:9292/46ff7c00-0000-0000-7ac8-282066132de2/page=1",
-            "last":"http://localhost:9292/46ff7c00-0000-0000-7ac8-282066132de2/page=-1"
-          },
-          "uuid":"46ff7c00-0000-0000-7ac8-282066132de2"
-        }
-      }
-    },
-  {
-      "description":"Get the search results (tubes 2)",
-      "method":"get",
-      "url":"/46ff7c00-0000-0000-7ac8-282066132de2/page=1",
-      "request":null,
-      "response":{
-        "actions":{
-          "read":"http://localhost:9292/tubes/page=1",
-          "first":"http://localhost:9292/tubes/page=1",
-          "last":"http://localhost:9292/tubes/page=-1"
         },
-        "size":1,
-        "tubes":[
-          {
+        "response":{
+          "search":{
+            "actions":{
+              "read":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2",
+              "first":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2/page=1",
+              "last":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2/page=-1"
+            },
+            "uuid":"473203b0-68ac-0130-7ac8-282066132de2"
+          }
+        }
+      },
+      {
+        "description":"Find the tubes by barcodes for tube 2...",
+        "method":"post",
+        "url":"/searches",
+        "request":{
+          "search":{
+            "user":"username",
+            "description":"search for barcoded tube",
+            "model":"tube",
+            "criteria":{
+              "label":{
+                "position":"barcode",
+                "type":"ean13-barcode",
+                "value":"9876543210987"
+              }
+            }
+          }
+        },
+        "response":{
+          "search":{
+            "actions":{
+              "read":"http://localhost:9292/46ff7c00-0000-0000-7ac8-282066132de2",
+              "first":"http://localhost:9292/46ff7c00-0000-0000-7ac8-282066132de2/page=1",
+              "last":"http://localhost:9292/46ff7c00-0000-0000-7ac8-282066132de2/page=-1"
+            },
+            "uuid":"46ff7c00-0000-0000-7ac8-282066132de2"
+          }
+        }
+      },
+      {
+        "description":"Get the search results (tubes 2)",
+        "method":"get",
+        "url":"/46ff7c00-0000-0000-7ac8-282066132de2/page=1",
+        "request":null,
+        "response":{
+          "actions":{
+            "read":"http://localhost:9292/tubes/page=1",
+            "first":"http://localhost:9292/tubes/page=1",
+            "last":"http://localhost:9292/tubes/page=-1"
+          },
+          "size":1,
+          "tubes":[
+            {
               "actions":{
                 "read":"http://localhost:9292/3bcf8010-0000-0000-9163-282066132de2",
                 "create":"http://localhost:9292/3bcf8010-0000-0000-9163-282066132de2",
@@ -196,183 +197,184 @@
                   "type":"ean13-barcode"
                 }
               }
-          }
-        ]
-      }
-    },
-    {
-      "description":"Find the order by tube uuid and role for tube 2",
-      "method":"post",
-      "url":"/searches",
-      "request":{
-        "search":{
-          "user":"username",
-          "description":"search for order",
-          "model":"order",
-          "criteria":{
-            "item":{
-              "uuid":"3bcf8010-0000-0000-9163-282066132de2"
             }
+          ]
+        }
+      },
+      {
+        "description":"Find the order by tube uuid and role for tube 2",
+        "method":"post",
+        "url":"/searches",
+        "request":{
+          "search":{
+            "user":"username",
+            "description":"search for order",
+            "model":"order",
+            "criteria":{
+              "item":{
+                "uuid":"3bcf8010-0000-0000-9163-282066132de2"
+              }
+            }
+          }
+        },
+        "response":{
+          "search":{
+            "actions":{
+              "read":"http://localhost:9292/473203b0-0000-0000-7ac8-282066132de2",
+              "first":"http://localhost:9292/473203b0-0000-0000-7ac8-282066132de2/page=1",
+              "last":"http://localhost:9292/473203b0-0000-0000-7ac8-282066132de2/page=-1"
+            },
+            "uuid":"473203b0-0000-0000-7ac8-282066132de2"
           }
         }
       },
-      "response":{
-        "search":{
-          "actions":{
-            "read":"http://localhost:9292/473203b0-0000-0000-7ac8-282066132de2",
-            "first":"http://localhost:9292/473203b0-0000-0000-7ac8-282066132de2/page=1",
-            "last":"http://localhost:9292/473203b0-0000-0000-7ac8-282066132de2/page=-1"
-          },
-          "uuid":"473203b0-0000-0000-7ac8-282066132de2"
-        }
-      }
-    },
 
-    {
-      "description":"Get the search results (order 1)",
-      "method":"get",
-      "url":"/473203b0-68ac-0130-7ac8-282066132de2/page=1",
-      "request":null,
-      "response":{
-        "actions":{
-          "read":"http://localhost:9292/orders/page=1",
-          "first":"http://localhost:9292/orders/page=1",
-          "last":"http://localhost:9292/orders/page=-1"
-        },
-        "size":1,
-        "orders":[
-          {
-            "actions":{
-              "read":"http://localhost:9292/3bd3da30-68ac-0130-9163-282066132de2",
-              "create":"http://localhost:9292/3bd3da30-68ac-0130-9163-282066132de2",
-              "update":"http://localhost:9292/3bd3da30-68ac-0130-9163-282066132de2",
-              "delete":"http://localhost:9292/3bd3da30-68ac-0130-9163-282066132de2"
-            },
-            "uuid":"3bd3da30-68ac-0130-9163-282066132de2",
-            "pipeline":"DNA+RNA manual extraction",
-            "status":"draft",
-            "parameters":{},
-            "state":{},
-            "cost_code":"cost code",
-            "creator":{
+      {
+        "description":"Get the search results (order 1)",
+        "method":"get",
+        "url":"/473203b0-68ac-0130-7ac8-282066132de2/page=1",
+        "request":null,
+        "response":{
+          "actions":{
+            "read":"http://localhost:9292/orders/page=1",
+            "first":"http://localhost:9292/orders/page=1",
+            "last":"http://localhost:9292/orders/page=-1"
+          },
+          "size":1,
+          "orders":[
+            {
               "actions":{
-                "read":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
-                "create":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
-                "update":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
-                "delete":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2"
+                "read":"http://localhost:9292/3bd3da30-68ac-0130-9163-282066132de2",
+                "create":"http://localhost:9292/3bd3da30-68ac-0130-9163-282066132de2",
+                "update":"http://localhost:9292/3bd3da30-68ac-0130-9163-282066132de2",
+                "delete":"http://localhost:9292/3bd3da30-68ac-0130-9163-282066132de2"
               },
-              "uuid":"3bce77b0-68ac-0130-9163-282066132de2"
-            },
-            "study":{
-              "actions":{
-                "read":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
-                "create":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
-                "update":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
-                "delete":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2"
+              "uuid":"3bd3da30-68ac-0130-9163-282066132de2",
+              "pipeline":"DNA+RNA manual extraction",
+              "status":"draft",
+              "parameters":{},
+              "state":{},
+              "cost_code":"cost code",
+              "creator":{
+                "actions":{
+                  "read":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
+                  "create":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
+                  "update":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
+                  "delete":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2"
+                },
+                "uuid":"3bce77b0-68ac-0130-9163-282066132de2"
               },
-              "uuid":"3bce8620-68ac-0130-9163-282066132de2"
-            },
-            "items":{
-              "tube_to_be_extracted":[
-                {
-                "uuid":"3bcf8010-68ac-0130-9163-282066132de2",
-                "status":"done",
-                "batch":null
+              "study":{
+                "actions":{
+                  "read":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
+                  "create":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
+                  "update":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
+                  "delete":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2"
+                },
+                "uuid":"3bce8620-68ac-0130-9163-282066132de2"
               },
-              {
-                "uuid":"3bd0e850-68ac-0130-9163-282066132de2",
-                "status":"done",
-                "batch":null
+              "items":{
+                "tube_to_be_extracted":[
+                  {
+                    "uuid":"3bcf8010-68ac-0130-9163-282066132de2",
+                    "status":"done",
+                    "batch":null
+                  },
+                  {
+                    "uuid":"3bd0e850-68ac-0130-9163-282066132de2",
+                    "status":"done",
+                    "batch":null
+                  }
+                ]
               }
-              ]
             }
-          }
-        ]
-      }
-    },
-    {
-      "description":"Get the search results (order 2)",
-      "method":"get",
-      "url":"/473203b0-0000-0000-7ac8-282066132de2/page=1",
-      "request":null,
-      "response":{
-        "actions":{
-          "read":"http://localhost:9292/orders/page=1",
-          "first":"http://localhost:9292/orders/page=1",
-          "last":"http://localhost:9292/orders/page=-1"
-        },
-        "size":1,
-        "orders":[
-          {
-            "actions":{
-              "read":"http://localhost:9292/3bd3da30-0000-0000-9163-282066132de2",
-              "create":"http://localhost:9292/3bd3da30-0000-0000-9163-282066132de2",
-              "update":"http://localhost:9292/3bd3da30-0000-0000-9163-282066132de2",
-              "delete":"http://localhost:9292/3bd3da30-0000-0000-9163-282066132de2"
-            },
-            "uuid":"3bd3da30-0000-0000-9163-282066132de2",
-            "pipeline":"DNA+RNA manual extraction",
-            "status":"draft",
-            "parameters":{},
-            "state":{},
-            "cost_code":"cost code",
-            "creator":{
-              "actions":{
-                "read":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
-                "create":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
-                "update":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
-                "delete":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2"
-              },
-              "uuid":"3bce77b0-68ac-0130-9163-282066132de2"
-            },
-            "study":{
-              "actions":{
-                "read":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
-                "create":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
-                "update":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
-                "delete":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2"
-              },
-              "uuid":"3bce8620-68ac-0130-9163-282066132de2"
-            },
-            "items":{
-              "tube_to_be_extracted":[
-                {
-                "uuid":"3bcf8010-0000-0000-9163-282066132de2",
-                "status":"done",
-                "batch":null
-              },
-              {
-                "uuid":"3bd0e850-68ac-0130-9163-282066132de2",
-                "status":"done",
-                "batch":null
-              }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "description":"Create a new batch",
-      "method":"post",
-      "url":"/batches",
-      "request": {
-        "batch": {
-          "user" : "username"
+          ]
         }
       },
-      "response":{
-        "batch":{
+      {
+        "description":"Get the search results (order 2)",
+        "method":"get",
+        "url":"/473203b0-0000-0000-7ac8-282066132de2/page=1",
+        "request":null,
+        "response":{
           "actions":{
-            "read":"http://localhost:9292/47608460-68ac-0130-7ac8-282066132de2",
-            "create":"http://localhost:9292/47608460-68ac-0130-7ac8-282066132de2",
-            "update":"http://localhost:9292/47608460-68ac-0130-7ac8-282066132de2",
-            "delete":"http://localhost:9292/47608460-68ac-0130-7ac8-282066132de2"
+            "read":"http://localhost:9292/orders/page=1",
+            "first":"http://localhost:9292/orders/page=1",
+            "last":"http://localhost:9292/orders/page=-1"
           },
-          "uuid":"47608460-68ac-0130-7ac8-282066132de2",
-          "process":null
+          "size":1,
+          "orders":[
+            {
+              "actions":{
+                "read":"http://localhost:9292/3bd3da30-0000-0000-9163-282066132de2",
+                "create":"http://localhost:9292/3bd3da30-0000-0000-9163-282066132de2",
+                "update":"http://localhost:9292/3bd3da30-0000-0000-9163-282066132de2",
+                "delete":"http://localhost:9292/3bd3da30-0000-0000-9163-282066132de2"
+              },
+              "uuid":"3bd3da30-0000-0000-9163-282066132de2",
+              "pipeline":"DNA+RNA manual extraction",
+              "status":"draft",
+              "parameters":{},
+              "state":{},
+              "cost_code":"cost code",
+              "creator":{
+                "actions":{
+                  "read":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
+                  "create":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
+                  "update":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2",
+                  "delete":"http://localhost:9292/3bce77b0-68ac-0130-9163-282066132de2"
+                },
+                "uuid":"3bce77b0-68ac-0130-9163-282066132de2"
+              },
+              "study":{
+                "actions":{
+                  "read":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
+                  "create":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
+                  "update":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2",
+                  "delete":"http://localhost:9292/3bce8620-68ac-0130-9163-282066132de2"
+                },
+                "uuid":"3bce8620-68ac-0130-9163-282066132de2"
+              },
+              "items":{
+                "tube_to_be_extracted":[
+                  {
+                    "uuid":"3bcf8010-0000-0000-9163-282066132de2",
+                    "status":"done",
+                    "batch":null
+                  },
+                  {
+                    "uuid":"3bd0e850-68ac-0130-9163-282066132de2",
+                    "status":"done",
+                    "batch":null
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "description":"Create a new batch",
+        "method":"post",
+        "url":"/batches",
+        "request":{
+          "batch":{
+            "user":"username"
+          }
+        },
+        "response":{
+          "batch":{
+            "actions":{
+              "read":"http://localhost:9292/47608460-68ac-0130-7ac8-282066132de2",
+              "create":"http://localhost:9292/47608460-68ac-0130-7ac8-282066132de2",
+              "update":"http://localhost:9292/47608460-68ac-0130-7ac8-282066132de2",
+              "delete":"http://localhost:9292/47608460-68ac-0130-7ac8-282066132de2"
+            },
+            "uuid":"47608460-68ac-0130-7ac8-282066132de2",
+            "process":null
+          }
         }
       }
-    }
-  ]
-}
+    ]
+  }
+]

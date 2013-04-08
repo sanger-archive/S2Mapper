@@ -1,0 +1,39 @@
+[
+  {
+    "description":"search with no result",
+    "calls":[
+      {
+        "description":"Searching for something that can't be found on S2.",
+        "method":"post",
+        "url":"/searches",
+        "request":{
+          "search":"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND"
+        },
+        "response":{
+          "search":{
+            "actions":{
+              "read":"http://localhost:9292/EMPTY_SEARCH_RESULT_UUID",
+              "first":"http://localhost:9292/EMPTY_SEARCH_RESULT_UUID/page=1",
+              "last":"http://localhost:9292/EMPTY_SEARCH_RESULT_UUID/page=-1"
+            },
+            "uuid":"EMPTY_SEARCH_RESULT_UUID"
+          }
+        }
+      },
+      {
+        "description":"Reading an empty search result set",
+        "method":"get",
+        "url":"/EMPTY_SEARCH_RESULT_UUID/page=1",
+        "request":null,
+        "response":{
+          "actions":{
+            "read":"http://localhost:9292/unknown/page=1",
+            "first":"http://localhost:9292/unknown/page=1",
+            "last":"http://localhost:9292/unknown/page=-1"
+          },
+          "size":0
+        }
+      }
+    ]
+  }
+]

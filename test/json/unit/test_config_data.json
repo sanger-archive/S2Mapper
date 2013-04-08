@@ -1,0 +1,52 @@
+[
+  {
+    "description":"before",
+    "calls":[
+      {
+        "description":"state before",
+        "method":"get",
+        "url":"/",
+        "request":null,
+        "response":{
+          "value":0
+        }
+      },
+      {
+        "description":"fake put request",
+        "method":"put",
+        "url":"/",
+        "request":"",
+        "response":{
+        }
+      }
+    ]
+  },
+  {
+    "description":"after",
+    "calls":[
+      {
+        "description":"state before",
+        "method":"get",
+        "url":"/",
+        "request":null,
+        "response":{
+          "value":1
+        }
+      }
+    ]
+  },
+  {
+    "description":"even later",
+    "calls":[
+      {
+        "description":"state before",
+        "method":"get",
+        "url":"/",
+        "request":null,
+        "response":{
+          "value":2
+        }
+      }
+    ]
+  }
+]
