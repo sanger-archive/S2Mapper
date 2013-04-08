@@ -1,367 +1,424 @@
-{
-  "stage": "Testing operations",
-  "steps": [
-    {
-      "description": "Find the order with a single input item",
-      "method": "get",
-      "url": "/order-with-single-item",
-      "request": null,
-      "response": {
-        "order": {
-          "uuid": "order-with-single-item",
-          "actions": {
-            "update": "http://localhost:9292/order-with-single-item"
-          },
-          "items": {
-            "inputRole": [
-              { "uuid": "input-tube-1", "status": "done" }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "description": "Find the order with multiple input items",
-      "method": "get",
-      "url": "/order-with-two-items",
-      "request": null,
-      "response": {
-        "order": {
-          "uuid": "order-with-two-items",
-          "actions": {
-            "update": "http://localhost:9292/order-with-two-items"
-          },
-          "items": {
-            "inputRole": [
-              { "uuid": "input-tube-2", "status": "done" },
-              { "uuid": "input-tube-3", "status": "done" }
-            ]
-          }
-        }
-      }
-    },
-
-    {
-      "description": "Find the input tube 1",
-      "method": "get",
-      "url": "/input-tube-1",
-      "request": null,
-      "response": {
-        "tube": {
-          "uuid": "input-tube-1"
-        }
-      }
-    },
-    {
-      "description": "Find the input tube 2",
-      "method": "get",
-      "url": "/input-tube-2",
-      "request": null,
-      "response": {
-        "tube": {
-          "uuid": "input-tube-2"
-        }
-      }
-    },
-    {
-      "description": "Find the input tube 3",
-      "method": "get",
-      "url": "/input-tube-3",
-      "request": null,
-      "response": {
-        "tube": {
-          "uuid": "input-tube-3"
-        }
-      }
-    },
-    {
-      "description": "Find the output tube 1",
-      "method": "get",
-      "url": "/output-tube-1",
-      "request": null,
-      "response": {
-        "tube": {
-          "uuid": "output-tube-1"
-        }
-      }
-    },
-    {
-      "description": "Find the output tube 2",
-      "method": "get",
-      "url": "/output-tube-2",
-      "request": null,
-      "response": {
-        "tube": {
-          "uuid": "output-tube-2"
-        }
-      }
-    },
-    {
-      "description": "Find the output tube 3",
-      "method": "get",
-      "url": "/output-tube-3",
-      "request": null,
-      "response": {
-        "tube": {
-          "uuid": "output-tube-3"
-        }
-      }
-    },
-    {
-      "description": "Find the output tube 4",
-      "method": "get",
-      "url": "/output-tube-4",
-      "request": null,
-      "response": {
-        "tube": {
-          "uuid": "output-tube-4"
-        }
-      }
-    },
-
-    {
-      "description": "Update single-item order on start",
-      "method": "put",
-      "url": "/order-with-single-item",
-      "request": {
-        "user": "username",
-        "items": {
-          "outputRole": {
-            "output-tube-1": { "event":"start" }
-          }
-        }
-      },
-      "response": {
-        "order": {
-        }
-      }
-    },
-    {
-      "description": "Update single-item order on complete",
-      "method": "put",
-      "url": "/order-with-single-item",
-      "request": {
-        "user": "username",
-        "items": {
-          "inputRole": {
-            "input-tube-1": { "event": "unuse" }
-          },
-          "outputRole": {
-            "output-tube-1": { "event": "complete" }
-          }
-        }
-      },
-      "response": {
-        "order": {
-        }
-      }
-    },
-    {
-      "description": "Update multiple-item order on start",
-      "method": "put",
-      "url": "/order-with-two-items",
-      "request": {
-        "user": "username",
-        "items": {
-          "outputRole": {
-            "output-tube-2": { "event":"start" },
-            "output-tube-3": { "event":"start" }
-          }
-        }
-      },
-      "response": {
-        "order": {
-        }
-      }
-    },
-    {
-      "description": "Update multiple-item order on complete",
-      "method": "put",
-      "url": "/order-with-two-items",
-      "request": {
-        "user": "username",
-        "items": {
-          "inputRole": {
-            "input-tube-2": { "event": "unuse" },
-            "input-tube-3": { "event": "unuse" }
-          },
-          "outputRole": {
-            "output-tube-2": { "event": "complete" },
-            "output-tube-3": { "event": "complete" }
-          }
-        }
-      },
-      "response": {
-        "order": {
-        }
-      }
-    },
-    {
-      "description": "Update multiple-item with uniqueness order on start",
-      "method": "put",
-      "url": "/order-with-two-items",
-      "request": {
-        "user": "username",
-        "items": {
-          "outputRole": {
-            "output-tube-2": { "event":"start" },
-            "output-tube-3": { "event":"start" },
-            "output-tube-4": { "event":"start" }
-          }
-        }
-      },
-      "response": {
-        "order": {
-        }
-      }
-    },
-    {
-      "description": "Update multiple-item with uniqueness order on complete",
-      "method": "put",
-      "url": "/order-with-two-items",
-      "request": {
-        "user": "username",
-        "items": {
-          "inputRole": {
-            "input-tube-2": { "event": "unuse" },
-            "input-tube-3": { "event": "unuse" }
-          },
-          "outputRole": {
-            "output-tube-2": { "event": "complete" },
-            "output-tube-3": { "event": "complete" },
-            "output-tube-4": { "event": "complete" }
-          }
-        }
-      },
-      "response": {
-        "order": {
-        }
-      }
-    },
-
-    {
-      "description": "Creating a tube for labelling (no attributes)",
-      "method": "post",
-      "url": "/tubes",
-      "request": {
-        "tube": {
-          "user": "username"
-        }
-      },
-      "response": {
-        "tube": {
-          "uuid": "tube-without-attributes"
-        }
-      }
-    },
-    {
-      "description": "Creating a tube for labelling (with attributes)",
-      "method": "post",
-      "url": "/tubes",
-      "request": {
-        "tube": {
-          "user": "username",
-          "foo": "bar"
-        }
-      },
-      "response": {
-        "tube": {
-          "uuid": "tube-with-attributes"
-        }
-      }
-    },
-
-    {
-      "description":"Request a new barcode",
-      "method":"post",
-      "url":"/barcodes",
-      "request":{
-        "barcode": {
-          "user": "username",
-          "labware": "tube",
-          "role": "stock",
-          "contents": "DNA"
-        }
-      },
-      "response":{
-        "barcode": {
-          "actions": { },
-          "ean13": "1234567891011",
-          "sanger": {
-            "prefix": "DN",
-            "number": "1234567",
-            "suffix": "K"
-          }
-        }
-      }
-    },
-    {
-      "description":"Label tube without attributes with barcode",
-      "method":"post",
-      "url":"/labellables",
-      "request":{
-        "labellable": {
-          "user": "username",
-          "name": "tube-without-attributes",
-          "type": "resource",
-          "labels": {
-            "barcode": { "type": "ean13-barcode", "value": "1234567891011" },
-            "sanger label": { "type": "sanger-barcode", "value": "DN1234567K" }
-          }
-        }
-      },
-      "response":{
-        "labellable": {
-          "actions": { },
-          "uuid": "UUID OF LABEL"
-        }
-      }
-    },
-    {
-      "description":"Label tube with attributes with barcode",
-      "method":"post",
-      "url":"/labellables",
-      "request":{
-        "labellable": {
-          "user": "username",
-          "name": "tube-with-attributes",
-          "type": "resource",
-          "labels": {
-            "barcode": { "type": "ean13-barcode", "value": "1234567891011" },
-            "sanger label": { "type": "sanger-barcode", "value": "DN1234567K" }
-          }
-        }
-      },
-      "response":{
-        "labellable": {
-          "actions": { },
-          "uuid": "UUID OF LABEL"
-        }
-      }
-    },
-
-    {
-      "description": "Single tube-to-tube transfer",
-      "method": "post",
-      "url": "/actions/transfer_tubes_to_tubes",
-      "request": {
-        "transfer_tubes_to_tube": {
-          "user":"username",
-          "transfers":[
-            {
-              "fraction":0.5,
-              "aliquot_type":"DNA",
-              "source_uuid":"input-tube-1",
-              "target_uuid":"output-tube-1"
+[
+  {
+    "description":"Testing operations",
+    "calls":[
+      {
+        "description":"Find the order with a single input item",
+        "method":"get",
+        "url":"/order-with-single-item",
+        "request":null,
+        "response":{
+          "order":{
+            "uuid":"order-with-single-item",
+            "actions":{
+              "update":"http://localhost:9292/order-with-single-item"
+            },
+            "items":{
+              "inputRole":[
+                {
+                  "uuid":"input-tube-1",
+                  "status":"done"
+                }
+              ]
             }
-          ]
+          }
         }
       },
-      "response": {
-        "transfer_tubes_to_tube": {
+      {
+        "description":"Find the order with multiple input items",
+        "method":"get",
+        "url":"/order-with-two-items",
+        "request":null,
+        "response":{
+          "order":{
+            "uuid":"order-with-two-items",
+            "actions":{
+              "update":"http://localhost:9292/order-with-two-items"
+            },
+            "items":{
+              "inputRole":[
+                {
+                  "uuid":"input-tube-2",
+                  "status":"done"
+                },
+                {
+                  "uuid":"input-tube-3",
+                  "status":"done"
+                }
+              ]
+            }
+          }
+        }
+      },
 
+      {
+        "description":"Find the input tube 1",
+        "method":"get",
+        "url":"/input-tube-1",
+        "request":null,
+        "response":{
+          "tube":{
+            "uuid":"input-tube-1"
+          }
+        }
+      },
+      {
+        "description":"Find the input tube 2",
+        "method":"get",
+        "url":"/input-tube-2",
+        "request":null,
+        "response":{
+          "tube":{
+            "uuid":"input-tube-2"
+          }
+        }
+      },
+      {
+        "description":"Find the input tube 3",
+        "method":"get",
+        "url":"/input-tube-3",
+        "request":null,
+        "response":{
+          "tube":{
+            "uuid":"input-tube-3"
+          }
+        }
+      },
+      {
+        "description":"Find the output tube 1",
+        "method":"get",
+        "url":"/output-tube-1",
+        "request":null,
+        "response":{
+          "tube":{
+            "uuid":"output-tube-1"
+          }
+        }
+      },
+      {
+        "description":"Find the output tube 2",
+        "method":"get",
+        "url":"/output-tube-2",
+        "request":null,
+        "response":{
+          "tube":{
+            "uuid":"output-tube-2"
+          }
+        }
+      },
+      {
+        "description":"Find the output tube 3",
+        "method":"get",
+        "url":"/output-tube-3",
+        "request":null,
+        "response":{
+          "tube":{
+            "uuid":"output-tube-3"
+          }
+        }
+      },
+      {
+        "description":"Find the output tube 4",
+        "method":"get",
+        "url":"/output-tube-4",
+        "request":null,
+        "response":{
+          "tube":{
+            "uuid":"output-tube-4"
+          }
+        }
+      },
+
+      {
+        "description":"Update single-item order on start",
+        "method":"put",
+        "url":"/order-with-single-item",
+        "request":{
+          "user":"username",
+          "items":{
+            "outputRole":{
+              "output-tube-1":{
+                "event":"start"
+              }
+            }
+          }
+        },
+        "response":{
+          "order":{
+          }
+        }
+      },
+      {
+        "description":"Update single-item order on complete",
+        "method":"put",
+        "url":"/order-with-single-item",
+        "request":{
+          "user":"username",
+          "items":{
+            "inputRole":{
+              "input-tube-1":{
+                "event":"unuse"
+              }
+            },
+            "outputRole":{
+              "output-tube-1":{
+                "event":"complete"
+              }
+            }
+          }
+        },
+        "response":{
+          "order":{
+          }
+        }
+      },
+      {
+        "description":"Update multiple-item order on start",
+        "method":"put",
+        "url":"/order-with-two-items",
+        "request":{
+          "user":"username",
+          "items":{
+            "outputRole":{
+              "output-tube-2":{
+                "event":"start"
+              },
+              "output-tube-3":{
+                "event":"start"
+              }
+            }
+          }
+        },
+        "response":{
+          "order":{
+          }
+        }
+      },
+      {
+        "description":"Update multiple-item order on complete",
+        "method":"put",
+        "url":"/order-with-two-items",
+        "request":{
+          "user":"username",
+          "items":{
+            "inputRole":{
+              "input-tube-2":{
+                "event":"unuse"
+              },
+              "input-tube-3":{
+                "event":"unuse"
+              }
+            },
+            "outputRole":{
+              "output-tube-2":{
+                "event":"complete"
+              },
+              "output-tube-3":{
+                "event":"complete"
+              }
+            }
+          }
+        },
+        "response":{
+          "order":{
+          }
+        }
+      },
+      {
+        "description":"Update multiple-item with uniqueness order on start",
+        "method":"put",
+        "url":"/order-with-two-items",
+        "request":{
+          "user":"username",
+          "items":{
+            "outputRole":{
+              "output-tube-2":{
+                "event":"start"
+              },
+              "output-tube-3":{
+                "event":"start"
+              },
+              "output-tube-4":{
+                "event":"start"
+              }
+            }
+          }
+        },
+        "response":{
+          "order":{
+          }
+        }
+      },
+      {
+        "description":"Update multiple-item with uniqueness order on complete",
+        "method":"put",
+        "url":"/order-with-two-items",
+        "request":{
+          "user":"username",
+          "items":{
+            "inputRole":{
+              "input-tube-2":{
+                "event":"unuse"
+              },
+              "input-tube-3":{
+                "event":"unuse"
+              }
+            },
+            "outputRole":{
+              "output-tube-2":{
+                "event":"complete"
+              },
+              "output-tube-3":{
+                "event":"complete"
+              },
+              "output-tube-4":{
+                "event":"complete"
+              }
+            }
+          }
+        },
+        "response":{
+          "order":{
+          }
+        }
+      },
+
+      {
+        "description":"Creating a tube for labelling (no attributes)",
+        "method":"post",
+        "url":"/tubes",
+        "request":{
+          "tube":{
+            "user":"username"
+          }
+        },
+        "response":{
+          "tube":{
+            "uuid":"tube-without-attributes"
+          }
+        }
+      },
+      {
+        "description":"Creating a tube for labelling (with attributes)",
+        "method":"post",
+        "url":"/tubes",
+        "request":{
+          "tube":{
+            "user":"username",
+            "foo":"bar"
+          }
+        },
+        "response":{
+          "tube":{
+            "uuid":"tube-with-attributes"
+          }
+        }
+      },
+
+      {
+        "description":"Request a new barcode",
+        "method":"post",
+        "url":"/barcodes",
+        "request":{
+          "barcode":{
+            "user":"username",
+            "labware":"tube",
+            "role":"stock",
+            "contents":"DNA"
+          }
+        },
+        "response":{
+          "barcode":{
+            "actions":{ },
+            "ean13":"1234567891011",
+            "sanger":{
+              "prefix":"DN",
+              "number":"1234567",
+              "suffix":"K"
+            }
+          }
+        }
+      },
+      {
+        "description":"Label tube without attributes with barcode",
+        "method":"post",
+        "url":"/labellables",
+        "request":{
+          "labellable":{
+            "user":"username",
+            "name":"tube-without-attributes",
+            "type":"resource",
+            "labels":{
+              "barcode":{
+                "type":"ean13-barcode",
+                "value":"1234567891011"
+              },
+              "sanger label":{
+                "type":"sanger-barcode",
+                "value":"DN1234567K"
+              }
+            }
+          }
+        },
+        "response":{
+          "labellable":{
+            "actions":{ },
+            "uuid":"UUID OF LABEL"
+          }
+        }
+      },
+      {
+        "description":"Label tube with attributes with barcode",
+        "method":"post",
+        "url":"/labellables",
+        "request":{
+          "labellable":{
+            "user":"username",
+            "name":"tube-with-attributes",
+            "type":"resource",
+            "labels":{
+              "barcode":{
+                "type":"ean13-barcode",
+                "value":"1234567891011"
+              },
+              "sanger label":{
+                "type":"sanger-barcode",
+                "value":"DN1234567K"
+              }
+            }
+          }
+        },
+        "response":{
+          "labellable":{
+            "actions":{ },
+            "uuid":"UUID OF LABEL"
+          }
+        }
+      },
+
+      {
+        "description":"Single tube-to-tube transfer",
+        "method":"post",
+        "url":"/actions/transfer_tubes_to_tubes",
+        "request":{
+          "transfer_tubes_to_tube":{
+            "user":"username",
+            "transfers":[
+              {
+                "fraction":0.5,
+                "aliquot_type":"DNA",
+                "source_uuid":"input-tube-1",
+                "target_uuid":"output-tube-1"
+              }
+            ]
+          }
+        },
+        "response":{
+          "transfer_tubes_to_tube":{
+
+          }
         }
       }
-    }
-  ]
-}
+    ]
+  }
+]

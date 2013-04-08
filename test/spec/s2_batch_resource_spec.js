@@ -20,7 +20,7 @@ define([
         var batch;
 
         beforeEach(function () {
-          config.setupTest(dataForOrder);
+          config.loadTestData(dataForOrder);
           Root.load({user:"username"}).done(results.assignTo('root'));
           s2 = results.get('root');
 
@@ -69,7 +69,7 @@ define([
         beforeEach(function () {
           mockOrderPromise = $.Deferred();
 
-          config.setupTest(dataForBatchOneTube);
+          config.loadTestData(dataForBatchOneTube);
           Root.load({user:"username"}).done(results.assignTo('root'));
           s2 = results.get('root');
           s2.tubes.findByEan13Barcode('tube1_BC').done(
@@ -132,10 +132,10 @@ define([
 
           it("calls update on each order correctly", function () {
             var expectedOptions = {type:"PUT",
-              url:                      "/order1_UUID",
-              dataType:                 'json',
-              headers:                  {"Content-Type":'application/json'},
-              data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
+              url:"/order1_UUID",
+              dataType:'json',
+              headers:{"Content-Type":'application/json'},
+              data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
             };
             expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });
@@ -156,7 +156,7 @@ define([
           mockOrderPromise1 = $.Deferred();
           mockOrderPromise2 = $.Deferred();
 
-          config.setupTest(dataForBatchTwoTubes);
+          config.loadTestData(dataForBatchTwoTubes);
           Root.load({user:"username"}).done(results.assignTo('root'));
           s2 = results.get('root');
           s2.tubes.findByEan13Barcode('tube1_BC').done(
@@ -224,10 +224,10 @@ define([
 
           it("creates a new batch", function () {
             var expectedOptions = {type:"POST",
-              url:                      "/batches",
-              dataType:                 'json',
-              headers:                  {"Content-Type":'application/json'},
-              data:                     '{"batch":{"user":"username"}}'
+              url:"/batches",
+              dataType:'json',
+              headers:{"Content-Type":'application/json'},
+              data:'{"batch":{"user":"username"}}'
             };
             expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });
@@ -244,10 +244,10 @@ define([
 
           it("calls update on each order correctly (which means only one here)", function () {
             var expectedOptions = {type:"PUT",
-              url:                      "/order1_UUID",
-              dataType:                 'json',
-              headers:                  {"Content-Type":'application/json'},
-              data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"},"tube2_UUID":{"batch_uuid":"batch_UUID"}}}}'
+              url:"/order1_UUID",
+              dataType:'json',
+              headers:{"Content-Type":'application/json'},
+              data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"},"tube2_UUID":{"batch_uuid":"batch_UUID"}}}}'
             };
             expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });
@@ -268,7 +268,7 @@ define([
           mockOrderPromise1 = $.Deferred();
           mockOrderPromise2 = $.Deferred();
 
-          config.setupTest(dataForBatchOneTubeOneOrderWithTwoTubes);
+          config.loadTestData(dataForBatchOneTubeOneOrderWithTwoTubes);
           Root.load({user:"username"}).done(results.assignTo('root'));
           s2 = results.get('root');
           s2.tubes.findByEan13Barcode('tube1_BC').done(
@@ -337,10 +337,10 @@ define([
 
           it("creates a new batch", function () {
             var expectedOptions = {type:"POST",
-              url:                      "/batches",
-              dataType:                 'json',
-              headers:                  {"Content-Type":'application/json'},
-              data:                     '{"batch":{"user":"username"}}'
+              url:"/batches",
+              dataType:'json',
+              headers:{"Content-Type":'application/json'},
+              data:'{"batch":{"user":"username"}}'
             };
             expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });
@@ -357,10 +357,10 @@ define([
 
           it("calls update on one order correctly (which means only one call here, with only one tube)", function () {
             var expectedOptions = {type:"PUT",
-              url:                      "/order1_UUID",
-              dataType:                 'json',
-              headers:                  {"Content-Type":'application/json'},
-              data:                     '{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
+              url:"/order1_UUID",
+              dataType:'json',
+              headers:{"Content-Type":'application/json'},
+              data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
             };
             expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
           });

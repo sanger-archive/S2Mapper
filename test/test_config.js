@@ -1,172 +1,177 @@
-define(['text!json/unit/empty_tube_search.json'], function (emptyTubeData) {
+define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
   'use strict';
 
-  var log = "";
+  function cleanupCall(options) {
+    // a blank options.url should default to '/'
+    options.url = options.url.replace(/http:\/\/localhost:\d+/, '');
+    if (options.url.length === 0) {
+      options.url = '/';
+      options.type = 'GET';
+      options.data = null
+    }
+    if (options.method) {
+      options.type = options.method
+    }
+    if (options.request) {
+      if (!options.format || options.format !== "xml") {
+        options.data = JSON.stringify(options.request);
+      }
+      else {
+        options.data = options.request;
+      }
+    }
+    options.type = options.type.toUpperCase();
+    return options;
+  }
+
+  function callToString(options) {
+    var output = options.type + ':' + options.url;
+    if (options.data) {
+      output = output + options.data;
+    }
+    return output;
+  }
+
+  function createSuccessfulResponse(call, response) {
+    return {
+      url:call.url,
+      'status':200,
+      responseTime:750,
+      responseText:response
+    };
+  }
 
   var config = {
-    apiUrl:   '', // NOT USED IN TESTING
-    setupTest:function (testData, stepNo, noReload) {
-      // if noReload is true, then the config.stepJson is NOT
-      // erased, and the testData are added to the actual one.
+    apiUrl:'', // NOT USED IN TESTING
+    logToConsole:true,
+    logLevel:2, // 0..2 (0->everything, 2->only errors)
+    printServiceUrl:'http://localhost:9292/services/print',
+    printers:[
+      {name:'Tube printer', type:2}
+    ],
 
-      var step = stepNo || 0;
-      if (!noReload){
-        config.stepJson = {};
-      }
-
-      testData = $.parseJSON(testData);
-      config.createTestData(testData);
-
-      var stepStage = testData.steps[step];
-      config.stepStage = stepStage;
-      config.stage = stepStage.description || "No description in JSON";
-
-      config.url = stepStage.url;
-      config.params = stepStage.request;
-      return testData.steps[step].response;
-
+    loadTestData:function (testDataFile) {
+      config.testData = undefined;
+      config.hashedTestData = undefined;
+      config.stage = 0;
+      config.normalLoadingTestData(testDataFile);
+      config.cummulativeLoadingTestDataInFirstStage(emptySearch);
     },
 
-    stepJson:{},
+    normalLoadingTestData:function (testDataFile) {
+      if (!config.testData) {
+        config.testData = [];
+        config.testData.push({"calls":[]});
+      }
+      config.testData = $.parseJSON(testDataFile);
+      config.transformTestDataIntoHashForStage(0);
+    },
 
-    createTestData:function (testData) {
-      var output = '';
-      for (var stepNo in testData.steps) {
-        var step = testData.steps[stepNo];
-        step.method = step.method.toUpperCase();
-        output += '<br/>Step' + stepNo + ':' + step.description + '. Needs a ' + step.method + '. Responds with ' +
-            Object.keys(step.response)[0];
+    cummulativeLoadingTestDataInFirstStage:function (testDataFile) {
+      if (!config.testData) {
+        config.testData = [];
+        config.testData.push({"calls":[]});
+      }
+      var extra = $.parseJSON(testDataFile)[0]["calls"];
+      config.testData[0]["calls"] = config.testData[0]["calls"].concat(extra);
+      config.transformTestDataIntoHashForStage(0);
+    },
 
-        var key = step.method + ':' + step.url;
-        if (step.request) {
-          var extension;
-          switch (step.format) {
-            case 'xml':
-              extension = step.request;
-              break;
-            default:
-              extension = JSON.stringify(step.request);
-              break;
-          }
-          key = key + extension;
-        }
-        config.stepJson[key] = step.response;
+    transformTestDataIntoHashForCurrentStage:function () {
+      if (config.stage != undefined) {
+        config.transformTestDataIntoHashForStage(config.stage);
       }
     },
 
-    setTestJson:function (workflow) {
-      // Fixme Not working ideally yet still having to require
-      // the package on module load.
-      config.testJSON = require('json/' + workflow);
-    },
-
-    getTestJson:function (url) {
-      var path = url.replace(/^http:\/\/\w*:?\d*\//, '/');
-      var resultFromJson = config.testJSON[config.currentStage][path];
-
-      if (resultFromJson === undefined) {
-        throw "Path: '" + path + "' not found in test JSON for stage: "
-            + config.currentStage;
+    transformTestDataIntoHashForStage:function (stage) {
+      if (!config.hashedTestData) {
+        config.hashedTestData = {};
       }
-
-      return resultFromJson;
+      _.each(config.testData[stage].calls, function (call) {
+        var callKey = callToString(cleanupCall(call));
+        config.hashedTestData[callKey] = call.response;
+      });
     },
 
-    logToConsole:false,
+    progress:function () {
+      if ((config.stage + 1) >= _.size(config.testData)) {
+        config.stage = config.testData.length - 1;
+        return;
+      }
+      config.stage++;
+      config.log(1, " [!Progression!] -> ", config.stage);
+      config.transformTestDataIntoHashForCurrentStage();
+    },
 
-    log: function (message, level) {
+    log:function (level) {
       if (!config.logToConsole) return; // do nothing
+
+      if (arguments.length <= 0) return;
+
+      if ((arguments.length == 1) || (typeof arguments[0] !== 'number' )) {
+        console.log(level); // in this case, level is ... not a level
+        return;
+      }
+
+      if (level < config.logLevel) return;
 
       var formats = [
         'background-color:darkgreen; color:white;',
         'background-color:darkblue; color:white;',
         'background-color:red; color:white;'
       ];
+      var args = [];
+      var str = '%c';
+      for (var i = 0; i < arguments.length; i++) {
+        if (i > 0) {
+          args.push(arguments[i]);
+          if (typeof arguments[i] === 'object') {
+            str += ' %o';
+          }
+          else if (typeof arguments[i] === 'string') {
+            str += ' %s';
+          }
+          else if (typeof arguments[i] === 'number') {
+            if (arguments[i] === +arguments[i] && arguments[i] !== (arguments[i] | 0)) {
+              str += ' %f';
+            } else {
+              str += ' %d';
+            }
+          }
+        }
+      }
+      args.unshift(formats[level]);
+      args.unshift(str);
+      console.log.apply(console, args);
+    },
 
-      if (typeof message === 'object') {
-        console.log(message);
+    ajax:function (originalAjaxCall) {
+      var fakeAjaxDeferred = $.Deferred();
+      var ajaxCall = cleanupCall(originalAjaxCall);
+
+      var key = callToString(ajaxCall);
+      config.log(0, "Ajax call made... : ", key);
+      var response = config.hashedTestData[key];
+      if (response) {
+        config.log(0, "   +--->     Found: ", response);
+        if (ajaxCall.type === "PUT" || ajaxCall.type === "POST") {
+          config.progress();
+        }
+        fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, response));
+      } else if (ajaxCall.type === 'POST' && ajaxCall.url === '/searches') {
+        // if we are here, it means that there is no result on the server...
+        // but the server should still respond with a search URI
+        config.log(1, "   +---> Empty search result ");
+        var keyForEmptySearchCall = "POST:/searches{\"search\":\"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND\"}";
+        fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, config.hashedTestData[keyForEmptySearchCall]));
       }
       else {
-        console.log('%c' + message, formats[level]);
+        config.log(1, "   +---> NOT found");
+        config.log(1, config.hashedTestData);
+        fakeAjaxDeferred.reject();
       }
-
-    },
-
-    // Dummy out the ajax call returned by S2Ajax to test from file.
-    // Returns a Deferred instead of jqXHR.
-    ajax:function (options) {
-      var fakeAjaxDeferred = $.Deferred();
-
-      // a blank options.url should default to '/'
-      options.url = options.url.replace(/http:\/\/localhost:\d+/, '');
-
-      if (options.url.length === 0) {
-        options.url = '/'
-        options.type = 'GET'
-        options.data = null
-      }
-
-      options.type = options.type.toUpperCase();
-
-      config.reqParams = options.type + ':' + options.url;
-      if (options.data) {
-        config.reqParams = config.reqParams + options.data;
-      }
-
-//      config.log('Sending ajax message for "' + config.stage + '"');
-      var response = config.stepJson[config.reqParams];
-      if (response !== undefined) {
-//        config.log("Responding with:", 0);
-//        config.log(response);
-
-        fakeAjaxDeferred.resolve({
-          url:         options.url,
-          'status':    200,
-          responseTime:750,
-          responseText:response
-        });
-
-      } else if (options.type === 'POST' && options.url === '/searches') {
-        config.log(config.reqParams, 1);
-
-        config.log('Sending ajax message for "' + config.stage + '"');
-        config.log('\nSearch for: ' + JSON.parse(options.data).search.model
-            + ' not found in test data.', 2);
-
-        config.log('\nSimulating search not found on S2...');
-        config.log('Returning: ' + options.url, 0);
-        fakeAjaxDeferred.resolve({
-          url:         options.url,
-          'status':    200,
-          responseTime:750,
-          responseText:JSON.parse(emptyTubeData).steps[0].response
-        });
-      } else if (options.type === 'GET' && options.url === '/EMPTY_SEARCH_RESULT_UUID/page=1') {
-//        config.log('\nSimulating empty search result search page...');
-//        config.log('Returning: ' + options.url, 0);
-
-        fakeAjaxDeferred.resolve({
-          url:         options.url,
-          'status':    200,
-          responseTime:750,
-          responseText:JSON.parse(emptyTubeData).steps[1].response
-        });
-
-      } else {
-        config.log(config.reqParams, 1);
-        config.log('\nRequest for: ' + config.reqParams + ' not found in test data.', 2);
-        config.log('Simulating a 404 error!', 2);
-        fakeAjaxDeferred.reject(fakeAjaxDeferred, '404 error');
-      }
-
-//      config.log('_________________________________________________________\n');
       return fakeAjaxDeferred;
-    },
-
-    printServiceUrl:'http://localhost:9292/services/print',
-    printers:       [
-      {name:'Tube printer', type:2}
-    ]
+    }
   };
 
   return config;
