@@ -1,4 +1,5 @@
-[
+{
+  "default":
   {
     "description":"batch",
     "calls":[
@@ -809,4 +810,4 @@
       }
     ]
   }
-]
+}

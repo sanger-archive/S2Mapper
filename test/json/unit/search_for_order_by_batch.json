@@ -1,5 +1,5 @@
-[
-  {
+{
+  "default":{
     "description":"searching for orders associated with batch",
     "calls":[
       {
@@ -179,4 +179,4 @@
       }
     ]
   }
-]
+}

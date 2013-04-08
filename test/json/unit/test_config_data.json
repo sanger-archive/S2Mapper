@@ -1,5 +1,5 @@
-[
-  {
+{
+  "default":{
     "description":"before",
     "calls":[
       {
@@ -14,14 +14,24 @@
       {
         "description":"fake put request",
         "method":"put",
-        "url":"/",
+        "next_stage":"after",
+        "url":"/1",
+        "request":"",
+        "response":{
+        }
+      },
+      {
+        "description":"fake put request",
+        "method":"put",
+        "next_stage":"even_later",
+        "url":"/2",
         "request":"",
         "response":{
         }
       }
     ]
   },
-  {
+  "after":{
     "description":"after",
     "calls":[
       {
@@ -32,10 +42,19 @@
         "response":{
           "value":1
         }
+      },
+      {
+        "description":"fake put request",
+        "method":"put",
+        "next_stage":"even_later",
+        "url":"/1",
+        "request":"",
+        "response":{
+        }
       }
     ]
   },
-  {
+  "even_later":{
     "description":"even later",
     "calls":[
       {
@@ -49,4 +68,4 @@
       }
     ]
   }
-]
+}
