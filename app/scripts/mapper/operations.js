@@ -36,6 +36,10 @@ define(['mapper/support/deferred'], function(Deferred) {
       }, function(state, barcode) {
         state['barcode'] = barcode;
         return barcode.label(state.labware);
+      }, function(state) {
+        return model.root.find(state.labware.uuid);
+      }, function(state, labware_with_labels) {
+        state['labware'] = labware_with_labels;
       }).promise();
     },
 
