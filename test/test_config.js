@@ -165,7 +165,11 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
             config.progress(next_call);
           }
         }
-        fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, response));
+        setTimeout(function(){
+          fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, response));
+          console.log("-----------------");
+        },100);
+
       } else if (ajaxCall.type === 'POST' && ajaxCall.url === '/searches') {
         // if we are here, it means that there is no result on the server...
         // but the server should still respond with a search URI
