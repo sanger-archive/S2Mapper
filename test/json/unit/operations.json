@@ -320,6 +320,17 @@
         }
       },
       {
+        "description":"Read the tube with its labels (no attributes)",
+        "method":"get",
+        "url":"/tube-without-attributes",
+        "request":null,
+        "response":{
+          "tube":{
+            "uuid":"tube-without-attributes"
+          }
+        }
+      },
+      {
         "description":"Creating a tube for labelling (with attributes)",
         "method":"post",
         "url":"/tubes",
@@ -329,6 +340,17 @@
             "foo":"bar"
           }
         },
+        "response":{
+          "tube":{
+            "uuid":"tube-with-attributes"
+          }
+        }
+      },
+      {
+        "description":"Read the tube with its labels (with attributes)",
+        "method":"get",
+        "url":"/tube-with-attributes",
+        "request":null,
         "response":{
           "tube":{
             "uuid":"tube-with-attributes"
