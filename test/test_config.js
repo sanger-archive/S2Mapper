@@ -90,7 +90,7 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
       }
       _.each(config.testData[stage].calls, function (call) {
         var callKey = callToString(cleanupCall(call));
-        config.hashedTestData[callKey] = {"response":"","next_stage":""};
+        config.hashedTestData[callKey] = {"response":"", "next_stage":""};
         config.hashedTestData[callKey]["response"] = call.response;
         if (call.next_stage) {
           config.hashedTestData[callKey]["next_stage"] = call.next_stage;
@@ -99,7 +99,7 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
     },
 
     progress:function (nextStage) {
-      if (!config.testData[nextStage]){
+      if (!config.testData[nextStage]) {
         return;
       }
       config.stage = nextStage;
@@ -155,7 +155,7 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
 
       var key = callToString(ajaxCall);
       config.log(0, "Ajax call made... : ", key);
-      var found = (config.hashedTestData[key]!=undefined);
+      var found = (config.hashedTestData[key] != undefined);
       if (found) {
         var response = config.hashedTestData[key]["response"];
         var next_call = config.hashedTestData[key]["next_stage"];
@@ -165,22 +165,25 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
             config.progress(next_call);
           }
         }
-        setTimeout(function(){
+        setTimeout(function () {
           fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, response));
-          console.log("-----------------");
-        },100);
+        }, 100);
 
       } else if (ajaxCall.type === 'POST' && ajaxCall.url === '/searches') {
         // if we are here, it means that there is no result on the server...
         // but the server should still respond with a search URI
         config.log(1, "   +---> Empty search result ");
         var keyForEmptySearchCall = "POST:/searches{\"search\":\"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND\"}";
-        fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, config.hashedTestData[keyForEmptySearchCall]["response"]));
+        setTimeout(function () {
+          fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, config.hashedTestData[keyForEmptySearchCall]["response"]));
+        }, 100);
       }
       else {
         config.log(1, "   +---> NOT found");
         config.log(1, config.hashedTestData);
-        fakeAjaxDeferred.reject();
+        setTimeout(function () {
+          fakeAjaxDeferred.reject();
+        }, 100);
       }
       return fakeAjaxDeferred;
     }
