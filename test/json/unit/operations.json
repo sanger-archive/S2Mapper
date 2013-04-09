@@ -159,7 +159,7 @@
             "outputRole":{
               "output-tube-1":{
                 "event":"start",
-                "batch":"batch_uuid"
+                "batch_uuid":"batch_uuid"
               }
             }
           }

@@ -90,7 +90,7 @@ define(['mapper/support/deferred'], function(Deferred) {
         start: function(state) {
           return updateItemsInOrders(
             _.chain(state.updates).map(function(update) {
-              return { order: update.input.order, resource: update.output.resource, role: update.output.role, update: { event: 'start', batch: update.output.batch } };
+              return { order: update.input.order, resource: update.output.resource, role: update.output.role, update: { event: 'start', batch_uuid: update.output.batch } };
             }).value()
           );
         },
