@@ -1,4 +1,5 @@
-[
+{
+  "default":
   {
     "description":"Label printing",
     "calls":[
@@ -24,4 +25,4 @@
       }
     ]
   }
-]
+}

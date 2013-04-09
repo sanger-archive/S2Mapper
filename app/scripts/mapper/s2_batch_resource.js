@@ -33,17 +33,21 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
         });
       },
 
-      items:function () {
+      items: function () {
         return batch.orders.then(function (orders) {
           return _.chain(orders)
-              .map(function (order) {
-                return _.values(order.items);
-              })
-              .flatten()
-              .filter(function (item) {
-                return item.batch && (item.batch.uuid === batch.uuid);
-              })
-              .value();
+          .map(function (order) {
+            return _.values(order.items);
+          })
+          .flatten()
+          .filter(function (item) {
+            if (item.batch && item.batch.uuid) { // if the batch is the full object
+              return item.batch.uuid === batch.uuid;
+            } // otherwise, it is only the UUID of the batch...
+
+            return item.batch === batch.uuid;
+          })
+          .value();
         });
       }
     };
@@ -58,7 +62,7 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
 
   function updateItemsInOrdersAfterBatchCreation(seedBatch, createdBatch, deferred) {
     var orderUpdatePromises = [],
-        resources;
+    resources;
 
     seedBatch.isNew = false;
 
@@ -76,13 +80,13 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       var promise = $.Deferred();
       listOfPromisesForOrders.push(promise);
       rsc.order().then(function (order) {
-            ordersHashedByUUID[order.uuid] = order;
-            promise.resolve();
-          }
-      ).fail(function () {
-            promise.reject();
-            deferred.reject();
-          });
+        ordersHashedByUUID[order.uuid] = order;
+        promise.resolve();
+      }
+                      ).fail(function () {
+                        promise.reject();
+                        deferred.reject();
+                      });
     });
 
     // when all found
@@ -97,14 +101,14 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
 
       // then, when all updated...
       $.when.apply(null, orderUpdatePromises)
-          .done(function () {
-            deferred.resolve(createdBatch)
-          }).fail(function () {
-            deferred.reject();
-          });
+      .done(function () {
+        deferred.resolve(createdBatch)
+      }).fail(function () {
+        deferred.reject();
+      });
     }).fail(function () {
-          deferred.reject();
-        });
+      deferred.reject();
+    });
   }
 
   var instanceMethods = {

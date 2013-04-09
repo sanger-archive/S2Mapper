@@ -6,9 +6,16 @@ define([
   'use strict';
 
   describe("the fake ajax call", function () {
-    var putCall = {
+    var put1Call = {
       type:'PUT',
-      url:'/',
+      url:'/1',
+      dataType:"json",
+      headers:{ 'Content-Type':'application/json' },
+      data:""
+    };
+    var put2Call = {
+      type:'PUT',
+      url:'/2',
       dataType:"json",
       headers:{ 'Content-Type':'application/json' },
       data:""
@@ -20,7 +27,7 @@ define([
 
     it("changes the current stage when sending a 'PUT'.", function () {
       spyOn(config, "progress").andCallThrough();
-      config.ajax(putCall)
+      config.ajax(put1Call)
           .then(function () {
             return expect(config.progress).toHaveBeenCalled();
           }).fail(function () {
@@ -28,16 +35,38 @@ define([
           });
     });
 
+
+    it("testData is complete", function () {
+      expect(config.testData["default"]).toBeDefined();
+      expect(config.testData["after"]).toBeDefined();
+      expect(config.testData["even_later"]).toBeDefined();
+    });
+
     it("changes the hashedData when changing stage.", function () {
       var key = "GET:/";
-      expect(config.hashedTestData[key].value).toEqual(0);
-      config.ajax(putCall)
+      expect(config.hashedTestData[key].response.value).toEqual(0);
+      config.ajax(put1Call)
           .then(function () {
-            expect(config.hashedTestData[key].value).toEqual(1);
-            return config.ajax(putCall)
+            expect(config.hashedTestData[key].response.value).toEqual(1);
+            return config.ajax(put1Call)
           })
           .then(function () {
-            expect(config.hashedTestData[key].value).toEqual(2);
+            expect(config.hashedTestData[key].response.value).toEqual(2);
+          }).fail(function () {
+            throw "oops";
+          });
+    });
+
+    it("changes the hashedData when changing stage, regardless of the call order.", function () {
+      var key = "GET:/";
+      expect(config.hashedTestData[key].response.value).toEqual(0);
+      config.ajax(put2Call)
+          .then(function () {
+            expect(config.hashedTestData[key].response.value).toEqual(2);
+            return config.ajax(put1Call)
+          })
+          .then(function () {
+            expect(config.hashedTestData[key].response.value).toEqual(1);
           }).fail(function () {
             throw "oops";
           });

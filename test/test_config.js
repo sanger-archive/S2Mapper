@@ -44,6 +44,7 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
   var config = {
     apiUrl:'', // NOT USED IN TESTING
     logToConsole:true,
+    defaultStage:"default",
     logLevel:2, // 0..2 (0->everything, 2->only errors)
     printServiceUrl:'http://localhost:9292/services/print',
     printers:[
@@ -53,7 +54,7 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
     loadTestData:function (testDataFile) {
       config.testData = undefined;
       config.hashedTestData = undefined;
-      config.stage = 0;
+      config.stage = config.defaultStage;
       config.normalLoadingTestData(testDataFile);
       config.cummulativeLoadingTestDataInFirstStage(emptySearch);
     },
@@ -64,7 +65,7 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
         config.testData.push({"calls":[]});
       }
       config.testData = $.parseJSON(testDataFile);
-      config.transformTestDataIntoHashForStage(0);
+      config.transformTestDataIntoHashForStage(config.defaultStage);
     },
 
     cummulativeLoadingTestDataInFirstStage:function (testDataFile) {
@@ -72,9 +73,9 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
         config.testData = [];
         config.testData.push({"calls":[]});
       }
-      var extra = $.parseJSON(testDataFile)[0]["calls"];
-      config.testData[0]["calls"] = config.testData[0]["calls"].concat(extra);
-      config.transformTestDataIntoHashForStage(0);
+      var extra = $.parseJSON(testDataFile)[config.defaultStage]["calls"];
+      config.testData[config.defaultStage]["calls"] = config.testData[config.defaultStage]["calls"].concat(extra);
+      config.transformTestDataIntoHashForStage(config.defaultStage);
     },
 
     transformTestDataIntoHashForCurrentStage:function () {
@@ -89,16 +90,19 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
       }
       _.each(config.testData[stage].calls, function (call) {
         var callKey = callToString(cleanupCall(call));
-        config.hashedTestData[callKey] = call.response;
+        config.hashedTestData[callKey] = {"response":"","next_stage":""};
+        config.hashedTestData[callKey]["response"] = call.response;
+        if (call.next_stage) {
+          config.hashedTestData[callKey]["next_stage"] = call.next_stage;
+        }
       });
     },
 
-    progress:function () {
-      if ((config.stage + 1) >= _.size(config.testData)) {
-        config.stage = config.testData.length - 1;
+    progress:function (nextStage) {
+      if (!config.testData[nextStage]){
         return;
       }
-      config.stage++;
+      config.stage = nextStage;
       config.log(1, " [!Progression!] -> ", config.stage);
       config.transformTestDataIntoHashForCurrentStage();
     },
@@ -151,11 +155,15 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
 
       var key = callToString(ajaxCall);
       config.log(0, "Ajax call made... : ", key);
-      var response = config.hashedTestData[key];
-      if (response) {
+      var found = (config.hashedTestData[key]!=undefined);
+      if (found) {
+        var response = config.hashedTestData[key]["response"];
+        var next_call = config.hashedTestData[key]["next_stage"];
         config.log(0, "   +--->     Found: ", response);
         if (ajaxCall.type === "PUT" || ajaxCall.type === "POST") {
-          config.progress();
+          if (next_call) {
+            config.progress(next_call);
+          }
         }
         fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, response));
       } else if (ajaxCall.type === 'POST' && ajaxCall.url === '/searches') {
@@ -163,7 +171,7 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
         // but the server should still respond with a search URI
         config.log(1, "   +---> Empty search result ");
         var keyForEmptySearchCall = "POST:/searches{\"search\":\"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND\"}";
-        fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, config.hashedTestData[keyForEmptySearchCall]));
+        fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, config.hashedTestData[keyForEmptySearchCall]["response"]));
       }
       else {
         config.log(1, "   +---> NOT found");

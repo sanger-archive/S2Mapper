@@ -1,5 +1,5 @@
-[
-  {
+{
+  "default":{
     "description":"search with no result",
     "calls":[
       {
@@ -36,4 +36,4 @@
       }
     ]
   }
-]
+}

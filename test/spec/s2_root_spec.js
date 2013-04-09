@@ -19,7 +19,7 @@ define([
 
         beforeEach(function () {
           config.loadTestData(rootTestJson);
-          rawRootJson = config.testData[0]["calls"][0].response;
+          rawRootJson = config.testData[config.defaultStage]["calls"][0].response;
           rootPromise = S2Root.load({user:"username"});
           rootPromise.done(results.assignTo('root'));
         });
@@ -80,7 +80,7 @@ define([
 
             beforeEach(function () {
               config.cummulativeLoadingTestDataInFirstStage(resourceTest.data);
-              expectedResponse = config.testData[0]["calls"][0].response;
+              expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
               S2Root.load({user:"username"}).done(results.assignTo('root'));
               results.get('root').find(resourceTest.uuid).done(results.assignTo('resource'));
             });
