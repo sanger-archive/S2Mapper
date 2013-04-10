@@ -36,18 +36,18 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       items: function () {
         return batch.orders.then(function (orders) {
           return _.chain(orders)
-          .map(function (order) {
-            return _.values(order.items);
-          })
-          .flatten()
-          .filter(function (item) {
-            if (item.batch && item.batch.uuid) { // if the batch is the full object
-              return item.batch.uuid === batch.uuid;
-            } // otherwise, it is only the UUID of the batch...
+              .map(function (order) {
+                return _.values(order.items);
+              })
+              .flatten()
+              .filter(function (item) {
+                if (item.batch && item.batch.uuid) { // if the batch is the full object
+                  return item.batch.uuid === batch.uuid;
+                } // otherwise, it is only the UUID of the batch...
 
-            return item.batch === batch.uuid;
-          })
-          .value();
+                return item.batch === batch.uuid;
+              })
+              .value();
         });
       }
     };
@@ -62,7 +62,7 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
 
   function updateItemsInOrdersAfterBatchCreation(seedBatch, createdBatch, deferred) {
     var orderUpdatePromises = [],
-    resources;
+        resources;
 
     seedBatch.isNew = false;
 
@@ -80,13 +80,13 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       var promise = $.Deferred();
       listOfPromisesForOrders.push(promise);
       rsc.order().then(function (order) {
-        ordersHashedByUUID[order.uuid] = order;
-        promise.resolve();
-      }
-                      ).fail(function () {
-                        promise.reject();
-                        deferred.reject();
-                      });
+            ordersHashedByUUID[order.uuid] = order;
+            promise.resolve();
+          }
+      ).fail(function () {
+            promise.reject();
+            deferred.reject();
+          });
     });
 
     // when all found
@@ -101,14 +101,14 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
 
       // then, when all updated...
       $.when.apply(null, orderUpdatePromises)
-      .done(function () {
-        deferred.resolve(createdBatch)
-      }).fail(function () {
-        deferred.reject();
-      });
+          .done(function () {
+            deferred.resolve(createdBatch)
+          }).fail(function () {
+            deferred.reject();
+          });
     }).fail(function () {
-      deferred.reject();
-    });
+          deferred.reject();
+        });
   }
 
   var instanceMethods = {
@@ -127,19 +127,16 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       return deferred.promise();
     },
 
-    getResourcesGroupedByOrders:function (batch) {
+    getItemsGroupedByOrders:function (batch) {
       var defferedForGroupedResources = $.Deferred();
       var ordersHashedByUUID = {};
 
-
-
       batch.items.then(function (items) {
-        _.each(items, function (rsc) {
-          //resourceUUIDs.push(rsc.uuid); // saving the rscs' uuids
-          if (!ordersHashedByUUID[rsc.order.uuid]) {
-            ordersHashedByUUID[rsc.order.uuid] = {order:rsc.order, items:[]};
+        _.each(items, function (item) {
+          if (!ordersHashedByUUID[item.order.uuid]) {
+            ordersHashedByUUID[item.order.uuid] = {order:item.order, items:[]};
           }
-          ordersHashedByUUID[rsc.order.uuid].items.push(rsc);
+          ordersHashedByUUID[item.order.uuid].items.push(item);
         });
         defferedForGroupedResources.resolve(ordersHashedByUUID);
       });
@@ -152,8 +149,8 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
     batchInstance.save = function () {
       return instanceMethods.save(batchInstance);
     };
-    batchInstance.getResourcesGroupedByOrders = function () {
-      return instanceMethods.getResourcesGroupedByOrders(batchInstance);
+    batchInstance.getItemsGroupedByOrders = function () {
+      return instanceMethods.getItemsGroupedByOrders(batchInstance);
     };
     batchInstance.resources = options.resources;
     return extendProxy(proxyFor(batchInstance), batchInstance);
