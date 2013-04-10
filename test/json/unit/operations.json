@@ -444,7 +444,7 @@
         "method":"post",
         "url":"/actions/transfer_tubes_to_tubes",
         "request":{
-          "transfer_tubes_to_tube":{
+          "transfer_tubes_to_tubes":{
             "user":"username",
             "transfers":[
               {
@@ -457,7 +457,7 @@
           }
         },
         "response":{
-          "transfer_tubes_to_tube":{
+          "transfer_tubes_to_tubes":{
 
           }
         }
