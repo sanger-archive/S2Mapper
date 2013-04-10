@@ -149,6 +149,12 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
       console.log.apply(console, args);
     },
 
+    // 'sendResponse' can be used to control when the Ajax response will be sent.  The implementation
+    // commented out below is synchronous, sending immediately; the other is asynchronous, and so behaves
+    // more like talking to a real system.
+//    sendResponse: function(callback) { callback(); },
+    sendResponse: function(callback) { setTimeout(callback, 100); },
+
     ajax:function (originalAjaxCall) {
       var fakeAjaxDeferred = $.Deferred();
       var ajaxCall = cleanupCall(originalAjaxCall);
@@ -165,25 +171,23 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
             config.progress(next_call);
           }
         }
-        setTimeout(function () {
+        this.sendResponse(function() {
           fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, response));
-        }, 100);
+        });
 
       } else if (ajaxCall.type === 'POST' && ajaxCall.url === '/searches') {
         // if we are here, it means that there is no result on the server...
         // but the server should still respond with a search URI
         config.log(1, "   +---> Empty search result ");
         var keyForEmptySearchCall = "POST:/searches{\"search\":\"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND\"}";
-        setTimeout(function () {
+        this.sendResponse(function() {
           fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, config.hashedTestData[keyForEmptySearchCall]["response"]));
-        }, 100);
+        });
       }
       else {
         config.log(1, "   +---> NOT found");
         config.log(1, config.hashedTestData);
-        setTimeout(function () {
-          fakeAjaxDeferred.reject();
-        }, 100);
+        this.sendResponse(fakeAjaxDeferred.reject);
       }
       return fakeAjaxDeferred;
     }
