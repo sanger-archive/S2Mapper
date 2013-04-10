@@ -30,6 +30,21 @@ define([
           return barcode.label(state.labware);
         }
       ).promise();
+    },
+
+    returnPrintDetails:function() {
+      var label = this.labels['sanger label'].value;
+      var prefixStr = label.slice(0, 2);
+      var barcodeStr = label.slice(2, label.length - 1);
+      var suffixStr = label.slice(label.length - 1, label.length);
+      return {
+        prefix: prefixStr,
+        barcode: barcodeStr,
+        suffix: suffixStr,
+        name: 'X',
+        description: 'X',
+        project: 'X'
+      };
     }
   };
 });
