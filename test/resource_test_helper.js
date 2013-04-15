@@ -38,6 +38,9 @@ define([], function() {
         expectationCall = false;
       },
 
+      // Current status
+      hasFinished: function() { return expectationCall; },
+
       // Dealing with expectations of methods being called in a more convenient manner
       unexpected: function() { throw 'Unexpected call!'; },
       expected: function() { expectationCall = true; },

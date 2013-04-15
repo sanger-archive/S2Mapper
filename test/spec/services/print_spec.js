@@ -29,19 +29,39 @@ define([
 
         it('sends a single label to the SOAP service', function () {
           config.loadTestData(testData);
-          printer.print([
-            {prefix:'P', barcode:'B', suffix:'S', name:'N', description:'D', project:'PR'}
-          ]).done(results.expected).fail(results.unexpected);
-          results.expectToBeCalled();
+          runs(function(){
+            printer.print([
+              {prefix:'P', barcode:'B', suffix:'S', name:'N', description:'D', project:'PR'}
+            ]).done(results.expected).fail(results.unexpected);
+          });
+
+          waitsFor(function(){
+            return results.hasFinished();
+          });
+
+          runs(function(){
+            expect(results.expectToBeCalled);
+          })
+
         });
 
         it('sends multiple labels to the SOAP service', function () {
           config.loadTestData(testData);
+          runs(function(){
           printer.print([
             {prefix:'P1', barcode:'B1', suffix:'S1', name:'N1', description:'D1', project:'PR1'},
             {prefix:'P2', barcode:'B2', suffix:'S2', name:'N2', description:'D2', project:'PR2'}
           ]).done(results.expected).fail(results.unexpected);
-          results.expectToBeCalled();
+          });
+
+          waitsFor(function(){
+            return results.hasFinished();
+          });
+
+          runs(function(){
+            expect(results.expectToBeCalled);
+          })
+
         });
       });
     });
