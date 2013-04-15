@@ -15,26 +15,60 @@ define([
       var s2, handler;
 
       beforeEach(function () {
-        config.loadTestData(rootData);
-        Root.load({user:"username"}).done(results.assignTo('root'));
-        s2 = results.get('root');
-
-        handler = s2.searches.handling(s2.batches);
-        config.cummulativeLoadingTestDataInFirstStage(searchData);
+        runs(function () {
+          config.loadTestData(rootData);
+          Root.load({user:"username"})
+              .then(results.assignTo('root'))
+              .then(function () {
+                s2 = results.get('root');
+                return s2.searches.handling(s2.batches);
+              })
+              .then(function (ret) {
+                handler = ret;
+                config.cummulativeLoadingTestDataInFirstStage(searchData)})
+              .then(results.expected)
+              .fail(results.unexpected);
+        });
+        waitsFor(results.hasFinished);
       });
 
       describe('handling resource', function () {
         describe('first', function () {
           it('returns the first page of results', function () {
-            handler.first({}).done(results.assignTo('results'));
-            expect(results.get('results')[0].name).toBe('first page');
+            results.reset();
+
+            runs(function(){
+              handler.first({})
+                  .then(results.assignTo('results'))
+                  .then(results.expected)
+                  .fail(results.unexpected);
+            });
+
+            waitsFor(results.hasFinished);
+
+            runs(function(){
+              expect(results.get('results')[0].name).toBe('first page');
+            });
           });
         });
 
         describe('last', function () {
           it('returns the last page of results', function () {
-            handler.last({}).done(results.assignTo('results'));
-            expect(results.get('results')[0].name).toBe('last page');
+
+            results.reset();
+
+            runs(function(){
+              handler.last({})
+                  .then(results.assignTo('results'))
+                  .then(results.expected)
+                  .fail(results.unexpected);
+            });
+
+            waitsFor(results.hasFinished);
+
+            runs(function(){
+              expect(results.get('results')[0].name).toBe('last page');
+            });
           });
         });
       });
