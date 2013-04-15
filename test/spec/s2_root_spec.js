@@ -20,17 +20,29 @@ define([
         beforeEach(function () {
           config.loadTestData(rootTestJson);
           rawRootJson = config.testData[config.defaultStage]["calls"][0].response;
-          rootPromise = S2Root.load({user:"username"});
-          rootPromise.done(results.assignTo('root'));
+          runs(function () {
+            rootPromise = S2Root.load({user:"username"})
+                .then(results.assignTo('root'))
+                .then(results.expected)
+                .fail(results.unexpected);
+          });
+
+          waitsFor(results.hasFinished);
         });
 
         it("returns a promise.", function () {
-          expect(rootPromise.done).toBeDefined();
+          runs(function () {
+            expect(rootPromise.hasOwnProperty("resolve")).toBeDefined();
+            expect(rootPromise.hasOwnProperty("reject")).toBeDefined();
+            expect(rootPromise.hasOwnProperty("promise")).toBeDefined();
+          });
         });
 
         it("has a SearchesResource", function () {
-          var resourceType = results.get('root').searches.resourceType;
-          expect(resourceType).toBe('search');
+          runs(function () {
+            var resourceType = results.get('root').searches.resourceType;
+            expect(resourceType).toBe('search');
+          });
         });
 
         // All of these are supposed to be actions, not root level resources.
@@ -52,17 +64,21 @@ define([
         }
 
         it("has the appropriate root level resourcs", function () {
-          expect(bidirectionalDifference(
-              _.union(_.difference(_.difference(_.keys(rawRootJson), resourcesThatAreActions), resourcesThatAreDropped), ['actions', 'user']),
-              _.keys(results.get('root'))
-          )).toEqual([]);
+          runs(function () {
+            expect(bidirectionalDifference(
+                _.union(_.difference(_.difference(_.keys(rawRootJson), resourcesThatAreActions), resourcesThatAreDropped), ['actions', 'user']),
+                _.keys(results.get('root'))
+            )).toEqual([]);
+          });
         });
 
         it("has the appropriate actions", function () {
-          expect(bidirectionalDifference(
-              resourcesThatAreActions,
-              _.keys(results.get('root').actions)
-          )).toEqual([]);
+          runs(function () {
+            expect(bidirectionalDifference(
+                resourcesThatAreActions,
+                _.keys(results.get('root').actions)
+            )).toEqual([]);
+          });
         });
       });
 
@@ -81,16 +97,30 @@ define([
             beforeEach(function () {
               config.cummulativeLoadingTestDataInFirstStage(resourceTest.data);
               expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
-              S2Root.load({user:"username"}).done(results.assignTo('root'));
-              results.get('root').find(resourceTest.uuid).done(results.assignTo('resource'));
+              runs(function () {
+                S2Root.load({user:"username"})
+                    .then(results.assignTo('root'))
+                    .then(function () {
+                      return results.get('root').find(resourceTest.uuid);
+                    })
+                    .then(results.assignTo('resource'))
+                    .then(results.expected)
+                    .fail(results.unexpected);
+              });
+
+              waitsFor(results.hasFinished);
             });
 
             it("is " + resourceTest.resourceType + " resource", function () {
-              expect(results.get('resource').resourceType).toBe(resourceTest.resourceType);
+              runs(function () {
+                expect(results.get('resource').resourceType).toBe(resourceTest.resourceType);
+              });
             });
 
             it("sets the root", function () {
-              expect(results.get('resource').root).toBeDefined();
+              runs(function () {
+                expect(results.get('resource').root).toBeDefined();
+              });
             });
           });
         }
