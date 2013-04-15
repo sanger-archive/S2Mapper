@@ -19,48 +19,84 @@ define([
       beforeEach(function () {
         var expectedResponse = config.loadTestData(testData);
 
-        Root.load({user:"username"}).done(results.assignTo('root'));
-        s2 = results.get('root');
+        runs(function () {
+          Root.load({user:"username"})
+            .then(function (root) {
+              results.assignTo('root')(root);
+              s2 = results.get('root');
+            })
+            .then(results.expected)
+            .fail(results.unexpected);
+        })
+
+        waitsFor(results.hasFinished);
+
       });
 
       describe('create', function () {
         beforeEach(function () {
-          s2.barcodes.create({
-            "labware":"tube",
-            "role":"stock",
-            "contents":"DNA"
-          }).done(results.assignTo("barcode"));
+          results.resetFinishedFlag();
+          runs(function () {
+            s2.barcodes.create({
+              "labware":"tube",
+              "role":"stock",
+              "contents":"DNA"
+            })
+              .then(results.assignTo("barcode"))
+              .then(results.expected)
+              .fail(results.unexpected)
+          });
+
+          waitsFor(results.hasFinished);
         });
 
         it("has an EAN13 barcode", function () {
-          expect(results.get('barcode').ean13).toBeDefined();
+
+          runs(function () {
+            expect(results.get('barcode').ean13).toBeDefined();
+          });
         });
 
         it("has a structured Sanger barcode", function () {
-          expect(results.get('barcode').sanger).toBeDefined();
+          runs(function () {
+            expect(results.get('barcode').sanger).toBeDefined();
+          });
         });
 
         it("has a string representation of the Sanger barcode", function () {
-          expect(results.get('barcode').sangerBarcode).toEqual("DN1234567K");
+          runs(function () {
+            expect(results.get('barcode').sangerBarcode).toEqual("DN1234567K");
+          });
         });
       });
 
       describe('label', function () {
         beforeEach(function () {
+          results.resetFinishedFlag();
           var resource = { root:s2, uuid:"UUID OF RESOURCE" }
           $.extend(resource, Labellable);
 
-          s2.barcodes.create({
-            "labware":"tube",
-            "role":"stock",
-            "contents":"DNA"
-          }).done(function (barcode) {
-                barcode.label(resource).done(results.assignTo('labellable'));
-              });
+          runs(function () {
+            s2.barcodes.create({
+              "labware":"tube",
+              "role":"stock",
+              "contents":"DNA"
+            })
+              .then(function (barcode) {
+                barcode.label(resource)
+                  .then(results.assignTo('labellable'))
+                  .then(results.expected)
+                  .fail(results.unexpected)
+              })
+          });
+          waitsFor(results.hasFinished);
+
         });
 
         it("attaches barcode labels to resources", function () {
-          expect(results.get('labellable')).toBeDefined();
+          runs(function () {
+            expect(results.get('labellable')).toBeDefined();
+          });
         });
       });
     });
