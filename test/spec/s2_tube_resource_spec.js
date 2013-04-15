@@ -23,64 +23,93 @@ define([ 'resource_test_helper'
       describe("Searching for a tube by EAN13 barcode,", function () {
         describe("and the tube IS on the system,", function () {
           beforeEach(function () {
-            config.loadTestData(rootTestJson)
-            Root.load({user:"username"}).done(results.assignTo('root'))
 
-            s2 = results.get('root')
-            config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson)
+            runs(function () {
+              config.loadTestData(rootTestJson);
+              config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
+              Root.load({user:"username"})
+                .then(function (root) {
+                  results.assignTo('root')(root);
+                  s2 = results.get('root');
+                  return root.tubes.findByEan13Barcode('2345678901234');
+                })
+                .then(results.assignTo('tube'))
+                .then(results.expected)
+                .fail(results.unexpected);
+            });
+            waitsFor(results.hasFinished);
 
-            s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'))
-          })
+          });
 
           it("takes an EAN13 barcode and returns the corresponding resource.", function () {
-            expect(results.get('tube').rawJson).toBeDefined()
-          })
-        })
+            runs(function () {
+              expect(results.get('tube').rawJson).toBeDefined()
+            });
+          });
+        });
 
         describe("and tube IS NOT on the system,", function () {
           beforeEach(function () {
-            config.loadTestData(rootTestJson)
-            Root.load({user:"username"}).done(results.assignTo('root'))
-            s2 = results.get('root')
-            config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson)
-            tubePromise = s2.tubes.findByEan13Barcode('6666666666666')
-
-          })
+            runs(function () {
+              config.loadTestData(rootTestJson);
+              Root.load({user:"username"})
+                .then(function (root) {
+                  results.assignTo('root')(root);
+                  s2 = results.get('root');
+                  config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
+                  tubePromise = s2.tubes.findByEan13Barcode('6666666666666'); // we need to save the promise here !
+                  return tubePromise;
+                })
+                .then(results.unexpected)
+                .fail(results.expected);
+            });
+            waitsFor(results.hasFinished);
+          });
 
           it("takes an EAN13 barcode but the returned promise is rejected.", function () {
-            expect(tubePromise.state()).toBe('rejected')
+            runs(function () {
+              expect(tubePromise.state()).toBe('rejected')
+            });
           })
         })
       })
 
       describe("once a tube has been loaded", function () {
         beforeEach(function () {
-          config.loadTestData(rootTestJson)
-          Root.load({user:"username"}).done(results.assignTo('root'))
-          s2 = results.get('root')
-
-          config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson)
-          s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'))
-        })
+          runs(function () {
+            config.loadTestData(rootTestJson);
+            Root.load({user:"username"})
+              .then(function (root) {
+                results.assignTo('root')(root);
+                s2 = results.get('root');
+                config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
+                return root.tubes.findByEan13Barcode('2345678901234');
+              })
+              .then(results.assignTo('tube'))
+              .then(results.expected)
+              .fail(results.unexpected);
+          });
+          waitsFor(results.hasFinished);
+        });
 
         describe(".order()", function () {
           it("resolves to an order resource.", function () {
-            results.get('tube').order().done(results.assignTo('order'))
-            expect(results.get('order').resourceType).toBe('order')
+            runs(function () {
+              results.resetFinishedFlag();
+              results.get('tube').order()
+                .then(results.assignTo('order'))
+                .then(results.expected)
+                .fail(results.unexpected)
+            });
+
+            waitsFor(results.hasFinished);
+
+            runs(function () {
+              expect(results.get('order').resourceType).toBe('order');
+            })
           })
-        })
-
-        xdescribe(".transfer", function () {
-          it("can be transferred", function () {
-            var tube = results.get('tube')
-                , transferResults = tube.transfer(tube)
-            console.warn(transferResults)
-
-          })
-
         })
       })
-
     })
   })
 })
