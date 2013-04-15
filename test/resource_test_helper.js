@@ -39,6 +39,7 @@ define([], function() {
       },
 
       // Current status
+      resetFinishedFlag: function(){expectationCall = false;},
       hasFinished: function() { return expectationCall; },
 
       // Dealing with expectations of methods being called in a more convenient manner
