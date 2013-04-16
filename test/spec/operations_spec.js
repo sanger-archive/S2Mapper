@@ -42,94 +42,127 @@ define([
 
         beforeEach(function () {
           config.loadTestData(testDataRoot);
-          Root.load({user:"username"}).done(results.assignTo('root')).fail(results.unexpected);
-          root = results.get('root');
+
+          runs(function () {
+            results.resetFinishedFlag();
+            Root.load({user:"username"})
+              .then(results.assignTo('root'))
+              .then(function () {
+                root = results.get('root');
+              })
+              .then(results.expected)
+              .fail(results.unexpected);
+
+          });
+          waitsFor(results.hasFinished);
+
 
           config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
+        });
+
+        it("passes the attributes to the labware constructor", function () {
+          runs(function () {
+            results.resetFinishedFlag();
+            Operations.registerLabware(
+              root.tubes,
+              'DNA',
+              'stock',
+              { 'foo':'bar' }
+            )
+              .then(results.expected)
+              .fail(results.unexpected);
+          });
+          waitsFor(results.hasFinished);
         });
 
         describe("performs create labware -> create barcode -> label labware", function () {
           var state;
 
           beforeEach(function () {
-            Operations.registerLabware(
+            results.resetFinishedFlag();
+            runs(function () {
+              Operations.registerLabware(
                 root.tubes,
                 'DNA',
                 'stock'
-            ).done(results.assignTo('state')).fail(results.unexpected);
+              )
+                .then(results.assignTo('state'))
+                .then(function () {
+                  state = results.get('state');
+                })
+                .then(results.expected)
+                .fail(results.unexpected);
+            })
+            waitsFor(results.hasFinished);
 
-            state = results.get('state');
           });
 
           it("outputs the labware", function () {
-            expect(state.labware).toBeDefined();
+            runs(function () {
+              expect(state.labware).toBeDefined();
+            })
           });
 
           it("outputs the barcode", function () {
-            expect(state.barcode).toBeDefined();
+            runs(function () {
+              expect(state.barcode).toBeDefined();
+            });
           });
         });
 
-        it("passes the attributes to the labware constructor", function () {
-          Operations.registerLabware(
-              root.tubes,
-              'DNA',
-              'stock',
-              { 'foo':'bar' }
-          ).done(results.expected).fail(results.unexpected);
-        });
+
       });
 
       describe("betweenLabware", function () {
         var root;
 
         beforeEach(function () {
-          config.loadTestData(testDataRoot);
-          Root.load({user:"username"}).done(results.assignTo('root')).fail(results.unexpected);
-          root = results.get('root');
+          results.resetFinishedFlag();
 
-          config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
+          runs(function () {
+            config.loadTestData(testDataRoot);
+            Root.load({user:"username"})
+              .then(results.assignTo('root'))
+              .then(function () {
+                root = results.get('root');
+                config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
+                return root.find('order-with-single-item');
+              })
+              .then(results.assignTo('order'))
+              .then(function () {
+                return root.find('input-tube-1');
+              })
+              .then(results.assignTo('inputTube'))
+              .then(function () {
+                return root.find('output-tube-1');
+              })
+              .then(results.assignTo('outputTube'))
+              .then(results.expected)
+              .fail(results.unexpected);
+          });
+          waitsFor(results.hasFinished);
 
-          root.find('order-with-single-item').done(results.assignTo('order')).fail(results.unexpected);
-          root.find('input-tube-1').done(results.assignTo('inputTube')).fail(results.unexpected);
-          root.find('output-tube-1').done(results.assignTo('outputTube')).fail(results.unexpected);
+
         });
 
         it("handles simple tube-to-tube transfer", function () {
-          Operations.betweenLabware(root.actions.transfer_tubes_to_tubes, [
-            function (operations, state) {
-              operations.push({
-                input:{ resource:results.get('inputTube'), role:'inputRole', order:results.get('order') },
-                output:{ resource:results.get('outputTube'), role:'outputRole' },
-                fraction:0.5,
-                aliquot_type:'DNA'
-              });
-              return $.Deferred().resolve('Woot!').promise();
-            }
-          ]).operation().done(results.expected).fail(results.unexpected);
-        });
+          runs(function () {
+            results.resetFinishedFlag();
+            Operations.betweenLabware(root.actions.transfer_tubes_to_tubes, [
+              function (operations, state) {
+                operations.push({
+                  input:{ resource:results.get('inputTube'), role:'inputRole', order:results.get('order') },
+                  output:{ resource:results.get('outputTube'), role:'outputRole' },
+                  fraction:0.5,
+                  aliquot_type:'DNA'
+                });
+                return $.Deferred().resolve('Woot!').promise();
+              }
+            ]).operation().done(results.expected).fail(results.unexpected);
+          })
+          waitsFor(results.hasFinished);
 
-//        betweenLabware(
-//          batch.root.actions.transfer_tubes_to_tubes,
-//          batch.items.filter(function(i) {
-//            return i.role === 'input_tube';
-//          }).map(function(inputItem) {
-//            return function(operations, state) {
-//              return Operations.registerLabware(
-//                batch.root.tubes,
-//                'DNA',
-//                'stock'
-//              ).then(function(s) {
-//                operations.push({
-//                  input:        { resource: inputItem.resource, role: inputItem.role, order: inputItem.order },
-//                  output:       { resource: s.labware,          role: 'output_tube' },
-//                  fraction:     0.5,
-//                  aliquot_type: 'DNA'
-//                });
-//              });
-//            };
-//          })
-//        });
+        });
       });
 
       describe("stateManagement", function () {
@@ -137,141 +170,284 @@ define([
 
         _.chain({
           'single input-output pair':function () {
-            root.find('order-with-single-item').done(results.assignTo('order')).fail(results.unexpected);
-            root.find('input-tube-1').done(results.assignTo('inputTube')).fail(results.unexpected);
-            root.find('output-tube-1').done(results.assignTo('outputTube')).fail(results.unexpected);
+            root.find('order-with-single-item')
+              .then(results.assignTo('order'))
+              .then(function () {
+                return root.find('input-tube-1');
+              })
+              .then(results.assignTo('inputTube'))
+              .then(function () {
+                return root.find('output-tube-1');
+              })
+              .then(results.assignTo('outputTube'))
+              .then(function () {
+                return {
+                  updates:[
+                    {
+                      input:{ resource:results.get('inputTube'), role:'inputRole', order:results.get('order') },
+                      output:{ resource:results.get('outputTube'), role:'outputRole' }
+                    }
+                  ]
+                };
+              })
+              .then(results.assignTo('wholeUpdate'))
+              .then(results.expected)
+              .fail(results.unexpected);
 
-            return {
-              updates:[
-                {
-                  input:{ resource:results.get('inputTube'), role:'inputRole', order:results.get('order') },
-                  output:{ resource:results.get('outputTube'), role:'outputRole' }
-                }
-              ]
-            };
           },
 
           'single input-output pair setting batch':function () {
-            root.find('order-with-single-item').done(results.assignTo('order')).fail(results.unexpected);
-            root.find('input-tube-1').done(results.assignTo('inputTube')).fail(results.unexpected);
-            root.find('output-tube-1').done(results.assignTo('outputTube')).fail(results.unexpected);
+            root.find('order-with-single-item')
+              .then(results.assignTo('order'))
+              .then(function () {
+                return root.find('input-tube-1');
+              })
+              .then(results.assignTo('inputTube'))
+              .then(function () {
+                return root.find('output-tube-1');
+              })
+              .then(results.assignTo('outputTube'))
+              .then(function () {
+                return {
+                  updates:[
+                    {
+                      input:{ resource:results.get('inputTube'), role:'inputRole', order:results.get('order') },
+                      output:{ resource:results.get('outputTube'), role:'outputRole', batch:'batch_uuid' }
+                    }
+                  ]
+                };
+              })
+              .then(results.assignTo('wholeUpdate'))
+              .then(results.expected)
+              .fail(results.unexpected);
 
-            return {
-              updates:[
-                {
-                  input:{ resource:results.get('inputTube'), role:'inputRole', order:results.get('order') },
-                  output:{ resource:results.get('outputTube'), role:'outputRole', batch:'batch_uuid' }
-                }
-              ]
-            };
+
           },
 
           'single order with multiple input-output pairs':function () {
-            root.find('order-with-two-items').done(results.assignTo('order')).fail(results.unexpected);
-            root.find('input-tube-2').done(results.assignTo('inputTube2')).fail(results.unexpected);
-            root.find('input-tube-3').done(results.assignTo('inputTube3')).fail(results.unexpected);
-            root.find('output-tube-2').done(results.assignTo('outputTube2')).fail(results.unexpected);
-            root.find('output-tube-3').done(results.assignTo('outputTube3')).fail(results.unexpected);
-
-            return {
-              updates:[
-                {
-                  input:{ resource:results.get('inputTube2'), role:'inputRole', order:results.get('order') },
-                  output:{ resource:results.get('outputTube2'), role:'outputRole' }
-                },
-                {
-                  input:{ resource:results.get('inputTube3'), role:'inputRole', order:results.get('order') },
-                  output:{ resource:results.get('outputTube3'), role:'outputRole' }
-                }
-              ]
-            };
+            root.find('order-with-two-items')
+              .then(results.assignTo('order'))
+              .then(function () {
+                return root.find('input-tube-2');
+              })
+              .then(results.assignTo('inputTube2'))
+              .then(function () {
+                return root.find('input-tube-3');
+              })
+              .then(results.assignTo('inputTube3'))
+              .then(function () {
+                return root.find('output-tube-2');
+              })
+              .then(results.assignTo('outputTube2'))
+              .then(function () {
+                return root.find('output-tube-3');
+              })
+              .then(results.assignTo('outputTube3'))
+              .then(function () {
+                return {
+                  updates:[
+                    {
+                      input:{ resource:results.get('inputTube2'), role:'inputRole', order:results.get('order') },
+                      output:{ resource:results.get('outputTube2'), role:'outputRole' }
+                    },
+                    {
+                      input:{ resource:results.get('inputTube3'), role:'inputRole', order:results.get('order') },
+                      output:{ resource:results.get('outputTube3'), role:'outputRole' }
+                    }
+                  ]
+                };
+              })
+              .then(results.assignTo('wholeUpdate'))
+              .then(results.expected)
+              .fail(results.unexpected);
           },
 
           'multiple orders with multiple input-output pairs':function () {
-            root.find('order-with-single-item').done(results.assignTo('single-order')).fail(results.unexpected);
-            root.find('order-with-two-items').done(results.assignTo('multiple-order')).fail(results.unexpected);
-            root.find('input-tube-1').done(results.assignTo('inputTube1')).fail(results.unexpected);
-            root.find('input-tube-2').done(results.assignTo('inputTube2')).fail(results.unexpected);
-            root.find('input-tube-3').done(results.assignTo('inputTube3')).fail(results.unexpected);
-            root.find('output-tube-1').done(results.assignTo('outputTube1')).fail(results.unexpected);
-            root.find('output-tube-2').done(results.assignTo('outputTube2')).fail(results.unexpected);
-            root.find('output-tube-3').done(results.assignTo('outputTube3')).fail(results.unexpected);
+            root.find('order-with-single-item')
+              .then(results.assignTo('single-order'))
+              .then(function () {
+                return root.find('order-with-two-items');
+              })
+              .then(results.assignTo('multiple-order'))
+              .then(function () {
+                return root.find('input-tube-1');
+              })
+              .then(results.assignTo('inputTube1'))
+              .then(function () {
+                return root.find('input-tube-2');
+              })
+              .then(results.assignTo('inputTube2'))
+              .then(function () {
+                return root.find('input-tube-3');
+              })
+              .then(results.assignTo('inputTube3'))
+              .then(function () {
+                return root.find('output-tube-1');
+              })
+              .then(results.assignTo('outputTube1'))
+              .then(function () {
+                return root.find('output-tube-2');
+              })
+              .then(results.assignTo('outputTube2'))
+              .then(function () {
+                return root.find('output-tube-3');
+              })
+              .then(results.assignTo('outputTube3'))
+              .then(function () {
+                return {
+                  updates:[
+                    {
+                      input:{ resource:results.get('inputTube1'), role:'inputRole', order:results.get('single-order') },
+                      output:{ resource:results.get('outputTube1'), role:'outputRole' }
+                    },
+                    {
+                      input:{ resource:results.get('inputTube2'), role:'inputRole', order:results.get('multiple-order') },
+                      output:{ resource:results.get('outputTube2'), role:'outputRole' }
+                    },
+                    {
+                      input:{ resource:results.get('inputTube3'), role:'inputRole', order:results.get('multiple-order') },
+                      output:{ resource:results.get('outputTube3'), role:'outputRole' }
+                    }
+                  ]
+                };
+              })
+              .then(results.assignTo('wholeUpdate'))
+              .then(results.expected)
+              .fail(results.unexpected);
 
-            return {
-              updates:[
-                {
-                  input:{ resource:results.get('inputTube1'), role:'inputRole', order:results.get('single-order') },
-                  output:{ resource:results.get('outputTube1'), role:'outputRole' }
-                },
-                {
-                  input:{ resource:results.get('inputTube2'), role:'inputRole', order:results.get('multiple-order') },
-                  output:{ resource:results.get('outputTube2'), role:'outputRole' }
-                },
-                {
-                  input:{ resource:results.get('inputTube3'), role:'inputRole', order:results.get('multiple-order') },
-                  output:{ resource:results.get('outputTube3'), role:'outputRole' }
-                }
-              ]
-            };
+
           },
 
           'multiple orders with duplicated input-output pairs uniques updates':function () {
-            root.find('order-with-single-item').done(results.assignTo('single-order')).fail(results.unexpected);
-            root.find('order-with-two-items').done(results.assignTo('multiple-order')).fail(results.unexpected);
-            root.find('input-tube-1').done(results.assignTo('inputTube1')).fail(results.unexpected);
-            root.find('input-tube-2').done(results.assignTo('inputTube2')).fail(results.unexpected);
-            root.find('input-tube-3').done(results.assignTo('inputTube3')).fail(results.unexpected);
-            root.find('output-tube-1').done(results.assignTo('outputTube1')).fail(results.unexpected);
-            root.find('output-tube-2').done(results.assignTo('outputTube2')).fail(results.unexpected);
-            root.find('output-tube-3').done(results.assignTo('outputTube3')).fail(results.unexpected);
-            root.find('output-tube-4').done(results.assignTo('outputTube4')).fail(results.unexpected);
-
-            return {
-              updates:[
-                {
-                  input:{ resource:results.get('inputTube1'), role:'inputRole', order:results.get('single-order') },
-                  output:{ resource:results.get('outputTube1'), role:'outputRole' }
-                },
-                {
-                  input:{ resource:results.get('inputTube2'), role:'inputRole', order:results.get('multiple-order') },
-                  output:{ resource:results.get('outputTube2'), role:'outputRole' }
-                },
-                {
-                  input:{ resource:results.get('inputTube3'), role:'inputRole', order:results.get('multiple-order') },
-                  output:{ resource:results.get('outputTube3'), role:'outputRole' }
-                },
-                {
-                  input:{ resource:results.get('inputTube3'), role:'inputRole', order:results.get('multiple-order') },
-                  output:{ resource:results.get('outputTube4'), role:'outputRole' }
-                }
-              ]
-            };
+            //results.resetFinishedFlag();
+            root.find('order-with-single-item')
+              .then(results.assignTo('single-order'))
+              .then(function () {
+                return root.find('order-with-two-items');
+              })
+              .then(results.assignTo('multiple-order'))
+              .then(function () {
+                return root.find('input-tube-1');
+              })
+              .then(results.assignTo('inputTube1'))
+              .then(function () {
+                return root.find('input-tube-2');
+              })
+              .then(results.assignTo('inputTube2'))
+              .then(function () {
+                return root.find('input-tube-3');
+              })
+              .then(results.assignTo('inputTube3'))
+              .then(function () {
+                return root.find('output-tube-1');
+              })
+              .then(results.assignTo('outputTube1'))
+              .then(function () {
+                return root.find('output-tube-2');
+              })
+              .then(results.assignTo('outputTube2'))
+              .then(function () {
+                return root.find('output-tube-3');
+              })
+              .then(results.assignTo('outputTube3'))
+              .then(function () {
+                return root.find('output-tube-4');
+              })
+              .then(results.assignTo('outputTube4'))
+              .then(function () {
+                return {
+                  updates:[
+                    {
+                      input:{ resource:results.get('inputTube1'), role:'inputRole', order:results.get('single-order') },
+                      output:{ resource:results.get('outputTube1'), role:'outputRole' }
+                    },
+                    {
+                      input:{ resource:results.get('inputTube2'), role:'inputRole', order:results.get('multiple-order') },
+                      output:{ resource:results.get('outputTube2'), role:'outputRole' }
+                    },
+                    {
+                      input:{ resource:results.get('inputTube3'), role:'inputRole', order:results.get('multiple-order') },
+                      output:{ resource:results.get('outputTube3'), role:'outputRole' }
+                    },
+                    {
+                      input:{ resource:results.get('inputTube3'), role:'inputRole', order:results.get('multiple-order') },
+                      output:{ resource:results.get('outputTube4'), role:'outputRole' }
+                    }
+                  ]
+                };
+              })
+              .then(results.assignTo('wholeUpdate'))
+              .then(results.expected)
+              .fail(results.unexpected);
           }
         }).each(function (setup, name) {
-              describe(name, function () {
-                var state;
+            describe(name, function () {
+              var state;
 
-                beforeEach(function () {
+              beforeEach(function () {
+                runs(function () {
+                  results.reset();
                   config.loadTestData(testDataRoot);
-                  Root.load({user:"username"}).done(results.assignTo('root')).fail(results.unexpected);
-                  root = results.get('root');
-
-                  config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
-                  state = setup();
+                  Root.load({user:"username"})
+                    .then(results.assignTo('root'))
+                    .then(function () {
+                      root = results.get('root');
+                      config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
+                    })
+                    .then(results.expected)
+                    .fail(results.unexpected);
                 });
 
-                it("adds the output items during start", function () {
-                  Operations.stateManagement().start(state).done(results.expected).fail(results.unexpected);
-                  results.expectToBeCalled();
+                waitsFor(results.hasFinished);
+
+
+                runs(function () {
+                  results.resetFinishedFlag();
+                  setup();
+                });
+                waitsFor(results.hasFinished);
+                runs(function () {
+                  state = results.get('wholeUpdate');
+                });
+              });
+
+              it("adds the output items during start", function () {
+                runs(function () {
+                  results.resetFinishedFlag();
+                  Operations.stateManagement()
+                    .start(state)
+                    .then(results.expected)
+                    .fail(results.unexpected);
                 });
 
-                it("updates both items during complete", function () {
-                  Operations.stateManagement().complete(state).done(results.expected).fail(results.unexpected);
+                waitsFor(results.hasFinished);
+
+                runs(function () {
                   results.expectToBeCalled();
                 })
+
+
+              });
+
+              it("updates both items during complete", function () {
+                runs(function () {
+                  results.resetFinishedFlag();
+                  Operations.stateManagement()
+                    .complete(state)
+                    .then(results.expected)
+                    .fail(results.unexpected);
+                });
+
+                waitsFor(results.hasFinished);
+
+                runs(function () {
+                  results.expectToBeCalled();
+                });
               });
             });
+          });
       });
     });
   });
-});
+})
+;
