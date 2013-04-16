@@ -1,7 +1,9 @@
-define(['config',
+define([
+  'resource_test_helper',
+  'config',
   'mapper/s2_ajax',
   'text!json/unit/ajax.json'
-], function (config, S2Ajax, ajaxTestJson) {
+], function (TestHelper, config, S2Ajax, ajaxTestJson) {
   'use strict';
   //load appropriate JSON for this workflow
   // config.testJSON = $.parseJSON (testJSON);
@@ -26,43 +28,15 @@ define(['config',
     }
   };
 
-  describe("S2Ajax:-", function () {
+  TestHelper(function (results) {
 
-    xdescribe('Mocked s2ajax object (used for testing only),', function () {
-      var search, expectedResponse;
+    describe("S2Ajax:-", function () {
 
-      beforeEach(function () {
-        //pass stage, step to config.setupTest
-        config.loadTestData(ajaxTestJson);
-        expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
-        config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
-        config.url = config.testData[config.defaultStage]["calls"][0].url;
-        config.params = config.testData[config.defaultStage]["calls"][0].request;
+      xdescribe('Mocked s2ajax object (used for testing only),', function () {
+        var search, expectedResponse;
 
-        s2ajax.send(
-            config.method,
-            config.url,
-            config.params
-        ).done(function (response) {
-              search = response.responseText;
-            });
-      });
-
-      it('matches data directly from JSON file', function () {
-        // send uuid or barcode to grab resources
-        expect(search).toEqual(expectedResponse);
-      });
-    });
-
-    describe("Loading S2's Root,", function () {
-
-      // We can only access the response object through a side effect.
-      var s2root, expectedResponse;
-      it('returns an object', function () {
-        var completed = false;
-        var s2root, expectedResponse;
-
-        runs(function () {
+        beforeEach(function () {
+          //pass stage, step to config.setupTest
           config.loadTestData(ajaxTestJson);
           expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
           config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
@@ -74,49 +48,73 @@ define(['config',
               config.url,
               config.params
           ).done(function (response) {
-                s2root = response.responseText;
-                completed = true;
+                search = response.responseText;
               });
         });
 
-        waitsFor(function () {
-          return completed
-        });
-        runs(function () {
-          expect(s2root).toBeDefined();
+        it('matches data directly from JSON file', function () {
+          // send uuid or barcode to grab resources
+          expect(search).toEqual(expectedResponse);
         });
       });
 
-      it('returns an object containing searches', function () {
-        var completed = false;
+      describe("Loading S2's Root,", function () {
+
+        // We can only access the response object through a side effect.
         var s2root, expectedResponse;
+        it('returns an object', function () {
+          var s2root, expectedResponse;
 
-        runs(function () {
-          config.loadTestData(ajaxTestJson);
-          expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
-          config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
-          config.url = config.testData[config.defaultStage]["calls"][0].url;
-          config.params = config.testData[config.defaultStage]["calls"][0].request;
+          runs(function () {
+            config.loadTestData(ajaxTestJson);
+            expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
+            config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
+            config.url = config.testData[config.defaultStage]["calls"][0].url;
+            config.params = config.testData[config.defaultStage]["calls"][0].request;
 
-          s2ajax.send(
-              config.method,
-              config.url,
-              config.params
-          ).done(function (response) {
-                s2root = response.responseText;
-                completed = true;
-              });
+            s2ajax.send(config.method, config.url, config.params)
+                .then(function (response) {
+                  s2root = response.responseText;
+                })
+                .then(results.expected)
+                .fail(results.unexpected);
+          });
+
+          waitsFor(results.hasFinished);
+
+          runs(function () {
+            expect(s2root).toBeDefined();
+          });
         });
 
-        waitsFor(function () {
-          return completed
-        });
-        runs(function () {
-          expect(s2root.searches).toBeDefined();
+        it('returns an object containing searches', function () {
+          var s2root, expectedResponse;
+
+          runs(function () {
+            config.loadTestData(ajaxTestJson);
+            results.resetFinishedFlag();
+            expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
+            config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
+            config.url = config.testData[config.defaultStage]["calls"][0].url;
+            config.params = config.testData[config.defaultStage]["calls"][0].request;
+
+            s2ajax.send(config.method, config.url, config.params)
+                .then(function (response) {
+                  s2root = response.responseText;
+                })
+                .then(results.expected)
+                .fail(results.unexpected);
+          });
+
+          waitsFor(results.hasFinished);
+
+          runs(function () {
+            expect(s2root.searches).toBeDefined();
+          });
         });
       });
+
     });
 
   });
-
 });
