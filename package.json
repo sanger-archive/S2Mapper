@@ -8,6 +8,6 @@
         "bower": "0.3.2"
     },
     "scripts": {
-        "test": "yes '\n' | node_modules/.bin/yeoman install ; node_modules/.bin/yeoman test --force"
+        "test": "yes '\n' | node_modules/.bin/yeoman install ; node_modules/.bin/yeoman test"
     }
 }
