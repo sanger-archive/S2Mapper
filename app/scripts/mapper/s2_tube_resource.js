@@ -76,7 +76,6 @@ define([
   var classMethods = {
     findByEan13Barcode: function(ean13){
 
-
       var tubesDeferred = $.Deferred();
       var root          = this.root;
       root.searches.create({
@@ -90,18 +89,15 @@ define([
             "value":     ean13
           }
         }
+      }).then(function(searchResult){
 
-      }).done(function(searchResult){
-
-        searchResult.first(undefined, processor(root, 'tubes', 'tube')).done(function(tube){
-
+        return searchResult.first(undefined, processor(root, 'tubes', 'tube'));
+      }).then(function(tube){
           tube.root = root;
           tubesDeferred.resolve(tube);
-        }).fail(function(tube,error){
+      }).fail(function(tube,error){
           tubesDeferred.reject(error);
-        });
       });
-
 
       return tubesDeferred.promise();
     }
