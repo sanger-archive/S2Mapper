@@ -72,7 +72,7 @@ define([ 'resource_test_helper'
             });
           })
         })
-      })
+      });
 
       describe("once a tube has been loaded", function () {
         beforeEach(function () {
@@ -109,7 +109,31 @@ define([ 'resource_test_helper'
             })
           })
         })
-      })
+      });
+
+      describe("When the server fails to respond to a search creation",function(){
+          it("the findByEan13Barcode promise fails.", function () {
+            runs(function () {
+              results.resetFinishedFlag();
+              config.loadTestData(rootTestJson);
+              Root.load({user:"username"})
+                  .then(function (root) {
+                    // with this line, when findByEan13Barcode will be called,
+                    // we artificially prevent the creation of search, simulating a server failure.
+                    root.searches.create = function(){ return $.Deferred().reject().promise();};
+
+                    results.assignTo('root')(root);
+                    s2 = results.get('root');
+                    config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
+                    return root.tubes.findByEan13Barcode('2345678901234');
+                  })
+                  .then(results.assignTo('failedSearch'))
+                  .then(results.unexpected)
+                  .fail(results.expected);
+            });
+            waitsFor(results.hasFinished);
+          })
+      });
     })
   })
-})
+});
