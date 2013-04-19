@@ -127,7 +127,6 @@ define([ 'resource_test_helper'
                     config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
                     return root.tubes.findByEan13Barcode('2345678901234');
                   })
-                  .then(results.assignTo('failedSearch'))
                   .then(results.unexpected)
                   .fail(results.expected);
             });

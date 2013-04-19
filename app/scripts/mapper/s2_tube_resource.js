@@ -75,10 +75,8 @@ define([
 
   var classMethods = {
     findByEan13Barcode: function(ean13){
-
-      var tubesDeferred = $.Deferred();
       var root          = this.root;
-      root.searches.create({
+      return root.searches.create({
         "user": root.user,
         "description":  "search for barcoded tube",
         "model":        "tube",
@@ -90,18 +88,9 @@ define([
           }
         }
       }).then(function(searchResult){
-
         return searchResult.first(undefined, processor(root, 'tubes', 'tube'));
-      }).then(function(tube){
-          tube.root = root;
-          tubesDeferred.resolve(tube);
-      }).fail(function(tube,error){
-          tubesDeferred.reject(error);
       });
-
-      return tubesDeferred.promise();
     }
-
   };
 
   $.extend(Tube, classMethods);
