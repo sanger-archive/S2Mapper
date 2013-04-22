@@ -20,7 +20,7 @@ require([
         'spec/services/print_spec',
         'spec/s2_ajax_spec',
         'spec/s2_search_resource_spec',
-        'spec/s2_labellable_spec',
+        'spec/s2_labeling_module_spec',
         'spec/s2_base_resource_spec',
         'spec/s2_tube_resource_spec',
         'spec/s2_spin_column_resource_spec',

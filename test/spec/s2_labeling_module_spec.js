@@ -1,7 +1,7 @@
 define([
   'resource_test_helper',
-  'mapper/s2_labellable'
-], function(TestHelper, Labellable) {
+  'mapper/s2_labeling_module'
+], function(TestHelper, LabelingModule) {
   'use strict';
 
   TestHelper(function(results) {
@@ -11,7 +11,7 @@ define([
       describe('labelWith', function() {
         it('attaches the labels to the resource', function() {
           var object = { root: { labellables: { create: function(l){} } }, uuid: 'uuid' };
-          $.extend(object, Labellable);
+          $.extend(object, LabelingModule);
           spyOn(object.root.labellables, 'create');
 
           object.labelWith('labels');
@@ -30,7 +30,7 @@ define([
                                value: 'ND1233334K'
                              }
                          }};
-          $.extend(object, Labellable);
+          $.extend(object, LabelingModule);
           spyOn(object.root.labellables, 'create');
 
           object.labelWith('labels');
