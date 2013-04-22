@@ -48,9 +48,10 @@
               "name":"11111111-2222-3333-4444-000000000000",
               "type":"resource",
               "labels":{
-                "position":"barcode",
+                "barcode":{
                 "value":"2345678901234",
                 "type":"ean13-barcode"
+                }
               }
             }
           ]

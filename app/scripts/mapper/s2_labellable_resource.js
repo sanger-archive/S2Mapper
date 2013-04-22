@@ -46,9 +46,6 @@ define([
         }})
           .then(function(searchResult){
             return searchResult.first(undefined, processor(root, 'labellables', 'labellable'));
-          })
-          .then(function(tube){
-              tube.root = root;
           });
     }
 
