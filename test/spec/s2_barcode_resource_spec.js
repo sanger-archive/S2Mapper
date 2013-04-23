@@ -3,9 +3,9 @@ define([
   'config',
   'mapper/s2_root',
   'text!json/unit/barcode.json',
-  'mapper/s2_labellable',
+  'mapper/s2_labeling_module',
   'mapper/s2_barcode_resource'
-], function (TestHelper, config, Root, testData, Labellable) {
+], function (TestHelper, config, Root, testData, LabelingModule) {
   'use strict';
 
   TestHelper(function (results) {
@@ -74,7 +74,7 @@ define([
         beforeEach(function () {
           results.resetFinishedFlag();
           var resource = { root:s2, uuid:"UUID OF RESOURCE" }
-          $.extend(resource, Labellable);
+          $.extend(resource, LabelingModule);
 
           runs(function () {
             s2.barcodes.create({

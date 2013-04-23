@@ -10,7 +10,8 @@ define([
   'mapper/s2_batch_resource',
   'mapper/s2_search_resource',
   'mapper/s2_transfer_resources',
-  'mapper/s2_movement_resources'
+  'mapper/s2_movement_resources',
+  'mapper/s2_labellable_resource'
 ], function(ignoreStringStuff, BaseResource) {
   'use strict';
 
