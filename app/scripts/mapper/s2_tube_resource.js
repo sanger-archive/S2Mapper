@@ -75,6 +75,15 @@ define([
 
   var classMethods = {
     findByEan13Barcode: function(ean13){
+      return this.findByBarcode("ean13-barcode",ean13);
+    },
+    findBySangerBarcode: function(sangerBarcode){
+      return this.findByBarcode("sanger_barcode", sangerBarcode);
+    },
+    findByBarcode2DBarcode: function(barcode2D){
+      return this.findByBarcode("barcode2_d", barcode2D);
+    },
+    findByBarcode: function(barcodetype,barcodeValue){
       var root          = this.root;
       return root.searches.create({
         "user": root.user,
@@ -83,8 +92,8 @@ define([
         "criteria":     {
           "label":  {
             "position":  "barcode",
-            "type":      "ean13-barcode",
-            "value":     ean13
+            "type":      barcodetype,
+            "value":     barcodeValue
           }
         }
       }).then(function(searchResult){
