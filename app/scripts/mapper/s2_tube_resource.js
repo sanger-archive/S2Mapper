@@ -2,13 +2,13 @@ define([
        'mapper/s2_base_resource',
        'mapper/s2_batch_resource',
        'mapper/s2_order_resource',
-       'mapper/s2_labellable'
-], function(BaseResource, BatchResource, Order, Labellable){
+       'mapper/s2_labeling_module'
+], function(BaseResource, BatchResource, Order, LabelingModule){
   'use strict';
 
   var Tube = BaseResource.extendAs('tube', function(tubeInstance, options) {
     $.extend(tubeInstance, instanceMethods);
-    $.extend(tubeInstance, Labellable);
+    $.extend(tubeInstance, LabelingModule);
     return tubeInstance;
   });
 
