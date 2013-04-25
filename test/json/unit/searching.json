@@ -52,10 +52,47 @@
             "first":"http://localhost:9292/orders/page=1",
             "last":"http://localhost:9292/orders/page=-1"
           },
-          "size":1,
+          "size":10,
           "batches":[
             {
-              "name":"last page"
+              "name":"last page",
+              "index":0
+            },
+            {
+              "name":"last page",
+              "index":1
+            },
+            {
+              "name":"last page",
+              "index":2
+            },
+            {
+              "name":"last page",
+              "index":3
+            },
+            {
+              "name":"last page",
+              "index":4
+            },
+            {
+              "name":"last page",
+              "index":5
+            },
+            {
+              "name":"last page",
+              "index":6
+            },
+            {
+              "name":"last page",
+              "index":7
+            },
+            {
+              "name":"last page",
+              "index":8
+            },
+            {
+              "name":"last page",
+              "index":9
             }
           ]
         }

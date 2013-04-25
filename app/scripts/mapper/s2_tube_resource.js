@@ -12,23 +12,6 @@ define([
     return tubeInstance;
   });
 
-  function processor(root, resourceTypeCollection, resourceType) {
-
-    return function(resultDeferred) {
-      return function(response) {
-        if (response.responseText.size === 0){
-          // reject with error...
-          return resultDeferred.reject(resultDeferred,'Barcode not found');
-        }
-
-        var json = response.responseText[resourceTypeCollection];
-        var rawJson = {}; rawJson[resourceType] = json[0];
-
-        var resource = root[resourceTypeCollection].instantiate({rawJson: rawJson});
-        return resultDeferred.resolve(resource);
-      };
-    };
-  }
   Tube.resourceType = 'tube';
 
   var instanceMethods = {
@@ -49,7 +32,9 @@ define([
       if (thisTube._order) {
         orderDeferred.resolve(thisTube._order);
       } else {
-        thisTube.root.searches.create({
+        // assuming that there is only one order for one tube...
+        // we use the 'first' method, and not the 'firstPage' one
+        thisTube.root.searches.handling(root.orders).first({
           "user":       root.user,
           "description":"search for order",
           "model":      "order",
@@ -58,42 +43,17 @@ define([
               "uuid": thisTube.rawJson.tube.uuid
             }
           }
-        }).done(function(searchResult){
-          searchResult.first(undefined, processor(root, 'orders', 'order'))
-          .done(function(order){
-
-            order.root = root;
-            thisTube._order = order;
-            orderDeferred.resolve(order);
-          });
-        });
+        })
+            .then(function(order){
+              order.root = root;
+              thisTube._order = order;
+              orderDeferred.resolve(order);
+            });
       }
 
       return orderDeferred.promise();
     }
   };
-
-  var classMethods = {
-    findByEan13Barcode: function(ean13){
-      var root          = this.root;
-      return root.searches.create({
-        "user": root.user,
-        "description":  "search for barcoded tube",
-        "model":        "tube",
-        "criteria":     {
-          "label":  {
-            "position":  "barcode",
-            "type":      "ean13-barcode",
-            "value":     ean13
-          }
-        }
-      }).then(function(searchResult){
-        return searchResult.first(undefined, processor(root, 'tubes', 'tube'));
-      });
-    }
-  };
-
-  $.extend(Tube, classMethods);
 
   return Tube;
 });
