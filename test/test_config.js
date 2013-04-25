@@ -190,6 +190,10 @@ define(['text!testjson/unit/empty_search.json'], function (emptySearch) {
         this.sendResponse(fakeAjaxDeferred.reject);
       }
       return fakeAjaxDeferred;
+    },
+
+    exceptionHandling: function(callback) {
+      callback();
     }
   };
 
