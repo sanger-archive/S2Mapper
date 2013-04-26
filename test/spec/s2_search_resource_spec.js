@@ -33,12 +33,12 @@ define([
       });
 
       describe('handling resource', function () {
-        describe('first', function () {
+        describe('firstPage', function () {
           it('returns the first page of results', function () {
             results.reset();
 
             runs(function(){
-              handler.first({})
+              handler.firstPage({})
                   .then(results.assignTo('results'))
                   .then(results.expected)
                   .fail(results.unexpected);
@@ -47,13 +47,33 @@ define([
             waitsFor(results.hasFinished);
 
             runs(function(){
-              expect(results.get('results')[0].name).toBe('first page');
+              expect(results.get('results')[0].name).toEqual('first page');
+            });
+          });
+        });
+
+        describe('lastPage', function () {
+          it('returns the last page of results', function () {
+
+            results.reset();
+
+            runs(function(){
+              handler.lastPage({})
+                  .then(results.assignTo('results'))
+                  .then(results.expected)
+                  .fail(results.unexpected);
+            });
+
+            waitsFor(results.hasFinished);
+
+            runs(function(){
+              expect(results.get('results')[0].name).toEqual('last page');
             });
           });
         });
 
         describe('last', function () {
-          it('returns the last page of results', function () {
+          it('returns the last result of the last page of results', function () {
 
             results.reset();
 
@@ -67,7 +87,8 @@ define([
             waitsFor(results.hasFinished);
 
             runs(function(){
-              expect(results.get('results')[0].name).toBe('last page');
+              expect(results.get('results').name).toEqual('last page');
+              expect(results.get('results').index).toEqual(9);
             });
           });
         });
