@@ -108,17 +108,17 @@ define([], function(){
       return this.findByBarcode("sanger_barcode", sangerBarcode);
     },
 
-    findByBarcode2DBarcode: function(barcode2D){
+    findBy2DBarcode: function(barcode2D){
       return this.findByBarcode("barcode2_d", barcode2D);
     },
 
     findByBarcode: function(barcodetype,barcodeValue){
       var root          = this.root;
-      var baseRsc = this;
+      var baseResource = this;
 
-      return root.searches.handling(baseRsc).first({
+      return root.searches.handling(baseResource).first({
         "user":         root.user,
-        "description":  "search for barcoded "+baseRsc.resourceType,
+        "description":  "search for barcoded "+baseResource.resourceType,
         "model":        baseRsc.resourceType,
         "criteria":     {
           "label":  {
