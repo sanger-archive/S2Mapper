@@ -28,8 +28,8 @@ define([], function(){
         sendAction:         name,
         resourceProcessor:  resourceProcessor
       }, sendData]));
-    }
-  };
+    };
+  }
 
   var instanceMethods = {
     // Standard actions for all resources
@@ -83,7 +83,7 @@ define([], function(){
         resourceInstance.rawJson      = rawJson;
         resourceInstance.resourceType = Object.keys(rawJson)[0];
       } else {
-        resourceInstance.rawJson      = {}
+        resourceInstance.rawJson      = {};
         resourceInstance.resourceType = this.resourceType;
         resourceInstance.rawJson[resourceInstance.resourceType] = {};
       }
@@ -98,7 +98,38 @@ define([], function(){
       var instance = this.instantiate(options);
       if (instance.actions === undefined) { instance.actions = {}; }
       return instance;
+    },
+
+    findByEan13Barcode: function(ean13){
+      return this.findByBarcode("ean13-barcode",ean13);
+    },
+
+    findBySangerBarcode: function(sangerBarcode){
+      return this.findByBarcode("sanger_barcode", sangerBarcode);
+    },
+
+    findByBarcode2DBarcode: function(barcode2D){
+      return this.findByBarcode("barcode2_d", barcode2D);
+    },
+
+    findByBarcode: function(barcodetype,barcodeValue){
+      var root          = this.root;
+      var baseRsc = this;
+
+      return root.searches.handling(baseRsc).first({
+        "user":         root.user,
+        "description":  "search for barcoded "+baseRsc.resourceType,
+        "model":        baseRsc.resourceType,
+        "criteria":     {
+          "label":  {
+            "position":  "barcode",
+            "type":      barcodetype,
+            "value":     barcodeValue
+          }
+        }
+      });
     }
+
   });
 
   return BaseResource;

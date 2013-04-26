@@ -20,7 +20,7 @@ define([ 'resource_test_helper'
       });
 
       describe("Searching for a labellable by EAN13 barcode,", function () {
-        describe("and the tube IS on the system,", function () {
+        describe("with the tube in the system,", function () {
           beforeEach(function () {
 
             runs(function () {
@@ -46,7 +46,7 @@ define([ 'resource_test_helper'
             });
           });
 
-          it("the found labellable found has a name.", function () {
+          it("the labellable found has a name.", function () {
             runs(function () {
               expect(results.get('labellable').name).toBeDefined();
             });
@@ -59,7 +59,7 @@ define([ 'resource_test_helper'
           });
         });
 
-        describe("and the tube IS NOT on the system,", function () {
+        describe("with the tube NOT in the system,", function () {
           var labellablePromise;
 
           beforeEach(function () {

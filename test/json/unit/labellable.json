@@ -9,7 +9,7 @@
         "request":{
           "search":{
             "user":"username",
-            "description":"search for a labellable",
+            "description":"search for barcoded labellable",
             "model":"labellable",
             "criteria":{
               "label":{
