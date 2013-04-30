@@ -119,7 +119,7 @@ define([], function(){
       return root.searches.handling(baseResource).first({
         "user":         root.user,
         "description":  "search for barcoded "+baseResource.resourceType,
-        "model":        baseRsc.resourceType,
+        "model":        baseResource.resourceType,
         "criteria":     {
           "label":  {
             "position":  "barcode",
