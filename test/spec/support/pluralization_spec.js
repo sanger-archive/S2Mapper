@@ -8,6 +8,12 @@ define(['mapper/support/pluralization'], function() {
       'word':   'words'
     };
 
+    var hyphens = {
+      'laboratorySearch': 'laboratory-search',
+      'multiWordSample': 'multi-word-sample',
+      'oneword': 'oneword'
+    };
+
     describe('pluralize', function() {
       for (var singular in pluralizations) {
         var plural = pluralizations[singular];
@@ -23,6 +29,15 @@ define(['mapper/support/pluralization'], function() {
 
         it("singularizes '" + plural + "' to '" + singular + "'", function() {
           expect(plural.singularize()).toBe(singular);
+        });
+      }
+    });
+    describe('hyphenToCamel', function() {
+      for (var camel in hyphens) {
+        var hyphen = hyphens[camel];
+
+        it("camels '" + hyphen + "' to '" + camel + "'", function() {
+          expect(hyphen.hyphenToCamel()).toBe(camel);
         });
       }
     });

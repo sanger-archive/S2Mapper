@@ -34,7 +34,7 @@ define([
       } else {
         // assuming that there is only one order for one tube...
         // we use the 'first' method, and not the 'firstPage' one
-        thisTube.root.searches.handling(root.orders).first({
+        thisTube.root.laboratorySearches.handling(root.orders).first({
           "user":       root.user,
           "description":"search for order",
           "model":      "order",

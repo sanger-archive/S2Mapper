@@ -23,7 +23,7 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
     // TODO: Once the proxy has been removed these are the functions that are needed on an instance
     var instanceMethods = {
       orders:function () {
-        return batch.root.searches.handling(batch.root.orders).firstPage({
+        return batch.root.laboratorySearches.handling(batch.root.orders).firstPage({
           "user":       batch.root.user,
           "description":"search order by batch",
           "model":      "order",

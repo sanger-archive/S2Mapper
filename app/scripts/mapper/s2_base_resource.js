@@ -116,7 +116,7 @@ define([], function(){
       var root          = this.root;
       var baseResource = this;
 
-      return root.searches.handling(baseResource).first({
+      return root.laboratorySearches.handling(baseResource).first({
         "user":         root.user,
         "description":  "search for barcoded "+baseResource.resourceType,
         "model":        baseResource.resourceType,

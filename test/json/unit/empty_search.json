@@ -5,7 +5,7 @@
       {
         "description":"Searching for something that can't be found on S2.",
         "method":"post",
-        "url":"/searches",
+        "url":"/laboratory-searches",
         "request":{
           "search":"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND"
         },

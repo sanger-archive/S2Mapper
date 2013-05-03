@@ -3,7 +3,7 @@ define([
 ], function(BaseResource) {
   'use strict';
 
-  var SearchResource = BaseResource.extendAs('search');
+  var SearchResource = BaseResource.extendAs('laboratorySearch');
 
   function processor(resultModel) {
     return function(resultDeferred) {
@@ -48,7 +48,7 @@ define([
         // If indexOnPage is negative, the
         return function(options){
           var deferred = $.Deferred();
-          root.searches.create(options)
+          root.laboratorySearches.create(options)
               .then(function (searchResult) {
                 return searchResult[actionName](undefined, handler);
               })

@@ -120,7 +120,7 @@ define([ 'resource_test_helper'
                   .then(function (root) {
                     // with this line, when findByEan13Barcode will be called,
                     // we artificially prevent the creation of search, simulating a server failure.
-                    root.searches.create = function(){ return $.Deferred().reject().promise();};
+                    root.laboratorySearches.create = function(){ return $.Deferred().reject().promise();};
 
                     results.assignTo('root')(root);
                     s2 = results.get('root');

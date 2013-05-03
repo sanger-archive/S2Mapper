@@ -13,12 +13,14 @@ define([
 
   function resourceProcessor(rootInstance, resourceDeferred) {
     return function(response){
-      var resourceType  = Object.keys(response.responseText)[0];
-      var resourceClass = rootInstance[resourceType.pluralize()] || rootInstance.actions[resourceType.pluralize()];
-      var resource      = resourceClass.instantiate({ rawJson: response.responseText });
-
+      var resource = resourceClassFrom(response, rootInstance).instantiate({ rawJson: response.responseText });
       resourceDeferred.resolve(resource);
     }
+  }
+
+  function resourceClassFrom(response, rootInstance) {
+    var resourceType  = Object.keys(response.responseText)[0];
+    return rootInstance[resourceType.pluralize()] || rootInstance.actions[resourceType.pluralize()];
   }
 
   function ajaxErrorHandler(resourceDeferred){
@@ -83,9 +85,10 @@ define([
       if (pair[0].match(/^(create|update|transfer)_|_(transfers|moves)$|^tag_wells$/)) {
         nester = function(root) { return root.actions; };
       }
+      var n = pair[0].hyphenToCamel();
 
       return {
-        name:pair[0],
+        name:n,
         json:pair[1],
         nesting:nester
       };
