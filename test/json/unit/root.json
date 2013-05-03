@@ -168,7 +168,7 @@
               "last":"http://localhost:9292/tag_groups/page=-1"
             }
           },
-          "searches":{
+          "laboratory-searches":{
             "actions":{
               "create":"http://localhost:9292/searches",
               "read":"http://localhost:9292/searches",

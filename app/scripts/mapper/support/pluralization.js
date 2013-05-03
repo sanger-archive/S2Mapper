@@ -60,6 +60,21 @@ define([], function() {
     };
   }
 
+  String.prototype.hyphenToCamel = function(){
+    var str = this;
+
+    // Match all hyphens in the string and the following first letter of the next word
+    var matches = str.match(/(-[a-z])/gi);
+
+    // Replace all hyphens and first letter of the following word to upper case
+    _.each(matches, function(match) {
+      var replace = match.match(/[a-z]/)[0].toUpperCase();
+      str = str.replace(match, replace);
+    });
+
+    return str;
+  }
+
   String.prototype.singularize = endingManipulator('singularize');
   String.prototype.pluralize   = endingManipulator('pluralize');
   return String;

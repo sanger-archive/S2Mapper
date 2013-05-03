@@ -40,8 +40,8 @@ define([
 
         it("has a SearchesResource", function () {
           runs(function () {
-            var resourceType = results.get('root').searches.resourceType;
-            expect(resourceType).toBe('search');
+            var resourceType = results.get('root').laboratorySearches.resourceType;
+            expect(resourceType).toBe('laboratorySearch');
           });
         });
 

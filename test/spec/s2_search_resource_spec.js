@@ -21,7 +21,7 @@ define([
               .then(results.assignTo('root'))
               .then(function () {
                 s2 = results.get('root');
-                return s2.searches.handling(s2.batches);
+                return s2.laboratorySearches.handling(s2.batches);
               })
               .then(function (ret) {
                 handler = ret;
