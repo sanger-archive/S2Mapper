@@ -161,7 +161,15 @@
               "last":"http://localhost:9292/tag_groups/page=-1"
             }
           },
-          "searches":{
+          "laboratory-searches":{
+            "actions":{
+              "create":"http://localhost:9292/searches",
+              "read":"http://localhost:9292/searches",
+              "first":"http://localhost:9292/searches/page=1",
+              "last":"http://localhost:9292/searches/page=-1"
+            }
+          },
+          "support-searches":{
             "actions":{
               "create":"http://localhost:9292/searches",
               "read":"http://localhost:9292/searches",
@@ -327,7 +335,7 @@
         "method":"post",
         "url":"/searches",
         "request":{
-          "search":{
+          "laboratorySearch":{
             "user":"username",
             "description":"search for barcoded tube",
             "model":"tube",
@@ -341,7 +349,7 @@
           }
         },
         "response":{
-          "search":{
+          "laboratorySearch":{
             "actions":{
               "read":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2",
               "first":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2/page=1",
@@ -413,7 +421,7 @@
         "method":"post",
         "url":"/searches",
         "request":{
-          "search":{
+          "laboratorySearch":{
             "user":"username",
             "description":"search for barcoded tube",
             "model":"tube",
@@ -427,7 +435,7 @@
           }
         },
         "response":{
-          "search":{
+          "laboratorySearch":{
             "actions":{
               "read":"http://localhost:9292/46ff7c00-0000-0000-7ac8-282066132de2",
               "first":"http://localhost:9292/46ff7c00-0000-0000-7ac8-282066132de2/page=1",
@@ -499,7 +507,7 @@
         "method":"post",
         "url":"/searches",
         "request":{
-          "search":{
+          "laboratorySearch":{
             "user":"username",
             "description":"search for order",
             "model":"order",
@@ -511,7 +519,7 @@
           }
         },
         "response":{
-          "search":{
+          "laboratorySearch":{
             "actions":{
               "read":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2",
               "first":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2/page=1",
@@ -589,7 +597,7 @@
         "method":"post",
         "url":"/searches",
         "request":{
-          "search":{
+          "laboratorySearch":{
             "user":"username",
             "description":"search for order",
             "model":"order",
@@ -601,7 +609,7 @@
           }
         },
         "response":{
-          "search":{
+          "laboratorySearch":{
             "actions":{
               "read":"http://localhost:9292/473203b0-0000-0000-7ac8-282066132de2",
               "first":"http://localhost:9292/473203b0-0000-0000-7ac8-282066132de2/page=1",

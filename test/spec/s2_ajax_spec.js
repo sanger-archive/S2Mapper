@@ -2,15 +2,16 @@ define([
   'resource_test_helper',
   'config',
   'mapper/s2_ajax',
+  'text!json/unit/root.json',
   'text!json/unit/ajax.json'
-], function (TestHelper, config, S2Ajax, ajaxTestJson) {
+], function (TestHelper, config, S2Ajax, rootTestJson, ajaxTestJson) {
   'use strict';
   //load appropriate JSON for this workflow
   // config.testJSON = $.parseJSON (testJSON);
   var s2ajax = new S2Ajax;
   var getActionMethod = function (call) {
 
-    if (call.response === "search") {
+    if (call.response === "laboratorySearch") {
       if (call.method === "post") {
         return 'search';
       } else if (call.url.match(/page\=1/)) {
@@ -37,7 +38,8 @@ define([
 
         beforeEach(function () {
           //pass stage, step to config.setupTest
-          config.loadTestData(ajaxTestJson);
+          config.loadTestData(rootTestJson);
+          config.cummulativeLoadingTestDataInFirstStage(ajaxTestJson);
           expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
           config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
           config.url = config.testData[config.defaultStage]["calls"][0].url;
@@ -66,7 +68,8 @@ define([
           var s2root, expectedResponse;
 
           runs(function () {
-            config.loadTestData(ajaxTestJson);
+            config.loadTestData(rootTestJson);
+            config.cummulativeLoadingTestDataInFirstStage(ajaxTestJson);
             expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
             config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
             config.url = config.testData[config.defaultStage]["calls"][0].url;
@@ -91,7 +94,8 @@ define([
           var s2root, expectedResponse;
 
           runs(function () {
-            config.loadTestData(ajaxTestJson);
+            config.loadTestData(rootTestJson);
+            config.cummulativeLoadingTestDataInFirstStage(ajaxTestJson);
             results.resetFinishedFlag();
             expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
             config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
@@ -109,7 +113,7 @@ define([
           waitsFor(results.hasFinished);
 
           runs(function () {
-            expect(s2root.searches).toBeDefined();
+            expect(s2root["laboratory-searches"]).toBeDefined();
           });
         });
       });

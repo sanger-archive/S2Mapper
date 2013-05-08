@@ -164,7 +164,15 @@
             "last":"http://localhost:9292/tag_groups/page=-1"
           }
         },
-        "searches":{
+        "laboratory-searches":{
+          "actions":{
+            "create":"http://localhost:9292/searches",
+            "read":"http://localhost:9292/searches",
+            "first":"http://localhost:9292/searches/page=1",
+            "last":"http://localhost:9292/searches/page=-1"
+          }
+        },
+        "support-searches":{
           "actions":{
             "create":"http://localhost:9292/searches",
             "read":"http://localhost:9292/searches",
@@ -330,7 +338,7 @@
       "method":"post",
       "url":"/searches",
       "request":{
-        "search":{
+        "laboratorySearch":{
           "user":"username",
           "description":"search for barcoded tube",
           "model":"tube",
@@ -345,7 +353,7 @@
         }
       },
       "response":{
-        "search":{
+        "laboratorySearch":{
           "actions":{
             "read":"http://localhost:9292/9b9571f0-738b-0130-e17c-282066132de2",
             "first":"http://localhost:9292/9b9571f0-738b-0130-e17c-282066132de2/page=1",
@@ -421,7 +429,7 @@
       "method":"post",
       "url":"/searches",
       "request":{
-        "search":{
+        "laboratorySearch":{
           "user":"username",
           "description":"search for order",
           "model":"order",
@@ -433,7 +441,7 @@
         }
       },
       "response":{
-        "search":{
+        "laboratorySearch":{
           "actions":{
             "read":"http://localhost:9292/9ba48d40-738b-0130-e17c-282066132de2",
             "first":"http://localhost:9292/9ba48d40-738b-0130-e17c-282066132de2/page=1",
@@ -510,7 +518,7 @@
       "method":"post",
       "url":"/searches",
       "request":{
-        "search":{
+        "laboratorySearch":{
 
           "user":"username",
           "description":"search for barcoded tube",
@@ -524,7 +532,7 @@
           }        }
       },
       "response":{
-        "search":{
+        "laboratorySearch":{
           "actions":{
             "read":"http://localhost:9292/9b9b0f60-738b-0130-e17c-282066132de2",
             "first":"http://localhost:9292/9b9b0f60-738b-0130-e17c-282066132de2/page=1",
@@ -940,7 +948,7 @@
       "method":"post",
       "url":"/searches",
       "request":{
-        "search":{
+        "laboratorySearch":{
           "description":"search for barcoded tube",
           "model":"tube",
           "criteria":{
@@ -954,7 +962,7 @@
         }
       },
       "response":{
-        "search":{
+        "laboratorySearch":{
           "actions":{
             "read":"http://localhost:9292/9c2c1820-738b-0130-e17c-282066132de2",
             "first":"http://localhost:9292/9c2c1820-738b-0130-e17c-282066132de2/page=1",
@@ -1026,7 +1034,7 @@
       "method":"post",
       "url":"/searches",
       "request":{
-        "search":{
+        "laboratorySearch":{
           "description":"search for order",
           "model":"order",
           "criteria":{
@@ -1038,7 +1046,7 @@
         }
       },
       "response":{
-        "search":{
+        "laboratorySearch":{
           "actions":{
             "read":"http://localhost:9292/9c5c5150-738b-0130-e17c-282066132de2",
             "first":"http://localhost:9292/9c5c5150-738b-0130-e17c-282066132de2/page=1",
@@ -1353,7 +1361,7 @@
       "method":"post",
       "url":"/searches",
       "request":{
-        "search":{
+        "laboratorySearch":{
           "description":"search order by batch",
           "model":"order",
           "criteria":{
@@ -1365,7 +1373,7 @@
         }
       },
       "response":{
-        "search":{
+        "laboratorySearch":{
           "actions":{
             "read":"http://localhost:9292/9cbf1f70-738b-0130-e17c-282066132de2",
             "first":"http://localhost:9292/9cbf1f70-738b-0130-e17c-282066132de2/page=1",

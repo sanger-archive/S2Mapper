@@ -27,8 +27,12 @@ define([
 
   // Register all of the resources into the registry.
   function register(name, resourceType) { registry[name.singularize()] = resourceType; }
-  for (var i = 2; i < arguments.length; i++) {
-    arguments[i].register(register);
-  }
+
+  _.chain(arguments)
+      .drop(2)
+      .flatten()
+      .each(function(resource){
+        resource.register(register)
+      });
   return registry;
 });

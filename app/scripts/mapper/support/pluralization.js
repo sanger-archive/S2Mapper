@@ -54,10 +54,25 @@ define([], function() {
     return function() {
       for (var r = 0; r < rules.length; r++) {
         var result = rules[r][direction](this);
-        if (result[0]) { return result[1]; }
+        if (result[0]) { return (result[1]).removeHyphen(); }
       }
       throw 'Reached the end of the rules for ' + direction + '!';
     };
+  }
+
+  String.prototype.removeHyphen = function(){
+    var str = this;
+
+    // Match all hyphens in the string and the following first letter of the next word
+    var matches = str.match(/(-[a-z])/gi);
+
+    // Replace all hyphens and first letter of the following word to upper case
+    _.each(matches, function(match) {
+      var replace = match.match(/[a-z]/)[0].toUpperCase();
+      str = str.replace(match, replace);
+    });
+
+    return str;
   }
 
   String.prototype.singularize = endingManipulator('singularize');

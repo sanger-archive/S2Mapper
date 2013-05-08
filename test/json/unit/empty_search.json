@@ -7,10 +7,10 @@
         "method":"post",
         "url":"/searches",
         "request":{
-          "search":"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND"
+          "laboratorySearch":"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND"
         },
         "response":{
-          "search":{
+          "laboratorySearch":{
             "actions":{
               "read":"http://localhost:9292/EMPTY_SEARCH_RESULT_UUID",
               "first":"http://localhost:9292/EMPTY_SEARCH_RESULT_UUID/page=1",
