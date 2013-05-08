@@ -7,9 +7,9 @@
       {
         "description":"Find the tubes by barcodes for tube...",
         "method":"post",
-        "url":"/searches",
+        "url":"/lims-laboratory/searches",
         "request":{
-          "laboratorySearch":{
+          "search":{
             "user":"username",
             "description":"search for barcoded tube",
             "model":"tube",
@@ -23,7 +23,7 @@
           }
         },
         "response":{
-          "laboratorySearch":{
+          "search":{
             "actions":{
               "read":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2",
               "first":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2/page=1",

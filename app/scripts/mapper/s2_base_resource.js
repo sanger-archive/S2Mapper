@@ -26,7 +26,8 @@ define([], function(){
       return this.root.retrieve(setup.apply(this, [{
         url:                actionUrl,
         sendAction:         name,
-        resourceProcessor:  resourceProcessor
+        resourceProcessor:  resourceProcessor,
+        resourceType:       this.resourceType
       }, sendData]));
     };
   }
@@ -34,7 +35,13 @@ define([], function(){
   var instanceMethods = {
     // Standard actions for all resources
     create: actionChangesState('create', function(data) {
-      var d = {}; d[this.resourceType] = data; return d;
+      var d = {};
+      if (this.resourceType === 'laboratorySearch' || this.resourceType === 'supportSearch') {
+        d['search'] = data;
+      } else {
+        d[this.resourceType] = data;
+      }
+      return d;
     }),
     read:   actionIsIdempotent('read'),
     update: actionChangesState('update'),

@@ -11,16 +11,16 @@ define([
 
   var S2Root = Object.create(null);
 
-  function resourceProcessor(rootInstance, resourceDeferred) {
+  function resourceProcessor(rootInstance, resourceDeferred, resourceType) {
     return function(response){
-      var resource = resourceClassFrom(response, rootInstance).instantiate({ rawJson: response.responseText });
+      var resource = resourceClassFrom(resourceType,response, rootInstance).instantiate({ rawJson: response.responseText });
       resourceDeferred.resolve(resource);
     }
   }
 
-  function resourceClassFrom(response, rootInstance) {
-    var resourceType  = Object.keys(response.responseText)[0];
-    return rootInstance[resourceType.pluralize()] || rootInstance.actions[resourceType.pluralize()];
+  function resourceClassFrom(resourceType, response, rootInstance) {
+    var resource_type  = resourceType || Object.keys(response.responseText)[0];
+    return rootInstance[resource_type.pluralize()] || rootInstance.actions[resource_type.pluralize()];
   }
 
   function ajaxErrorHandler(resourceDeferred){
@@ -40,7 +40,7 @@ define([
     retrieve: function(options) {
       var resourceDeferred = $.Deferred();
       var url              = options.uuid? (config.apiUrl+'/'+options.uuid) : options.url;
-      var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred);
+      var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred, options.resourceType);
 
       var ajax = s2_ajax.send(
         options.sendAction || 'read',

@@ -175,11 +175,11 @@ define(['text!mapper_testjson/unit/empty_search.json'], function (emptySearch) {
           fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, response));
         });
 
-      } else if (ajaxCall.type === 'POST' && (ajaxCall.url === '/searches')||(ajaxCall.url === '/suportsearches')) {
+      } else if (ajaxCall.type === 'POST' && (ajaxCall.url === '/lims-laboratory/searches')||(ajaxCall.url === '/lims-supprt/searches')) {
         // if we are here, it means that there is no result on the server...
         // but the server should still respond with a search URI
         config.log(1, "   +---> Empty search result ");
-        var keyForEmptySearchCall = "POST:/searches{\"laboratorySearch\":\"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND\"}";
+        var keyForEmptySearchCall = "POST:"+ajaxCall.url+"{\"search\":\"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND\"}";
         this.sendResponse(function() {
           fakeAjaxDeferred.resolve(createSuccessfulResponse(ajaxCall, config.hashedTestData[keyForEmptySearchCall]["response"]));
         });

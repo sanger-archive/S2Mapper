@@ -5,14 +5,14 @@
       {
         "description":"Create the search order by batch",
         "method":"post",
-        "url":"/searches",
+        "url":"/lims-laboratory/searches",
         "request":{
-          "laboratorySearch":{
+          "search":{
             "user":"username"
           }
         },
         "response":{
-          "laboratorySearch":{
+          "search":{
             "actions":{
               "read":"http://localhost:9292/laboratorysearches-result-url",
               "first":"http://localhost:9292/laboratorysearches-result-url/page=1",
@@ -101,14 +101,14 @@
       {
         "description":"Create the search order by batch",
         "method":"post",
-        "url":"/supportsearches",
+        "url":"/lims-support/searches",
         "request":{
-          "supportSearch":{
+          "search":{
             "user":"username"
           }
         },
         "response":{
-          "supportSearch":{
+          "search":{
             "actions":{
               "read":"http://localhost:9292/supportsearches-result-url",
               "first":"http://localhost:9292/supportsearches-result-url/page=1",
