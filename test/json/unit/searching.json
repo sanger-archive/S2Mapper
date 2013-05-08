@@ -7,25 +7,25 @@
         "method":"post",
         "url":"/searches",
         "request":{
-          "search":{
+          "laboratorySearch":{
             "user":"username"
           }
         },
         "response":{
-          "search":{
+          "laboratorySearch":{
             "actions":{
-              "read":"http://localhost:9292/4816f830-68ac-0130-7ac8-282066132de2",
-              "first":"http://localhost:9292/4816f830-68ac-0130-7ac8-282066132de2/page=1",
-              "last":"http://localhost:9292/4816f830-68ac-0130-7ac8-282066132de2/page=-1"
+              "read":"http://localhost:9292/laboratorysearches-result-url",
+              "first":"http://localhost:9292/laboratorysearches-result-url/page=1",
+              "last":"http://localhost:9292/laboratorysearches-result-url/page=-1"
             },
-            "uuid":"4816f830-68ac-0130-7ac8-282066132de2"
+            "uuid":"laboratorysearches-result-url"
           }
         }
       },
       {
         "description":"Get first page",
         "method":"get",
-        "url":"/4816f830-68ac-0130-7ac8-282066132de2/page=1",
+        "url":"/laboratorysearches-result-url/page=1",
         "request":null,
         "response":{
           "actions":{
@@ -44,7 +44,103 @@
       {
         "description":"Get last page",
         "method":"get",
-        "url":"/4816f830-68ac-0130-7ac8-282066132de2/page=-1",
+        "url":"/laboratorysearches-result-url/page=-1",
+        "request":null,
+        "response":{
+          "actions":{
+            "read":"http://localhost:9292/orders/page=1",
+            "first":"http://localhost:9292/orders/page=1",
+            "last":"http://localhost:9292/orders/page=-1"
+          },
+          "size":10,
+          "batches":[
+            {
+              "name":"last page",
+              "index":0
+            },
+            {
+              "name":"last page",
+              "index":1
+            },
+            {
+              "name":"last page",
+              "index":2
+            },
+            {
+              "name":"last page",
+              "index":3
+            },
+            {
+              "name":"last page",
+              "index":4
+            },
+            {
+              "name":"last page",
+              "index":5
+            },
+            {
+              "name":"last page",
+              "index":6
+            },
+            {
+              "name":"last page",
+              "index":7
+            },
+            {
+              "name":"last page",
+              "index":8
+            },
+            {
+              "name":"last page",
+              "index":9
+            }
+          ]
+        }
+      },
+
+      {
+        "description":"Create the search order by batch",
+        "method":"post",
+        "url":"/supportsearches",
+        "request":{
+          "supportSearch":{
+            "user":"username"
+          }
+        },
+        "response":{
+          "supportSearch":{
+            "actions":{
+              "read":"http://localhost:9292/supportsearches-result-url",
+              "first":"http://localhost:9292/supportsearches-result-url/page=1",
+              "last":"http://localhost:9292/supportsearches-result-url/page=-1"
+            },
+            "uuid":"supportsearches-result-url"
+          }
+        }
+      },
+      {
+        "description":"Get first page",
+        "method":"get",
+        "url":"/supportsearches-result-url/page=1",
+        "request":null,
+        "response":{
+          "actions":{
+            "read":"http://localhost:9292/orders/page=1",
+            "first":"http://localhost:9292/orders/page=1",
+            "last":"http://localhost:9292/orders/page=-1"
+          },
+          "size":1,
+          "batches":[
+            {
+              "name":"first page"
+            }
+          ]
+        }
+      },
+      {
+        "description":"Get last page",
+        "method":"get",
+        "url":"/supportsearches-result-url/page=-1",
         "request":null,
         "response":{
           "actions":{

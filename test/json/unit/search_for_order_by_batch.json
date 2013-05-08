@@ -25,7 +25,7 @@
         "method":"post",
         "url":"/searches",
         "request":{
-          "search":{
+          "laboratorySearch":{
             "user":"username",
             "description":"search order by batch",
             "model":"order",
@@ -37,7 +37,7 @@
           }
         },
         "response":{
-          "search":{
+          "laboratorySearch":{
             "actions":{
               "read":"http://localhost:9292/4816f830-68ac-0130-7ac8-282066132de2",
               "first":"http://localhost:9292/4816f830-68ac-0130-7ac8-282066132de2/page=1",

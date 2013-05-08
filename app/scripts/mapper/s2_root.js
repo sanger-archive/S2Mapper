@@ -85,10 +85,9 @@ define([
       if (pair[0].match(/^(create|update|transfer)_|_(transfers|moves)$|^tag_wells$/)) {
         nester = function(root) { return root.actions; };
       }
-      var n = pair[0].hyphenToCamel();
 
       return {
-        name:n,
+        name:pair[0].removeHyphen(),
         json:pair[1],
         nesting:nester
       };

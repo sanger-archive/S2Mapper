@@ -134,15 +134,15 @@ define([
           responseSearchCall = results.get('response');
           expect(responseSearchCall).toBeDefined();
           expect(responseSearchCall["responseText"]).toBeDefined();
-          expect(responseSearchCall["responseText"]["search"]).toBeDefined();
-          expect(responseSearchCall["responseText"]["search"]["actions"]).toBeDefined();
-          expect(responseSearchCall["responseText"]["search"]["actions"]["first"]).toBeDefined();
+          expect(responseSearchCall["responseText"]["laboratorySearch"]).toBeDefined();
+          expect(responseSearchCall["responseText"]["laboratorySearch"]["actions"]).toBeDefined();
+          expect(responseSearchCall["responseText"]["laboratorySearch"]["actions"]["first"]).toBeDefined();
 
         });
 
         runs(function () {
 
-          var URL_FOR_NO_RESULT = responseSearchCall["responseText"]["search"]["actions"]["first"];
+          var URL_FOR_NO_RESULT = responseSearchCall["responseText"]["laboratorySearch"]["actions"]["first"];
           var resultCall = {
             type:'GET',
             url:URL_FOR_NO_RESULT,

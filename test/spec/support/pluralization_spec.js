@@ -37,7 +37,7 @@ define(['mapper/support/pluralization'], function() {
         var hyphen = hyphens[camel];
 
         it("camels '" + hyphen + "' to '" + camel + "'", function() {
-          expect(hyphen.hyphenToCamel()).toBe(camel);
+          expect(hyphen.removeHyphen()).toBe(camel);
         });
       }
     });

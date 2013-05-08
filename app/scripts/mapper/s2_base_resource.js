@@ -63,10 +63,28 @@ define([], function(){
   $.extend(BaseResource, {
     // Convenience method for creating extensions of the base resource class.
     extendAs: function(resourceType, constructor) {
-      var resourceClass = Object.create(this);
-      resourceClass.resourceType = resourceType;
-      resourceClass.constructor  = constructor || this.constructor;
-      return resourceClass;
+      var baseResource = this;
+      var resourceClasses;
+      var argumentWasArray = true;
+
+      // To maintain previous behaviour, if the resourceType is NOT an array,
+      // we want to be able to return a singular element
+      if (!Array.isArray(resourceType)) {
+        resourceType = [resourceType];
+        argumentWasArray = false;
+      }
+
+      resourceClasses =  _.map(resourceType,function(oneResourceType){
+        var resourceClass = Object.create(baseResource);
+        resourceClass.resourceType = oneResourceType;
+        resourceClass.constructor  = constructor || baseResource.constructor;
+        return resourceClass;
+      });
+
+      if (argumentWasArray)
+        return resourceClasses;
+      else
+        return resourceClasses[0];
     },
 
     register: function(callback) { callback(this.resourceType, this); },
@@ -116,6 +134,7 @@ define([], function(){
       var root          = this.root;
       var baseResource = this;
 
+      // when we make a search, it is always on the laboratorySearches...
       return root.laboratorySearches.handling(baseResource).first({
         "user":         root.user,
         "description":  "search for barcoded "+baseResource.resourceType,
