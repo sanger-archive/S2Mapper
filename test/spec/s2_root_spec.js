@@ -40,8 +40,8 @@ define([
 
         it("has a SearchesResource", function () {
           runs(function () {
-            var resourceType = results.get('root').searches.resourceType;
-            expect(resourceType).toBe('search');
+            var resourceType = results.get('root')["laboratorySearches"].resourceType;
+            expect(resourceType).toBe('laboratorySearch');
           });
         });
 
@@ -59,15 +59,23 @@ define([
           'revision'
         ];
 
+        // These resources are removed or dropped
+        var oldResourcesOnTheRoot = [
+            'laboratory-searches'
+          , 'support-searches'
+        ];
+
         function bidirectionalDifference(a, b) {
           return _.union(_.difference(a, b), _.difference(b, a));
         }
 
         it("has the appropriate root level resourcs", function () {
+
+
           runs(function () {
             expect(bidirectionalDifference(
-                _.union(_.difference(_.difference(_.keys(rawRootJson), resourcesThatAreActions), resourcesThatAreDropped), ['actions', 'user']),
-                _.keys(results.get('root'))
+                _.chain(rawRootJson).keys().map(function(r){return r.removeHyphen()}).difference(resourcesThatAreDropped).difference(resourcesThatAreActions).union(['actions', 'user']).value(),
+                _.difference(_.keys(results.get('root'), oldResourcesOnTheRoot))
             )).toEqual([]);
           });
         });

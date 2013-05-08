@@ -168,12 +168,20 @@
               "last":"http://localhost:9292/tag_groups/page=-1"
             }
           },
-          "searches":{
+          "laboratory-searches":{
             "actions":{
               "create":"http://localhost:9292/searches",
               "read":"http://localhost:9292/searches",
               "first":"http://localhost:9292/searches/page=1",
               "last":"http://localhost:9292/searches/page=-1"
+            }
+          },
+          "support-searches":{
+            "actions":{
+              "create":"http://localhost:9292/supportsearches",
+              "read":"http://localhost:9292/supportsearches",
+              "first":"http://localhost:9292/supportsearches/page=1",
+              "last":"http://localhost:9292/supportsearches/page=-1"
             }
           },
           "multi_criteria_filters":{

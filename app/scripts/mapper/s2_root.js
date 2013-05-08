@@ -13,12 +13,14 @@ define([
 
   function resourceProcessor(rootInstance, resourceDeferred) {
     return function(response){
-      var resourceType  = Object.keys(response.responseText)[0];
-      var resourceClass = rootInstance[resourceType.pluralize()] || rootInstance.actions[resourceType.pluralize()];
-      var resource      = resourceClass.instantiate({ rawJson: response.responseText });
-
+      var resource = resourceClassFrom(response, rootInstance).instantiate({ rawJson: response.responseText });
       resourceDeferred.resolve(resource);
     }
+  }
+
+  function resourceClassFrom(response, rootInstance) {
+    var resourceType  = Object.keys(response.responseText)[0];
+    return rootInstance[resourceType.pluralize()] || rootInstance.actions[resourceType.pluralize()];
   }
 
   function ajaxErrorHandler(resourceDeferred){
@@ -85,7 +87,7 @@ define([
       }
 
       return {
-        name:pair[0],
+        name:pair[0].removeHyphen(),
         json:pair[1],
         nesting:nester
       };
