@@ -23,6 +23,15 @@ define([], function(){
       var actionUrl = this.actions[name];
       if (actionUrl === undefined) { throw 'No ' + name + ' action URL'; }
 
+      if (!resourceProcessor) {
+        var model = this.instantiate ? this : this.root[this.resourceType.pluralize()];
+        resourceProcessor = function(resourceDeferred) {
+          return function(response) {
+            resourceDeferred.resolve(model.instantiate({ rawJson: response.responseText }));
+          };
+        };
+      }
+
       return this.root.retrieve(setup.apply(this, [{
         url:                actionUrl,
         sendAction:         name,
@@ -35,13 +44,7 @@ define([], function(){
   var instanceMethods = {
     // Standard actions for all resources
     create: actionChangesState('create', function(data) {
-      var d = {};
-      if (this.resourceType === 'laboratorySearch' || this.resourceType === 'supportSearch') {
-        d['search'] = data;
-      } else {
-        d[this.resourceType] = data;
-      }
-      return d;
+      var d = {}; d[this.resourceType] = data; return d;
     }),
     read:   actionIsIdempotent('read'),
     update: actionChangesState('update'),
@@ -69,32 +72,34 @@ define([], function(){
 
   $.extend(BaseResource, {
     // Convenience method for creating extensions of the base resource class.
-    extendAs: function(resourceType, constructor) {
+    extendAs: function(resourceTypes, constructor) {
       var baseResource = this;
       var resourceClasses;
       var argumentWasArray = true;
 
-      // To maintain previous behaviour, if the resourceType is NOT an array,
-      // we want to be able to return a singular element
-      if (!Array.isArray(resourceType)) {
-        resourceType = [resourceType];
-        argumentWasArray = false;
+      // When we are given an array for the resourceTypes we are to assume that
+      // the first element is the JSON element, and the subsequent entries are the
+      // names under which to register.
+      var resourceType = resourceTypes;
+      if (Array.isArray(resourceTypes)) {
+        resourceType  = resourceTypes[0];
+        resourceTypes = _.drop(resourceTypes, 1);
+      } else {
+        resourceTypes = [resourceTypes];
       }
 
-      resourceClasses =  _.map(resourceType,function(oneResourceType){
-        var resourceClass = Object.create(baseResource);
-        resourceClass.resourceType = oneResourceType;
-        resourceClass.constructor  = constructor || baseResource.constructor;
-        return resourceClass;
-      });
+      var resourceClass = Object.create(baseResource);
+      resourceClass.resourceType = resourceType;
+      resourceClass.constructor  = constructor || baseResource.constructor;
 
-      if (argumentWasArray)
-        return resourceClasses;
-      else
-        return resourceClasses[0];
+      // A single resource class can be registered under many names, so we handle
+      // that by repeatedly calling the callback.
+      resourceClass.register     = function(callback) {
+        _.each(resourceTypes, function(n) { callback(n, resourceClass); });
+      };
+      return resourceClass;
     },
 
-    register: function(callback) { callback(this.resourceType, this); },
     constructor: function(instance) { return instance; },
 
     instantiate: function(opts){
