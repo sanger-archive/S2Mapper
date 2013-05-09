@@ -26,6 +26,7 @@ require([
         'spec/s2_labellable_resource_spec',
         'spec/s2_spin_column_resource_spec',
         'spec/s2_tube_rack_resource_spec',
+        'spec/s2_kit_resource_spec',
         'spec/s2_order_resource_spec',
         'spec/s2_batch_resource_spec',
         'spec/s2_root_spec',
