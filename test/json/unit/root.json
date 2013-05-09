@@ -160,6 +160,14 @@
               "last":"http://localhost:9292/tube_racks/page=-1"
             }
           },
+          "kits":{
+            "actions":{
+              "create":"http://localhost:9292/lims-support/kits",
+              "read":"http://localhost:9292/lims-support/kits",
+              "first":"http://localhost:9292/lims-support/kits/page=1",
+              "last":"http://localhost:9292/lims-support/kits/page=-1"
+            }
+          },
           "tag_groups":{
             "actions":{
               "create":"http://localhost:9292/tag_groups",
