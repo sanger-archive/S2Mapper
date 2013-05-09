@@ -13,7 +13,17 @@
             "model":"kit",
             "criteria":{
               "label":{
-                "position":"barcode"
+                "position":"front barcode",
+                "type":"ean13-barcode",
+                "value":"1234567890"
+              },
+              "comparison":{
+                "expires":{
+                  ">=": "_DATE_OF_TEST_"
+                },
+                "amount":{
+                  ">=": 1
+                }
               }
             }
           }
@@ -43,7 +53,15 @@
           "size":1,
           "kits":[
             {
-              "name":"first page"
+              "kit":{
+                "actions":{
+                  "read":"http://localhost:9292/KitUUID",
+                  "create":"http://localhost:9292/KitUUID",
+                  "update":"http://localhost:9292/KitUUID",
+                  "delete":"http://localhost:9292/KitUUID"
+                },
+                "uuid":"KitUUID"
+              }
             }
           ]
         }

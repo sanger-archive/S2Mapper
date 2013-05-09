@@ -9,37 +9,54 @@ define([
   'use strict';
 
   TestHelper(function (results) {
-    describe("Kit Resource:-", function () {
+    describe("Kit Resource", function () {
       results.lifeCycle();
 
-      describe("modular interface", function () {
-        it("should NOT be labellable", function () {
-          expect(KitResource.instantiate({rawJson:{actions:{}}})).not.toBeDefined()
-        });
-        it("should be labellable", function () {
+      it("should be labellable", function () {
+        expect(KitResource.instantiate({rawJson:{actions:{}}})).toBeDefined()
+      });
+
+      describe("while searching for a kit", function () {
+        var s2;
+
+        beforeEach(function () {
           runs(function () {
             config.loadTestData(rootData);
-            var s2;
             Root.load({user:"username"})
                 .then(results.assignTo('root'))
                 .then(function () {
                   s2 = results.get('root');
+                  var today = new Date;
+                  var todayFormatted = [
+                    ("00" + today.getDate()).slice(-2),        // for padding with zeros : 5 -> 05
+                    ("00" + (today.getMonth() + 1)).slice(-2), // for padding with zeros : 5 -> 05
+                    today.getFullYear()]
+                      .join('-');
+                  // because the date is hardcoded in the mapper (using today's date), we
+                  // have to make sure the test data can be adjusted to the same date
+                  searchingData = searchingData.replace(/_DATE_OF_TEST_/g, todayFormatted);
+
                   config.cummulativeLoadingTestDataInFirstStage(searchingData);
-                  return s2.kits.findByBarcode();
                 }).then(results.expected)
                 .fail(results.unexpected);
           });
           waitsFor(results.hasFinished);
+        });
 
-          runs(function(){
-            expect(results.get('results')).toEqual('first page');
+        it(" can find a valid one and return it", function () {
+          runs(function () {
+            results.resetFinishedFlag();
+            s2.kits.findByBarcode("1234567890")
+                .then(results.assignTo('kit'))
+                .then(results.expected)
+                .fail(results.unexpected);
           });
-
-//          var kitInstance = KitResource.instantiate({rawJson:{actions:{}}});
-//          expect(kitInstance.findByBarcode).toBeDefined();
-//          kitInstance.findByBarcode();
-
-        })
+          waitsFor(results.hasFinished);
+          runs(function(){
+            results.resetFinishedFlag();
+            expect(results.get('kit')).toBeDefined();
+          })
+        });
       });
     });
   });
