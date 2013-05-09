@@ -40,9 +40,9 @@
       {
         "description":"Find the order by tube uuid and role",
         "method":"post",
-        "url":"/searches",
+        "url":"/lims-laboratory/searches",
         "request":{
-          "laboratorySearch":{
+          "search":{
             "user":"username",
             "description":"search for order",
             "model":"order",
@@ -54,7 +54,7 @@
           }
         },
         "response":{
-          "laboratorySearch":{
+          "search":{
             "actions":{
               "read":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2",
               "first":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2/page=1",

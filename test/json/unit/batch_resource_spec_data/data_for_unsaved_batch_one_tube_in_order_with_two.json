@@ -163,18 +163,18 @@
           },
           "laboratory-searches":{
             "actions":{
-              "create":"http://localhost:9292/searches",
-              "read":"http://localhost:9292/searches",
-              "first":"http://localhost:9292/searches/page=1",
-              "last":"http://localhost:9292/searches/page=-1"
+              "create":"http://localhost:9292/lims-laboratory/searches",
+              "read":"http://localhost:9292/lims-laboratory/searches",
+              "first":"http://localhost:9292/lims-laboratory/searches/page=1",
+              "last":"http://localhost:9292/lims-laboratory/searches/page=-1"
             }
           },
           "support-searches":{
             "actions":{
-              "create":"http://localhost:9292/searches",
-              "read":"http://localhost:9292/searches",
-              "first":"http://localhost:9292/searches/page=1",
-              "last":"http://localhost:9292/searches/page=-1"
+              "create":"http://localhost:9292/lims-support/searches",
+              "read":"http://localhost:9292/lims-support/searches",
+              "first":"http://localhost:9292/lims-support/searches/page=1",
+              "last":"http://localhost:9292/lims-support/searches/page=-1"
             }
           },
           "multi_criteria_filters":{
@@ -333,9 +333,9 @@
       {
         "description":"Find the tubes by barcodes for tube 1...",
         "method":"post",
-        "url":"/searches",
+        "url":"/lims-laboratory/searches",
         "request":{
-          "laboratorySearch":{
+          "search":{
             "user":"username",
             "description":"search for barcoded tube",
             "model":"tube",
@@ -349,7 +349,7 @@
           }
         },
         "response":{
-          "laboratorySearch":{
+          "search":{
             "actions":{
               "read":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2",
               "first":"http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2/page=1",
@@ -419,9 +419,9 @@
       {
         "description":"Find the tubes by barcodes for tube 2...",
         "method":"post",
-        "url":"/searches",
+        "url":"/lims-laboratory/searches",
         "request":{
-          "laboratorySearch":{
+          "search":{
             "user":"username",
             "description":"search for barcoded tube",
             "model":"tube",
@@ -435,7 +435,7 @@
           }
         },
         "response":{
-          "laboratorySearch":{
+          "search":{
             "actions":{
               "read":"http://localhost:9292/46ff7c00-0000-0000-7ac8-282066132de2",
               "first":"http://localhost:9292/46ff7c00-0000-0000-7ac8-282066132de2/page=1",
@@ -505,9 +505,9 @@
       {
         "description":"Find the order by tube uuid and role for tube 1",
         "method":"post",
-        "url":"/searches",
+        "url":"/lims-laboratory/searches",
         "request":{
-          "laboratorySearch":{
+          "search":{
             "user":"username",
             "description":"search for order",
             "model":"order",
@@ -519,7 +519,7 @@
           }
         },
         "response":{
-          "laboratorySearch":{
+          "search":{
             "actions":{
               "read":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2",
               "first":"http://localhost:9292/473203b0-68ac-0130-7ac8-282066132de2/page=1",
@@ -595,9 +595,9 @@
       {
         "description":"Find the order by tube uuid and role for tube 2",
         "method":"post",
-        "url":"/searches",
+        "url":"/lims-laboratory/searches",
         "request":{
-          "laboratorySearch":{
+          "search":{
             "user":"username",
             "description":"search for order",
             "model":"order",
@@ -609,7 +609,7 @@
           }
         },
         "response":{
-          "laboratorySearch":{
+          "search":{
             "actions":{
               "read":"http://localhost:9292/473203b0-0000-0000-7ac8-282066132de2",
               "first":"http://localhost:9292/473203b0-0000-0000-7ac8-282066132de2/page=1",
@@ -685,9 +685,9 @@
       {
         "description":"Find the order by batch",
         "method":"post",
-        "url":"/searches",
+        "url":"/lims-laboratory/searches",
         "request":{
-          "laboratorySearch":{
+          "search":{
             "user":"username",
             "description":"search order by batch",
             "model":"order",
@@ -699,7 +699,7 @@
           }
         },
         "response":{
-          "laboratorySearch":{
+          "search":{
             "actions":{
               "read":"http://localhost:9292/searchOrderByBatchUUID",
               "first":"http://localhost:9292/searchOrderByBatchUUID/page=1",
