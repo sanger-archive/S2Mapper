@@ -46,7 +46,7 @@ define([
         it(" can find a valid one and return it", function () {
           runs(function () {
             results.resetFinishedFlag();
-            s2.kits.findByBarcode("1234567890")
+            s2.kits.findByEan13Barcode("1234567890")
                 .then(results.assignTo('kit'))
                 .then(results.expected)
                 .fail(results.unexpected);

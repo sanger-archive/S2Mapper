@@ -11,7 +11,7 @@ define([
 
   Kit.resourceType = 'kit';
 
-  Kit.findByBarcode = function(barcodeValue){
+  Kit.findByBarcode = function(barcodetype,barcodeValue){
     var root          = this.root;
     var baseResource = this;
 
@@ -35,7 +35,7 @@ define([
       "criteria":     {
         "label":  {
           "position":  "front barcode",
-          "type":      "ean13-barcode",
+          "type":      barcodetype,
           "value":     barcodeValue
         },
         "comparison": comparison
