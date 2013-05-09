@@ -18,43 +18,70 @@ define(['mapper/s2_base_resource'], function(BaseResource){
       });
     });
 
-    describe('register', function() {
-      it("calls back with the resourceType", function() {
-        var resource = {};
-        $.extend(resource, BaseResource);
-        resource.resourceType = 'foo';
-
-        var registry = {};
-        resource.register(function(name,value) { registry[name] = value; });
-
-        expect(registry['foo']).toBe(resource);
-      });
-    });
-
     describe('extendAs', function() {
-      var model;
+      describe('with individual name', function() {
+        var model;
 
-      beforeEach(function() {
-        model = BaseResource.extendAs('foo');
+        beforeEach(function() {
+          model = BaseResource.extendAs('foo');
+        });
+
+        it('configures the resourceType', function() {
+          expect(model.resourceType).toBe('foo');
+        });
+
+        it('ensures instances have the correct type', function() {
+          expect(model.new().resourceType).toBe('foo');
+        });
+
+        it('ensures instances have actions', function() {
+          expect(model.new().actions).toEqual({});
+        });
+
+        it('can change the rawJson in the background', function() {
+          var instance = model.new({rawJson:{foo:{uuid: 'bar'}}});
+          expect(instance.uuid).toEqual('bar');
+          instance.rawJson.foo.uuid = 'foobar';
+          expect(instance.uuid).toEqual('foobar');
+        });
+
+        describe('register', function() {
+          it('registers under the singular name', function() {
+            var registry = {};
+            model.register(function(name,value) { registry[name] = value; });
+
+            expect(registry['foo']).toBe(model);
+          });
+        });
       });
 
-      it('configures the resourceType', function() {
-        expect(model.resourceType).toBe('foo');
-      });
+      describe('with multiple names', function() {
+        var model;
 
-      it('ensures instances have the correct type', function() {
-        expect(model.new().resourceType).toBe('foo');
-      });
+        beforeEach(function() {
+          model = BaseResource.extendAs(['type', 'name1', 'name2']);
+        });
 
-      it('ensures instances have actions', function() {
-        expect(model.new().actions).toEqual({});
-      });
+        it('configures the resourceType', function() {
+          expect(model.resourceType).toBe('type');
+        });
 
-      it('can change the rawJson in the background', function() {
-        var instance = model.new({rawJson:{foo:{uuid: 'bar'}}});
-        expect(instance.uuid).toEqual('bar');
-        instance.rawJson.foo.uuid = 'foobar';
-        expect(instance.uuid).toEqual('foobar');
+        describe('register', function() {
+          it('registers under the multiple names', function() {
+            var registry = {};
+            model.register(function(name,value) { registry[name] = value; });
+
+            expect(registry['name1']).toBe(model);
+            expect(registry['name2']).toBe(model);
+          });
+
+          it('does not register under the type', function() {
+            var registry = {};
+            model.register(function(name,value) { registry[name] = value; });
+
+            expect(registry['type']).toBeUndefined();
+          });
+        });
       });
     });
 
