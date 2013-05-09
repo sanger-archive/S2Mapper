@@ -5,12 +5,12 @@
       {
         "description":"Searching for something that can't be found on S2.",
         "method":"post",
-        "url":"/searches",
+        "url":"/lims-laboratory/searches",
         "request":{
-          "laboratorySearch":"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND"
+          "search":"SEARCHING_FOR_SOMETHING_THAT_CAN'T_BE_FOUND"
         },
         "response":{
-          "laboratorySearch":{
+          "search":{
             "actions":{
               "read":"http://localhost:9292/EMPTY_SEARCH_RESULT_UUID",
               "first":"http://localhost:9292/EMPTY_SEARCH_RESULT_UUID/page=1",

@@ -41,7 +41,7 @@ define([
         it("has a SearchesResource", function () {
           runs(function () {
             var resourceType = results.get('root')["laboratorySearches"].resourceType;
-            expect(resourceType).toBe('laboratorySearch');
+            expect(resourceType).toBe('search');
           });
         });
 
