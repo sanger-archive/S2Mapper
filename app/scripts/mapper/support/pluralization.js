@@ -53,7 +53,7 @@ define([], function() {
   function endingManipulator(direction) {
     return function() {
       for (var r = 0; r < rules.length; r++) {
-        var result = rules[r][direction](this);
+        var result = rules[r][direction](this.toString());
         if (result[0]) { return (result[1]).removeHyphen(); }
       }
       throw 'Reached the end of the rules for ' + direction + '!';
@@ -61,7 +61,7 @@ define([], function() {
   }
 
   String.prototype.removeHyphen = function(){
-    var str = this;
+    var str = this.toString();
 
     // Match all hyphens in the string and the following first letter of the next word
     var matches = str.match(/(-[a-z])/gi);
