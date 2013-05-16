@@ -34,7 +34,7 @@ define([
       "model":        baseResource.resourceType,
       "criteria":     {
         "label":  {
-          "position":  "front barcode",
+          "position":  "barcode",
           "type":      barcodetype,
           "value":     barcodeValue
         },
