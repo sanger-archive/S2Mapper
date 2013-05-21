@@ -13,7 +13,7 @@
             "model":"kit",
             "criteria":{
               "label":{
-                "position":"front barcode",
+                "position":"barcode",
                 "type":"ean13-barcode",
                 "value":"1234567890"
               },
