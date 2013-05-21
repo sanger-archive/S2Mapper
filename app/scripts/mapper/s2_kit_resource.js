@@ -17,9 +17,10 @@ define([
 
     var today = new Date;
     var todayFormatted = [
-          ("00" + today.getDate()).slice(-2),        // for padding with zeros : 5 -> 05
+          today.getFullYear(),
           ("00" + (today.getMonth() + 1)).slice(-2), // for padding with zeros : 5 -> 05
-          today.getFullYear()]
+          ("00" + today.getDate()).slice(-2)         // for padding with zeros : 5 -> 05
+          ]
         .join('-');
 
     var comparison = {
