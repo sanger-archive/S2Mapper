@@ -9,7 +9,8 @@ define(['mapper/s2_base_resource'], function(BaseResource) {
         source_uuid:     details.input.resource.uuid,
         source_location: details.input.location,
         target_uuid:     details.output.resource.uuid,
-        target_location: details.output.location
+        target_location: details.output.location,
+        transfer_map:    details.transfer_map
       };
     },
     'transfer_tubes_to_tubes': function(details) {
