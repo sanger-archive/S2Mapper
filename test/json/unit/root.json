@@ -15,7 +15,7 @@
           },
           "bulk_create_tube":{
             "actions":{
-              "create":"http://localhost:9292/actions/bulk_create_sample"
+              "create":"http://localhost:9292/actions/bulk_create_tube"
             }
           },
           "batches":{
