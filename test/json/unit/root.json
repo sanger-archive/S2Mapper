@@ -8,6 +8,16 @@
         "url":"/",
         "request":null,
         "response":{
+          "bulk_create_sample":{
+            "actions":{
+              "create":"http://localhost:9292/actions/bulk_create_sample"
+            }
+          },
+          "bulk_create_tube":{
+            "actions":{
+              "create":"http://localhost:9292/actions/bulk_create_sample"
+            }
+          },
           "batches":{
             "actions":{
               "create":"http://localhost:9292/batches",

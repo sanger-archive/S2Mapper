@@ -50,7 +50,7 @@ define([
 
       ajax.done(ajaxProcessor).fail(ajaxErrorHandler(resourceDeferred));
 
-      // Calling promise makes the defferd object readonly
+      // Calling promise makes the deferred object readonly
       return resourceDeferred.promise();
     }
   });
