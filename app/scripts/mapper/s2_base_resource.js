@@ -14,12 +14,12 @@ define([], function(){
     dataHandler = dataHandler || function(data) { return data; }
     return actionHelper(name, function(options, sendData) {
       sendData = $.extend({user: this.root.user}, sendData || {});
-      options['data']  = dataHandler.apply(this, [sendData]);
+      options['data']  = dataHandler.apply(this, [sendData,options]);
       return options
     });
   }
   function actionHelper(name, setup) {
-    return function(sendData, resourceProcessor) {
+    return function(sendData, resourceProcessor, options) {
       var actionUrl = this.actions[name];
       if (actionUrl === undefined) { throw 'No ' + name + ' action URL'; }
 
@@ -32,24 +32,27 @@ define([], function(){
         };
       }
 
-      return this.root.retrieve(setup.apply(this, [{
+      var data = _.extend({
         url:                actionUrl,
         sendAction:         name,
         resourceProcessor:  resourceProcessor,
         resourceType:       this.resourceType
-      }, sendData]));
+      }, options || {});
+
+      return this.root.retrieve(setup.apply(this, [data, sendData]));
     };
   }
 
   var instanceMethods = {
     // Standard actions for all resources
-    create: actionChangesState('create', function(data) {
-      var d = {};
+    create: actionChangesState('create', function(data, options) {
+      var key = (options || {})['resourceType'] || this.resourceType;
+
       if (this.resourceType === 'laboratorySearch' || this.resourceType === 'supportSearch') {
-        d['search'] = data;
-      } else {
-        d[this.resourceType] = data;
+        key = 'search'
       }
+
+      var d = {}; d[key] = data;
       return d;
     }),
     read:   actionIsIdempotent('read'),

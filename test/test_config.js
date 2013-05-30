@@ -48,7 +48,7 @@ define(['text!mapper_testjson/unit/empty_search.json'], function (emptySearch) {
     logLevel:2, // 0..2 (0->everything, 2->only errors)
     printServiceUrl:'http://localhost:9292/services/print',
     printers:[
-      {name:'Tube printer', type:2}
+      {name:'Tube printer', type:2, uuid:'printer_uuid'}
     ],
 
     loadTestData:function (testDataFile) {
