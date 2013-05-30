@@ -342,6 +342,12 @@
               "create":"http://localhost:9292/actions/update_tube_rack"
             }
           },
+          "label_printers":{
+            "actions":{
+              "read":"http://localhost:9292/label_printers",
+              "create":"http://localhost:9292/label_printers"
+            }
+          },
           "revision":3
         }
       }
