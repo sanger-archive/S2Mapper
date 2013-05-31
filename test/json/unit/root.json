@@ -8,6 +8,26 @@
         "url":"/",
         "request":null,
         "response":{
+          "bulk_create_sample":{
+            "actions":{
+              "create":"http://localhost:9292/actions/bulk_create_sample"
+            }
+          },
+          "bulk_create_tube":{
+            "actions":{
+              "create":"http://localhost:9292/actions/bulk_create_tube"
+            }
+          },
+          "bulk_create_barcode":{
+            "actions":{
+              "create":"http://localhost:9292/actions/bulk_create_barcode"
+            }
+          },
+          "bulk_create_labellable":{
+            "actions":{
+              "create":"http://localhost:9292/actions/bulk_create_labellable"
+            }
+          },
           "batches":{
             "actions":{
               "create":"http://localhost:9292/batches",
