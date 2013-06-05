@@ -8,22 +8,27 @@
         "url":"/",
         "request":null,
         "response":{
-          "bulk_create_sample":{
+          "bulk_create_samples":{
             "actions":{
               "create":"http://localhost:9292/actions/bulk_create_sample"
             }
           },
-          "bulk_create_tube":{
+          "bulk_update_samples":{
+            "actions":{
+              "create":"http://localhost:9292/actions/bulk_update_sample"
+            }
+          },
+          "bulk_create_tubes":{
             "actions":{
               "create":"http://localhost:9292/actions/bulk_create_tube"
             }
           },
-          "bulk_create_barcode":{
+          "bulk_create_barcodes":{
             "actions":{
               "create":"http://localhost:9292/actions/bulk_create_barcode"
             }
           },
-          "bulk_create_labellable":{
+          "bulk_create_labellables":{
             "actions":{
               "create":"http://localhost:9292/actions/bulk_create_labellable"
             }
