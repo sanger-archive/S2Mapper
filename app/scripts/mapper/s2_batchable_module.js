@@ -34,6 +34,7 @@ define([
             }
           }
         })
+            .fail(orderDeferred.reject)
             .then(function(order){
               order.root = root;
               thisResource._order = order;
