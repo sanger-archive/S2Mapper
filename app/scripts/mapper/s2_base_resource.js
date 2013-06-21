@@ -71,7 +71,7 @@ define([], function(){
     if (rawJson === undefined) return;
 
     Object.defineProperties(
-      instance, 
+      instance,
       _.chain(rawJson).keys().difference(Object.getOwnPropertyNames(instance)).reduce(function(proxyMethods, name) {
         proxyMethods[name] = { get: function() { return rawJson[name]; } };
         return proxyMethods;
@@ -139,35 +139,40 @@ define([], function(){
       return instance;
     },
 
-    findByEan13Barcode: function(ean13){
-      return this.findByBarcode("ean13-barcode",ean13);
+    findByEan13Barcode: function(ean13, allResult){
+      return this.findByBarcode("ean13-barcode",ean13, allResult);
     },
 
-    findBySangerBarcode: function(sangerBarcode){
-      return this.findByBarcode("sanger_barcode", sangerBarcode);
+    findBySangerBarcode: function(sangerBarcode, allResult){
+      return this.findByBarcode("sanger_barcode", sangerBarcode, allResult);
     },
 
-    findBy2DBarcode: function(barcode2D){
-      return this.findByBarcode("barcode2_d", barcode2D);
+    findBy2DBarcode: function(barcode2D, allResult){
+      return this.findByBarcode("barcode2_d", barcode2D, allResult);
     },
 
-    findByBarcode: function(barcodetype,barcodeValue){
-      var root          = this.root;
+    findByBarcode: function (barcodetype, barcodeValue, allResult) {
+      var root = this.root;
       var baseResource = this;
 
-      // when we make a search, it is always on the laboratorySearches...
-      return root.laboratorySearches.handling(baseResource).first({
-        "user":         root.user,
-        "description":  "search for barcoded "+baseResource.resourceType,
-        "model":        baseResource.resourceType,
-        "criteria":     {
-          "label":  {
-            "position":  "barcode",
-            "type":      barcodetype,
-            "value":     barcodeValue
+      var searchBody = {
+        "user":        root.user,
+        "description": "search for barcoded " + baseResource.resourceType,
+        "model":       baseResource.resourceType,
+        "criteria":    {
+          "label": {
+            "position": "barcode",
+            "type":     barcodetype,
+            "value":    barcodeValue
           }
         }
-      });
+      };
+      if (allResult) {
+        return root.laboratorySearches.handling(baseResource).firstPage(searchBody);
+      } else {
+        // when we make a search, it is always on the laboratorySearches...
+        return root.laboratorySearches.handling(baseResource).first(searchBody);
+      }
     }
 
   });
