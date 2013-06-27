@@ -151,6 +151,10 @@ define([], function(){
       return this.findByBarcode("barcode2_d", barcode2D, allResult);
     },
 
+    findByCode128Barcode: function(barcode, allResult) {
+      return this.findByBarcode("code128-c-barcode", barcode, allResult);
+    },
+
     findByBarcode: function (barcodetype, barcodeValue, allResult) {
       var root = this.root;
       var baseResource = this;
