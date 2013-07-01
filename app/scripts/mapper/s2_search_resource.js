@@ -3,7 +3,7 @@ define([
 ], function(BaseResource) {
   'use strict';
 
-  var SearchResource = BaseResource.extendAs(['search', 'laboratorySearch', 'supportSearch']);
+  var SearchResource = BaseResource.extendAs(['search', 'laboratorySearch', 'supportSearch', 'managementSearch']);
 
   function processor(resultModel) {
     return function(resultDeferred) {

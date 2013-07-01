@@ -48,7 +48,7 @@ define([], function(){
     create: actionChangesState('create', function(data, options) {
       var key = (options || {})['resourceType'] || this.resourceType;
 
-      if (this.resourceType === 'laboratorySearch' || this.resourceType === 'supportSearch') {
+      if (this.resourceType === 'laboratorySearch' || this.resourceType === 'supportSearch' || this.resourceType === "managementSearch") {
         key = 'search'
       }
 
@@ -80,6 +80,8 @@ define([], function(){
   }
 
   $.extend(BaseResource, {
+    searchAddress: "laboratorySearches", // by default
+
     // Convenience method for creating extensions of the base resource class.
     extendAs: function(resourceTypes, constructor) {
       var baseResource = this;
@@ -172,10 +174,10 @@ define([], function(){
         }
       };
       if (allResult) {
-        return root.laboratorySearches.handling(baseResource).firstPage(searchBody);
+        return root[baseResource.searchAddress].handling(baseResource).firstPage(searchBody);
       } else {
         // when we make a search, it is always on the laboratorySearches...
-        return root.laboratorySearches.handling(baseResource).first(searchBody);
+        return root[baseResource.searchAddress].handling(baseResource).first(searchBody);
       }
     }
 
