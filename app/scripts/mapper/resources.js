@@ -3,6 +3,7 @@ define([
   'mapper/s2_base_resource',
 
   // Add new resources for automatic inclusion after this point
+  'mapper/s2_sample_resource',
   'mapper/s2_tube_resource',
   'mapper/s2_tube_rack_resource',
   'mapper/s2_gel_resource',
