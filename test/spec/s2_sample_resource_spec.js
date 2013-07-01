@@ -24,7 +24,7 @@ define([ 'resource_test_helper'
                   .then(function (root) {
                     results.assignTo('root')(root);
                     s2 = results.get('root');
-                    return root.samples.findByEan13Barcode('2345678901234');
+                    return root.samples.find('sampleUUID');
                   })
                   .then(results.assignTo('sample'))
                   .then(results.expected)
@@ -49,7 +49,7 @@ define([ 'resource_test_helper'
                     results.assignTo('root')(root);
                     s2 = results.get('root');
                     config.cummulativeLoadingTestDataInFirstStage(sampleTestJson);
-                    samplePromise = s2.samples.findByEan13Barcode('6666666666666'); // we need to save the promise here !
+                    samplePromise = s2.samples.find('NotAValidsampleUUID'); // we need to save the promise here !
                     return samplePromise;
                   })
                   .then(results.unexpected)
