@@ -10,6 +10,10 @@ define([
   Sample.searchAddress = "managementSearches";
   Sample.resourceType = 'sample';
 
+  Sample.find = function(sangerUUID){
+    return this.root.retrieve({uuid:sangerUUID, "resourceType":Sample.resourceType, s2AppUrl:"lims-management"});
+  };
+
   return Sample;
 });
 

@@ -39,7 +39,8 @@ define([
 
     retrieve: function(options) {
       var resourceDeferred = $.Deferred();
-      var url              = options.uuid? (config.apiUrl+'/'+options.uuid) : options.url;
+      var s2AppUrl         = options.s2AppUrl ?  config.apiUrl + '/' +options.s2AppUrl : config.apiUrl;
+      var url              = options.uuid? (s2AppUrl+'/'+options.uuid) : options.url;
       var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred, options.resourceType);
 
       var ajax = s2_ajax.send(
