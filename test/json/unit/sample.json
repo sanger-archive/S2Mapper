@@ -1,0 +1,65 @@
+{
+  "default": {
+    "description": "find a sample by barcode",
+
+    "calls": [
+      {
+        "description": "Find the tubes by barcodes for tube...",
+        "method":      "post",
+        "url":         "/lims-management/searches",
+        "request":     {
+          "search": {
+            "user":        "username",
+            "description": "search for barcoded sample",
+            "model":       "sample",
+            "criteria":    {
+              "label": {
+                "position": "barcode",
+                "type":     "ean13-barcode",
+                "value":    "2345678901234"
+              }
+            }
+          }
+        },
+        "response":    {
+          "search": {
+            "actions": {
+              "read":  "http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2",
+              "first": "http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2/page=1",
+              "last":  "http://localhost:9292/46ff7c00-68ac-0130-7ac8-282066132de2/page=-1"
+            },
+            "uuid":    "46ff7c00-68ac-0130-7ac8-282066132de2"
+          }
+        }
+      },
+
+      {
+        "description": "Get the search results (tubes)",
+        "method":      "get",
+        "url":         "/46ff7c00-68ac-0130-7ac8-282066132de2/page=1",
+        "request":     null,
+        "response":    {
+          "actions": {
+            "read":  "http://localhost:9292/tubes/page=1",
+            "first": "http://localhost:9292/tubes/page=1",
+            "last":  "http://localhost:9292/tubes/page=-1"
+          },
+          "size":    1,
+          "samples": [
+            {
+              "actions": {
+                "read":   "http://localhost:9292/472fc450-68ac-0130-7ac8-282066132de2",
+                "create": "http://localhost:9292/472fc450-68ac-0130-7ac8-282066132de2",
+                "update": "http://localhost:9292/472fc450-68ac-0130-7ac8-282066132de2",
+                "delete": "http://localhost:9292/472fc450-68ac-0130-7ac8-282066132de2"
+              },
+              "uuid":    "472fc450-68ac-0130-7ac8-282066132de2",
+              "name":    "sample_0"
+
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
