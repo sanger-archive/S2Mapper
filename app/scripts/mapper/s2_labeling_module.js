@@ -33,15 +33,20 @@ define([
     },
 
     returnPrintDetails:function() {
-      var data = {
-        ean13:  this.labels['barcode'].value,
-        sanger: this.labels['sanger label'].value
+      var label = {
+        template: this.resourceType
       };
 
-      var label = {};
-      label['template'] = this.resourceType;
-      label[this.resourceType] = data;
+      label[this.resourceType] = {
+        ean13:      this.labels['barcode'].value,
+        sanger:     this.labels['sanger label'].value,
+        label_text: {
+          role: this.labelRole
+        }
+      };
+
       return label;
     }
+
   };
 });
