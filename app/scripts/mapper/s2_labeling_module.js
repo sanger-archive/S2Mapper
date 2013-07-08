@@ -41,7 +41,7 @@ define([
         ean13:      this.labels['barcode'].value,
         sanger:     this.labels['sanger label'].value,
         label_text: {
-          role: this.labelRole
+          role: this.labelRole()
         }
       };
 
