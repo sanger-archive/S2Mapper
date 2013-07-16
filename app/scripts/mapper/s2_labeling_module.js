@@ -32,6 +32,10 @@ define([
       ).promise();
     },
 
+    labelRole: function() {
+      return this.aliquots[0].type;
+    },
+
     returnPrintDetails:function() {
       var label = {
         template: this.resourceType

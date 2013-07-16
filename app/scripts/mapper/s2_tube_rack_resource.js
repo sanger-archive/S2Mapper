@@ -6,9 +6,9 @@ define([
   'use strict';
 
   var TubeRack = BaseResource.extendAs('tube_rack', function(tubeRackInstance, options) {
-    $.extend(tubeRackInstance, instanceMethods);
     $.extend(tubeRackInstance, batchableMethods);
     $.extend(tubeRackInstance, LabelingModule);
+    $.extend(tubeRackInstance, instanceMethods);
     return tubeRackInstance;
   });
 
