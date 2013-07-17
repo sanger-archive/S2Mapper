@@ -33,7 +33,8 @@ define([
     },
 
     labelRole: function() {
-      return this.aliquots[0].type;
+      var contentsLabel = this.aliquots[0] && this.aliquots.type;
+      return contentsLabel || '';
     },
 
     returnPrintDetails:function() {
