@@ -19,7 +19,7 @@ define(['mapper/support/pluralization'], function() {
         var plural = pluralizations[singular];
 
         it("pluralizes '" + singular + "' to '" + plural + "'", function() {
-          expect(singular.pluralize()).toBe(plural);
+          expect(singular.pluralize()).to.equal(plural);
         });
       }
     });
@@ -28,7 +28,7 @@ define(['mapper/support/pluralization'], function() {
         var plural = pluralizations[singular];
 
         it("singularizes '" + plural + "' to '" + singular + "'", function() {
-          expect(plural.singularize()).toBe(singular);
+          expect(plural.singularize()).to.equal(singular);
         });
       }
     });
@@ -37,7 +37,7 @@ define(['mapper/support/pluralization'], function() {
         var hyphen = hyphens[camel];
 
         it("camels '" + hyphen + "' to '" + camel + "'", function() {
-          expect(hyphen.removeHyphen()).toBe(camel);
+          expect(hyphen.removeHyphen()).to.equal(camel);
         });
       }
     });
