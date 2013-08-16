@@ -26,7 +26,7 @@ define([
 
           it("handles initial state with single function", function() {
             Deferred.sequentially({success:0}, succeed).promise().done(results.assignTo('result')).fail(results.unexpected);
-            expect(results.get('result')).toEqual({ success: 1 });
+            expect(results.get('result')).to.deep.equal({ success: 1 });
           });
         });
 
@@ -43,12 +43,12 @@ define([
 
           it("handles initial state with two functions", function() {
             Deferred.sequentially({success:0}, succeed, succeed).promise().done(results.assignTo('result')).fail(results.unexpected);
-            expect(results.get('result')).toEqual({ success: 2 });
+            expect(results.get('result')).to.deep.equal({ success: 2 });
           });
 
           it("handles initial state with two functions in an array", function() {
             Deferred.sequentially({success:0}, [succeed, succeed]).promise().done(results.assignTo('result')).fail(results.unexpected);
-            expect(results.get('result')).toEqual({ success: 2 });
+            expect(results.get('result')).to.deep.equal({ success: 2 });
           });
 
           it("handles failure at step 1", function() {
@@ -75,7 +75,7 @@ define([
               }
             ).promise().done(results.assignTo('result'));
 
-            expect(results.get('result')).toEqual({ arg1: 'first', arg2: 'second', arg3: 'third' });
+            expect(results.get('result')).to.deep.equal({ arg1: 'first', arg2: 'second', arg3: 'third' });
           });
         });
       });
@@ -99,7 +99,7 @@ define([
             left,
             right
           ).promise().done(results.assignTo('result')).fail(results.unexpected);
-          expect(results.get('result')).toEqual({ left: 1, right: 1 })
+          expect(results.get('result')).to.deep.equal({ left: 1, right: 1 })
         });
 
         it("handles chains of functions", function() {
@@ -108,7 +108,7 @@ define([
             [left,left],
             [right,right]
           ).promise().done(results.assignTo('result')).fail(results.unexpected);
-          expect(results.get('result')).toEqual({ left: 2, right: 2 })
+          expect(results.get('result')).to.deep.equal({ left: 2, right: 2 })
         });
 
         it("handles two functions where left fails", function() {

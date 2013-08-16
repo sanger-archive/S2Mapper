@@ -1,7 +1,7 @@
 define([
   'resource_test_helper'
   , 'config'
-  , 'text!/json/unit/test_config_data.json'
+  , 'text!test/json/unit/test_config_data.json'
 ], function (TestHelper, config, minidb) {
 
   'use strict';
@@ -28,121 +28,104 @@ define([
         config.loadTestData(minidb);
       });
 
-      it("changes the current stage when sending a 'PUT'.", function () {
-        spyOn(config, "progress").andCallThrough();
-        runs(function () {
-          config.ajax(put1Call)
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-        waitsFor(results.hasFinished);
-
-        runs(function () {
-          return expect(config.progress).toHaveBeenCalled();
-        });
-
+      it("changes the current stage when sending a 'PUT'.", function (done) {
+        var spy = sinon.spy(config, "progress");
+        config.ajax(put1Call)
+            .then(function() {
+              results.expected();
+              expect(spy).to.have.been.called;
+            })
+            .fail(results.unexpected)
+            .always(done);
       });
 
       it("testData is complete", function () {
-        runs(function () {
-          expect(config.testData["default"]).toBeDefined();
-          expect(config.testData["after"]).toBeDefined();
-          expect(config.testData["even_later"]).toBeDefined();
-        });
+          expect(config.testData["default"]).to.be.defined;
+          expect(config.testData["after"]).to.be.defined;
+          expect(config.testData["even_later"]).to.be.defined;
       });
 
-      it("changes the hashedData when changing stage.", function () {
+      it("changes the hashedData when changing stage.", function (done) {
         var key = "GET:/";
+        
         results.resetFinishedFlag();
-        expect(config.hashedTestData[key].response.value).toEqual(0);
-        runs(function () {
-          config.ajax(put1Call)
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-        waitsFor(results.hasFinished);
+        
+        expect(config.hashedTestData[key].response.value).to.equal(0);
+        
+        function firstCall() {
+          return config.ajax(put1Call)
+            .then(function() { 
+              expect(config.hashedTestData[key].response.value).to.equal(1); 
+            })
+            .fail(results.unexpected);
+        }
 
-        runs(function () {
-          expect(config.hashedTestData[key].response.value).toEqual(1);
-        });
+        function secondCall() {
+          return config.ajax(put1Call)
+            .then(function() {
+              expect(config.hashedTestData[key].response.value).to.equal(2); 
+            })
+            .fail(results.unexpected);
+        }
 
-        runs(function () {
-          results.resetFinishedFlag();
-          config.ajax(put1Call)
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-        waitsFor(results.hasFinished);
-
-        runs(function () {
-          expect(config.hashedTestData[key].response.value).toEqual(2);
-        });
+        firstCall()
+          .then(secondCall)
+          .fail(results.unexpected)
+          .always(done);
       });
 
-      it("changes the hashedData when changing stage, regardless of the call order.", function () {
+      it("changes the hashedData when changing stage, regardless of the call order.", function (done) {
         var key = "GET:/";
-        expect(config.hashedTestData[key].response.value).toEqual(0);
+        
+        expect(config.hashedTestData[key].response.value).to.equal(0);
 
-        results.resetFinishedFlag();
-        expect(config.hashedTestData[key].response.value).toEqual(0);
-        runs(function () {
-          config.ajax(put2Call)
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-        waitsFor(results.hasFinished);
-
-        runs(function () {
-          expect(config.hashedTestData[key].response.value).toEqual(2);
-        });
-
-        runs(function () {
-          results.resetFinishedFlag();
-          config.ajax(put1Call)
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-        waitsFor(results.hasFinished);
-
-        runs(function () {
-          expect(config.hashedTestData[key].response.value).toEqual(1);
-        });
-
-      });
-
-      it("return an empty thing when a search fails.", function () {
-        var searchCall = {
-          type:'POST',
-          url:'/lims-laboratory/searches',
-          dataType:"json",
-          headers:{ 'Content-Type':'application/json' },
-          data:{ 'what':'something impossible to find' }
+        function firstCall() {
+          return config.ajax(put2Call)
+                  .then(function() { 
+                    expect(config.hashedTestData[key].response.value).to.equal(2); 
+                  });
         };
 
-        var responseSearchCall;
+        function secondCall() { 
+          return config.ajax(put1Call)
+            .then(function() { 
+              expect(config.hashedTestData[key].response.value).to.equal(1); 
+            });
+        };
 
-        runs(function () {
-          results.resetFinishedFlag();
-          config.ajax(searchCall)
-              .then(results.assignTo('response'))
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-        waitsFor(results.hasFinished);
+        firstCall()
+          .then(secondCall)
+          .fail(results.unexpected)
+          .always(done);
+      });
 
-        runs(function () {
-          responseSearchCall = results.get('response');
-          expect(responseSearchCall).toBeDefined();
-          expect(responseSearchCall["responseText"]).toBeDefined();
-          expect(responseSearchCall["responseText"]["search"]).toBeDefined();
-          expect(responseSearchCall["responseText"]["search"]["actions"]).toBeDefined();
-          expect(responseSearchCall["responseText"]["search"]["actions"]["first"]).toBeDefined();
+      it("return an empty thing when a search fails.", function (done) {
 
-        });
+        var responseToFirstSearch;
 
-        runs(function () {
+        function firstCall() {
+          var searchCall = {
+            type:'POST',
+            url:'/lims-laboratory/searches',
+            dataType:"json",
+            headers:{ 'Content-Type':'application/json' },
+            data:{ 'what':'something impossible to find' }
+          };
 
-          var URL_FOR_NO_RESULT = responseSearchCall["responseText"]["search"]["actions"]["first"];
+          return config.ajax(searchCall)
+                  .then(function(responseSearchCall) {
+                    responseToFirstSearch = responseSearchCall;
+                    expect(responseSearchCall).to.be.defined;
+                    expect(responseSearchCall["responseText"]).to.be.defined;
+                    expect(responseSearchCall["responseText"]["search"]).to.be.defined;
+                    expect(responseSearchCall["responseText"]["search"]["actions"]).to.be.defined;
+                    expect(responseSearchCall["responseText"]["search"]["actions"]["first"]).to.be.defined;
+                  });
+        }
+                
+        function secondCall() {
+          var URL_FOR_NO_RESULT = responseToFirstSearch["responseText"]["search"]["actions"]["first"];
+
           var resultCall = {
             type:'GET',
             url:URL_FOR_NO_RESULT,
@@ -151,23 +134,22 @@ define([
             data:""
           };
 
-          results.resetFinishedFlag();
-          config.ajax(resultCall)
-              .then(results.assignTo('response'))
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-        waitsFor(results.hasFinished);
+          return config.ajax(resultCall)
+                  .then(function(responseNoResult) {
+                    expect(responseNoResult).to.be.defined;
+                    expect(responseNoResult["responseText"]).to.be.defined;
+                    expect(responseNoResult["responseText"]["size"]).to.be.defined;
+                    expect(responseNoResult["responseText"]["size"]).to.equal(0);
+                  });
+        };
+        
+        firstCall()
+          .then(secondCall)
+          .fail(results.unexpected)
+          .always(done);
 
-        runs(function () {
-          var responseNoResult = results.get('response');
-          expect(responseNoResult).toBeDefined();
-          expect(responseNoResult["responseText"]).toBeDefined();
-          expect(responseNoResult["responseText"]["size"]).toBeDefined();
-          expect(responseNoResult["responseText"]["size"]).toEqual(0);
-        });
       });
-
+      
     });
 
   });
