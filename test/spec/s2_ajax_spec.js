@@ -6,6 +6,7 @@ define([
   'text!json/unit/ajax.json'
 ], function (TestHelper, config, S2Ajax, rootTestJson, ajaxTestJson) {
   'use strict';
+
   //load appropriate JSON for this workflow
   // config.testJSON = $.parseJSON (testJSON);
   var s2ajax = new S2Ajax;

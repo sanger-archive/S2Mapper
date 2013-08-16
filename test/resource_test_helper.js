@@ -45,7 +45,7 @@ define([], function() {
       // Dealing with expectations of methods being called in a more convenient manner
       unexpected: function() { throw 'Unexpected call!'; },
       expected: function() { expectationCall = true; },
-      expectToBeCalled: function() { expect(expectationCall).toBe(true); }
+      expectToBeCalled: function() { expect(expectationCall).to.equal(true); }
     });
   };
 });
