@@ -9,11 +9,11 @@ define([
     describe("Tube Rack Resource:-", function () {
       results.lifeCycle();
       it("should be labellable", function () {
-        expect(TubeRackResource.instantiate({rawJson: {actions: {}}}).labelWith).toBeDefined()
+        expect(TubeRackResource.instantiate({rawJson: {actions: {}}}).labelWith).to.be.defined
       });
 
       it("is 'batchable'.", function () {
-        expect(TubeRackResource.instantiate({rawJson: {actions: {}}}).order).toBeDefined();
+        expect(TubeRackResource.instantiate({rawJson: {actions: {}}}).order).to.be.defined;
       })
     });
   });

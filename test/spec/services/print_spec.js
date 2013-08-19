@@ -9,17 +9,20 @@ define([
 
   TestHelper(function (results) {
     describe('PrintService', function () {
+
       describe('printers', function () {
+
         it('contains printers', function () {
+          
           var printer = PrintService.printers[0];
-          expect(printer.name).toBeDefined();
-          expect(printer.type).toBeDefined();
-          expect(typeof printer.print).toBe('function');
+          expect(printer.name).to.be.defined;
+          expect(printer.type).to.be.defined;
+          expect(typeof printer.print).to.equal('function');
         });
+
       });
 
       describe('single printer', function () {
-        results.lifeCycle();
 
         var printer;
 
@@ -29,39 +32,33 @@ define([
           config.cummulativeLoadingTestDataInFirstStage(testData);
         });
 
-        it('sends a single label to the SOAP service', function () {
-          runs(function(){
-            printer.print([
-              {prefix:'P', barcode:'B', suffix:'S', name:'N', description:'D', project:'PR'}
-            ], {user:"username"}).done(results.expected).fail(results.unexpected);
-          });
+        it('sends a single label to the SOAP service', function (done) {
 
-          waitsFor(function(){
-            return results.hasFinished();
-          });
-
-          runs(function(){
-            expect(results.expectToBeCalled);
+          printer.print([
+            {prefix:'P', barcode:'B', suffix:'S', name:'N', description:'D', project:'PR'}
+          ], {user:"username"})
+          .then(function() {
+            results.expected();
+            results.expectToBeCalled();
           })
+          .fail(results.unexpected)
+          .always(done) 
 
         });
 
-        it('sends multiple labels to the SOAP service', function () {
-          runs(function(){
+        it('sends multiple labels to the SOAP service', function (done) {
+          
           printer.print([
             {prefix:'P1', barcode:'B1', suffix:'S1', name:'N1', description:'D1', project:'PR1'},
             {prefix:'P2', barcode:'B2', suffix:'S2', name:'N2', description:'D2', project:'PR2'}
-          ], {user:"username"}).done(results.expected).fail(results.unexpected);
-          });
-
-          waitsFor(function(){
-            return results.hasFinished();
-          });
-
-          runs(function(){
-            expect(results.expectToBeCalled);
-          })
-
+          ], {user:"username"})
+            .then(function() {
+              results.expected();
+              results.expectToBeCalled();
+             })
+            .fail(results.unexpected)
+            .always(done)
+          
         });
       });
     });

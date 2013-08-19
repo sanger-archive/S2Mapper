@@ -30,13 +30,17 @@ define([
 
       it("changes the current stage when sending a 'PUT'.", function (done) {
         var spy = sinon.spy(config, "progress");
+
         config.ajax(put1Call)
             .then(function() {
               results.expected();
               expect(spy).to.have.been.called;
             })
             .fail(results.unexpected)
-            .always(done);
+            .always(function() {
+              config.progress.restore();              
+              done();
+            });
       });
 
       it("testData is complete", function () {
@@ -149,7 +153,7 @@ define([
           .always(done);
 
       });
-      
+
     });
 
   });

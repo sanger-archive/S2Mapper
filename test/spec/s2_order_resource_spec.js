@@ -119,45 +119,52 @@ define([
       results.lifeCycle();
 
       var order;
-      beforeEach(function () {
+
+      beforeEach(function (done) {
 
         config.loadTestData(rootTestJson);
 
-        runs(function () {
-          Root.load({user:"username"})
-              .then(results.assignTo('root'))
-              .then(function () {
-                config.cummulativeLoadingTestDataInFirstStage(dataForOrderWithTwoTubesUpdate);
-                s2 = results.get('root')
-              })
-              .then(function () {
-                return s2.find("order1_UUID");
-              })
-              .then(results.assignTo('order'))
-              .then(function () {
-                return s2.find("batch_UUID");
-              })
-              .then(results.assignTo('batch'))
-              .then(function () {
-                return s2.find("tube1_UUID");
-              })
-              .then(results.assignTo('tube'))
-              .then(results.expected)
-              .fail(results.unexpected);
-          spyOn(config, "ajax").andCallThrough();
-        });
+        this.spy = sinon.spy(config, "ajax");
 
-        waitsFor(results.hasFinished);
+        Root.load({user:"username"})
+          .then(results.assignTo('root'))
+          .then(function () {
+            config.cummulativeLoadingTestDataInFirstStage(dataForOrderWithTwoTubesUpdate);
+            s2 = results.get('root')
+          })
+          .then(function () {
+            return s2.find("order1_UUID");
+          })
+          .then(results.assignTo('order'))
+          .then(function () {
+            return s2.find("batch_UUID");
+          })
+          .then(results.assignTo('batch'))
+          .then(function () {
+            return s2.find("tube1_UUID");
+          })
+          .then(results.assignTo('tube'))
+          .then(results.expected)
+          .fail(results.unexpected)
+          .always(done);
 
       });
 
-      it("makes the right call to S2 when setting batch for one tube", function () {
+      afterEach(function() {
+        config.ajax.restore();
+      })
+
+      it("makes the right call to S2 when setting batch for one tube", function (done) {
 
         var order = results.get('order');
         var batch = results.get('batch');
-        expect(order).toBeDefined();
-        expect(batch).toBeDefined();
+        var self = this;
+        
+        expect(order).to.be.defined;
+        expect(batch).to.be.defined;
+        
         results.resetFinishedFlag();
+        
         var expectedOptions = {type:"PUT",
           url:"/order1_UUID",
           dataType:'json',
@@ -165,26 +172,26 @@ define([
           data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
         };
 
-        runs(function () {
-          order.setBatchForResources(batch, ['tube1_UUID'], 'done')
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-
-        waitsFor(results.hasFinished);
-
-        runs(function () {
-          expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
-        });
+        order.setBatchForResources(batch, ['tube1_UUID'], 'done')
+          .then(function() {
+            results.expected();
+            expect(self.spy).to.have.been.calledWith(expectedOptions);
+          })
+          .fail(results.unexpected)
+          .always(done);
+                
       });
 
-      it("makes the right call to S2 with adding role for one tube", function () {
+      it("makes the right call to S2 with adding role for one tube", function (done) {
 
         var order = results.get('order');
         var batch = results.get('batch');
-        expect(order).toBeDefined();
-        expect(batch).toBeDefined();
+        
+        expect(order).to.be.defined;
+        expect(batch).to.be.defined;
+        
         results.resetFinishedFlag();
+        
         var expectedOptions = {type:"PUT",
           url:"/order1_UUID",
           dataType:'json',
@@ -192,26 +199,26 @@ define([
           data:'{"user":"username","items":{"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"start"}}}}'
         };
 
-        runs(function () {
-          order.addRoleForResources(['tube1_UUID'],
-              "binding_tube_to_be_extracted")
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
+        order.addRoleForResources(['tube1_UUID'],
+          "binding_tube_to_be_extracted")
+          .then(function() {
+            results.expected();
+            expect(config.ajax).to.have.been.calledWith(expectedOptions);
+          })
+          .fail(results.unexpected)
+          .always(done);
 
-        waitsFor(results.hasFinished);
-
-        runs(function () {
-          expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
-        });
       });
 
-      it("makes the right call to S2 with setting role for one tube", function () {
+      it("makes the right call to S2 with setting role for one tube", function (done) {
         var order = results.get('order');
         var batch = results.get('batch');
-        expect(order).toBeDefined();
-        expect(batch).toBeDefined();
+
+        expect(order).to.be.defined;
+        expect(batch).to.be.defined;
+
         results.resetFinishedFlag();
+
         var expectedOptions = {type:"PUT",
           url:"/order1_UUID",
           dataType:'json',
@@ -219,73 +226,71 @@ define([
           data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"event":"unuse"}},"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"complete"}}}}'
         };
 
-        runs(function () {
-          order.addRoleForResources(['tube1_UUID'], "binding_tube_to_be_extracted")
-              .then(function (order) {
-                expect(_.chain(order.items).keys().contains("tube_to_be_extracted").value()).toBeTruthy();
-                expect(_.chain(order.items).keys().contains("binding_tube_to_be_extracted").value()).toBeTruthy();
-                return order.setNewRoleForResources(['tube1_UUID'],
-                    "binding_tube_to_be_extracted", 'complete',
-                    "tube_to_be_extracted", 'unuse');
-              }).then(results.expected)
-              .fail(results.unexpected);
-        });
+        order.addRoleForResources(['tube1_UUID'], "binding_tube_to_be_extracted")
+          .then(function (order) {
+            expect(_.chain(order.items).keys().contains("tube_to_be_extracted").value()).to.be.ok;
+            expect(_.chain(order.items).keys().contains("binding_tube_to_be_extracted").value()).to.be.ok;
+            return order.setNewRoleForResources(['tube1_UUID'],
+                "binding_tube_to_be_extracted", 'complete',
+                "tube_to_be_extracted", 'unuse');
+          })
+          .then(function() {
+            results.expected();
+            expect(config.ajax).to.have.been.calledWith(expectedOptions);
+          })
+          .fail(results.unexpected)
+          .always(done);
 
-        waitsFor(results.hasFinished);
-
-        runs(function () {
-          expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
-        });
       });
 
-      it("after the right calls to set roles, the order has been updated (NOT based in server returned data)", function () {
+      it("after the right calls to set roles, the order has been updated (NOT based in server returned data)", function (done) {
         var order = results.get('order');
         var batch = results.get('batch');
-        expect(order).toBeDefined();
-        expect(batch).toBeDefined();
+        
+        expect(order).to.be.defined;
+        expect(batch).to.be.defined;
+        
         results.resetFinishedFlag();
 
-        runs(function () {
-
-          order.addRoleForResources(['tube1_UUID'], "binding_tube_to_be_extracted")
-              .then(function (order) {
-                return order.setNewRoleForResources(['tube1_UUID'],
-                    "binding_tube_to_be_extracted", 'complete',
-                    "tube_to_be_extracted", 'unuse');
-              })
+        order.addRoleForResources(['tube1_UUID'], "binding_tube_to_be_extracted")
+          .then(function (order) {
+            return order.setNewRoleForResources(['tube1_UUID'],
+                "binding_tube_to_be_extracted", 'complete',
+                "tube_to_be_extracted", 'unuse');
+          })
 //              We don't ask the server for the new version of the order!
 //              Instead, we rely on the order returned by the mapper
 //              Uncomment next call to ask the server for the new version.
 //              .then(function () {
 //                return s2.find("order1_UUID");
 //              })
-              .then(results.assignTo('order'))
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
+          .then(results.assignTo('order'))
+          .then(function() {
+            results.expected();
+            var order = results.get('order');
 
-        waitsFor(results.hasFinished);
+            var roles = _.chain(order.items).keys().value();
 
-        runs(function () {
-          var order = results.get('order');
+            expect(_.contains(roles, "tube_to_be_extracted")).to.be.ok;
+            expect(_.contains(roles, "binding_tube_to_be_extracted")).to.be.ok;
 
-          var roles = _.chain(order.items).keys().value();
-
-          expect(_.contains(roles, "tube_to_be_extracted")).toBeTruthy();
-          expect(_.contains(roles, "binding_tube_to_be_extracted")).toBeTruthy();
-
-          expect(order.items["tube_to_be_extracted"][0]["status"]).toEqual("unused");
-          expect(order.items["binding_tube_to_be_extracted"][0]["status"]).toEqual("done");
-        });
+            expect(order.items["tube_to_be_extracted"][0]["status"]).to.equal("unused");
+            expect(order.items["binding_tube_to_be_extracted"][0]["status"]).to.equal("done");
+          })
+          .fail(results.unexpected)
+          .always(done);
+        
       });
 
-      it("(Using Operation) start a new role", function () {
+      it("(Using Operation) start a new role", function (done) {
         var order = results.get('order');
         var batch = results.get('batch');
         var tube = results.get('tube');
-        expect(tube).toBeDefined();
-        expect(order).toBeDefined();
-        expect(batch).toBeDefined();
+
+        expect(tube).to.be.defined;
+        expect(order).to.be.defined;
+        expect(batch).to.be.defined;
+        
         results.resetFinishedFlag();
 
         var state = {
@@ -296,6 +301,7 @@ define([
             }
           ]
         };
+
         var expectedOptions = {type:"PUT",
           url:"/order1_UUID",
           dataType:'json',
@@ -303,26 +309,25 @@ define([
           data:'{"user":"username","items":{"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"start"}}}}'
         };
 
-        runs(function () {
-          Operations.stateManagement().start(state)
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-
-        waitsFor(results.hasFinished);
-
-        runs(function () {
-          expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
-        });
+        Operations.stateManagement().start(state)
+          .then(function() {
+            results.expected();
+            expect(config.ajax).to.have.been.calledWith(expectedOptions);
+          })
+          .fail(results.unexpected)
+          .always(done)
+          
       });
 
-      it("(Using Operation) update roles", function () {
+      it("(Using Operation) update roles", function (done) {
         var order = results.get('order');
         var batch = results.get('batch');
         var tube = results.get('tube');
-        expect(tube).toBeDefined();
-        expect(order).toBeDefined();
-        expect(batch).toBeDefined();
+        
+        expect(tube).to.be.defined;
+        expect(order).to.be.defined;
+        expect(batch).to.be.defined;
+        
         results.resetFinishedFlag();
 
         var startingRole = {
@@ -354,22 +359,17 @@ define([
           data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"event":"unuse"}},"binding_tube_to_be_extracted":{"tube1_UUID":{"event":"complete"}}}}'
         };
 
-        runs(function () {
-          Operations.stateManagement().start(startingRole)
-              .then(function () {
-                return Operations.stateManagement().complete(changingRoles);
-              })
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-        waitsFor(results.hasFinished);
-
-        runs(function () {
-          expect(config.ajax).toHaveBeenCalledWith(startingOptions);
-
-          expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
-
-        });
+        Operations.stateManagement().start(startingRole)
+          .then(function () {
+            return Operations.stateManagement().complete(changingRoles);
+          })
+          .then(function() {
+            results.expected();
+            expect(config.ajax).to.have.been.calledWith(startingOptions);
+            expect(config.ajax).to.have.been.calledWith(expectedOptions);
+          })
+          .fail(results.unexpected)
+          .always(done);
       });
     });
   });

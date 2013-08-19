@@ -19,7 +19,7 @@ require([
     'domReady!',
     'spec/support/test_config_spec',
     'spec/support/pluralization_spec',
-    'spec/support/deferred_spec'/*,
+    'spec/support/deferred_spec',
     'spec/services/print_spec',
     'spec/s2_ajax_spec',
     'spec/s2_search_resource_spec',
@@ -38,7 +38,7 @@ require([
     'spec/s2_root_spec',
     'spec/s2_barcode_resource_spec',
     'spec/operations_spec',
-    'spec/integration/dna_only_extraction_spec'*/
+    'spec/integration/dna_only_extraction_spec'
 ], function() {
   mocha.run();
 });

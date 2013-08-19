@@ -10,171 +10,134 @@ define([
 
   TestHelper(function (results) {
     describe("laboratorySearches", function () {
-      results.lifeCycle();
 
       var s2, handler;
 
-      beforeEach(function () {
-        runs(function () {
+      beforeEach(function (done) {
           config.loadTestData(rootData);
+
           Root.load({user:"username"})
-              .then(results.assignTo('root'))
-              .then(function () {
-                s2 = results.get('root');
-                return s2.laboratorySearches.handling(s2.batches);
-              })
-              .then(function (ret) {
-                handler = ret;
-                config.cummulativeLoadingTestDataInFirstStage(searchData)})
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-        waitsFor(results.hasFinished);
+            .then(results.assignTo('root'))
+            .then(function () {
+              s2 = results.get('root');
+              return s2.laboratorySearches.handling(s2.batches);
+            })
+            .then(function (ret) {
+              handler = ret;
+              config.cummulativeLoadingTestDataInFirstStage(searchData)})
+            .then(results.expected)
+            .fail(results.unexpected)
+            .always(done);
       });
 
       describe('handling resource', function () {
+        
         describe('firstPage', function () {
-          it('returns the first page of results', function () {
-            results.reset();
+          
+          it('returns the first page of results', function (done) {
+            handler.firstPage({})
+              .then(function(results) {
+                expect(results[0].name).to.equal('first page');
+              })
+              .fail(results.unexpected)
+              .always(done);
 
-            runs(function(){
-              handler.firstPage({})
-                  .then(results.assignTo('results'))
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-
-            waitsFor(results.hasFinished);
-
-            runs(function(){
-              expect(results.get('results')[0].name).toEqual('first page');
-            });
           });
+
         });
 
         describe('lastPage', function () {
-          it('returns the last page of results', function () {
+          
+          it('returns the last page of results', function (done) {
+            handler.lastPage({})
+              .then(function(results) {
+                expect(results[0].name).to.equal('last page');
+              })
+              .fail(results.unexpected)
+              .always(done);
 
-            results.reset();
-
-            runs(function(){
-              handler.lastPage({})
-                  .then(results.assignTo('results'))
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-
-            waitsFor(results.hasFinished);
-
-            runs(function(){
-              expect(results.get('results')[0].name).toEqual('last page');
-            });
           });
+        
         });
 
         describe('last', function () {
-          it('returns the last result of the last page of results', function () {
+          
+          it('returns the last result of the last page of results', function (done) {
 
-            results.reset();
+            handler.last({})
+              .then(function(results) {
+                expect(results.name).to.equal('last page');
+                expect(results.index).to.equal(9);
+              })
+              .fail(results.unexpected)
+              .always(done);
 
-            runs(function(){
-              handler.last({})
-                  .then(results.assignTo('results'))
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-
-            waitsFor(results.hasFinished);
-
-            runs(function(){
-              expect(results.get('results').name).toEqual('last page');
-              expect(results.get('results').index).toEqual(9);
-            });
           });
         });
       });
     });
     describe("supportSearches", function () {
-      results.lifeCycle();
-
       var s2, handler;
 
-      beforeEach(function () {
-        runs(function () {
-          config.loadTestData(rootData);
-          Root.load({user:"username"})
-              .then(results.assignTo('root'))
-              .then(function () {
-                s2 = results.get('root');
-                return s2.supportSearches.handling(s2.batches);
-              })
-              .then(function (ret) {
-                handler = ret;
-                config.cummulativeLoadingTestDataInFirstStage(searchData)})
-              .then(results.expected)
-              .fail(results.unexpected);
-        });
-        waitsFor(results.hasFinished);
+      beforeEach(function (done) {
+
+        config.loadTestData(rootData);
+
+        Root.load({user:"username"})
+          .then(results.assignTo('root'))
+          .then(function () {
+            s2 = results.get('root');
+            return s2.supportSearches.handling(s2.batches);
+          })
+          .then(function (ret) {
+            handler = ret;
+            config.cummulativeLoadingTestDataInFirstStage(searchData)})
+          .fail(results.unexpected)
+          .always(done);
       });
 
       describe('handling resource', function () {
+        
         describe('firstPage', function () {
-          it('returns the first page of results', function () {
-            results.reset();
+          
+          it('returns the first page of results', function (done) {
 
-            runs(function(){
-              handler.firstPage({})
-                  .then(results.assignTo('results'))
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-
-            waitsFor(results.hasFinished);
-
-            runs(function(){
-              expect(results.get('results')[0].name).toEqual('first page');
-            });
+            handler.firstPage({})
+              .then(function(results) {
+                expect(results[0].name).to.equal('first page');
+              })
+              .fail(results.unexpected)
+              .always(done);
+          
           });
+        
         });
 
         describe('lastPage', function () {
-          it('returns the last page of results', function () {
+          it('returns the last page of results', function (done) {
 
-            results.reset();
+            handler.lastPage({})
+              .then(function(results) {
+                expect(results[0].name).to.equal('last page');
+              })
+              .fail(results.unexpected)
+              .always(done);
 
-            runs(function(){
-              handler.lastPage({})
-                  .then(results.assignTo('results'))
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-
-            waitsFor(results.hasFinished);
-
-            runs(function(){
-              expect(results.get('results')[0].name).toEqual('last page');
-            });
           });
+
         });
 
         describe('last', function () {
-          it('returns the last result of the last page of results', function () {
+          it('returns the last result of the last page of results', function (done) {
 
-            results.reset();
+            handler.last({})
+              .then(function(results) {
+                expect(results.name).to.equal('last page');
+                expect(results.index).to.equal(9);
+              })
+              .fail(results.unexpected)
+              .always(done);
 
-            runs(function(){
-              handler.last({})
-                  .then(results.assignTo('results'))
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-
-            waitsFor(results.hasFinished);
-
-            runs(function(){
-              expect(results.get('results').name).toEqual('last page');
-              expect(results.get('results').index).toEqual(9);
-            });
           });
         });
       });

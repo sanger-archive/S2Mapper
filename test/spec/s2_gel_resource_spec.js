@@ -9,11 +9,11 @@ define([
     describe("Gel Resource:-", function () {
       results.lifeCycle();
       it("should be labellable", function () {
-        expect(GelResource.instantiate({rawJson: {actions: {}}}).labelWith).toBeDefined()
+        expect(GelResource.instantiate({rawJson: {actions: {}}}).labelWith).to.be.defined;
       });
 
       it("is 'batchable'.", function () {
-        expect(GelResource.instantiate({rawJson: {actions: {}}}).order).toBeDefined();
+        expect(GelResource.instantiate({rawJson: {actions: {}}}).order).to.be.defined;
       })
     });
   });
