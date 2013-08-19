@@ -9,59 +9,61 @@ define([ 'resource_test_helper'
 
   TestHelper(function (results) {
     describe("Sample Resource:-", function () {
-      results.lifeCycle();
+
       var s2, samplePromise;
 
-
       describe("Searching for a sample by EAN13 barcode,", function () {
-        describe("and the sample IS on the system,", function () {
-          beforeEach(function () {
 
-            runs(function () {
-              config.loadTestData(rootTestJson);
-              config.cummulativeLoadingTestDataInFirstStage(sampleTestJson);
-              Root.load({user:"username"})
-                  .then(function (root) {
-                    results.assignTo('root')(root);
-                    s2 = results.get('root');
-                    return root.samples.find('sampleUUID');
-                  })
-                  .then(results.assignTo('sample'))
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-            waitsFor(results.hasFinished);
+        describe("and the sample IS on the system,", function () {
+
+          beforeEach(function (done) {
+            var self = this;
+            
+            config.loadTestData(rootTestJson);
+            config.cummulativeLoadingTestDataInFirstStage(sampleTestJson);
+            
+            Root.load({user:"username"})
+              .then(function (root) {
+                results.assignTo('root')(root);
+                s2 = results.get('root');
+                return root.samples.find('sampleUUID');
+              })
+              .then(function(result) {
+                self.sample = result;
+              })
+              .fail(results.unexpected)
+              .always(done);
+
           });
 
           it("takes an EAN13 barcode and returns the corresponding resource.", function () {
-            runs(function () {
-              expect(results.get('sample').rawJson).toBeDefined()
-            });
+            expect(this.sample.rawJson).to.be.defined;
           });
         });
 
         describe("and sample IS NOT on the system,", function () {
-          beforeEach(function () {
-            runs(function () {
-              config.loadTestData(rootTestJson);
-              Root.load({user:"username"})
-                  .then(function (root) {
-                    results.assignTo('root')(root);
-                    s2 = results.get('root');
-                    config.cummulativeLoadingTestDataInFirstStage(sampleTestJson);
-                    samplePromise = s2.samples.find('NotAValidsampleUUID'); // we need to save the promise here !
-                    return samplePromise;
-                  })
-                  .then(results.unexpected)
-                  .fail(results.expected);
-            });
-            waitsFor(results.hasFinished);
+          
+          beforeEach(function (done) {
+            
+            config.loadTestData(rootTestJson);
+            
+            Root.load({user:"username"})
+              .then(function (root) {
+                s2 = root;
+
+                config.cummulativeLoadingTestDataInFirstStage(sampleTestJson);
+                
+                samplePromise = s2.samples.find('NotAValidsampleUUID'); // we need to save the promise here !
+                
+                return samplePromise;
+              })
+              .then(results.unexpected)
+              .fail(results.expected)
+              .always(done);
           });
 
           it("takes an EAN13 barcode but the returned promise is rejected.", function () {
-            runs(function () {
-              expect(samplePromise.state()).toBe('rejected')
-            });
+            expect(samplePromise.state()).to.equal('rejected')
           })
         })
       });

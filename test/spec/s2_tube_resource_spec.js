@@ -10,48 +10,59 @@ define([ 'resource_test_helper'
 
   TestHelper(function (results) {
     describe("Tube Resource:-", function () {
-      results.lifeCycle();
 
-      var s2, tubePromise;
+      var s2;
 
       describe("modular interface", function () {
+        
         it("should be labellable", function () {
-          expect(TubeResource.instantiate({rawJson:{actions:{}}}).labelWith).toBeDefined()
+          expect(TubeResource.instantiate({rawJson:{actions:{}}}).labelWith).to.be.defined;
         })
+      
       });
 
       describe("Searching for a tube by EAN13 barcode,", function () {
-        describe("and the tube IS on the system,", function () {
-          beforeEach(function () {
 
-            runs(function () {
-              config.loadTestData(rootTestJson);
-              config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
-              Root.load({user:"username"})
-                .then(function (root) {
-                  results.assignTo('root')(root);
-                  s2 = results.get('root');
-                  return root.tubes.findByEan13Barcode('2345678901234');
-                })
-                .then(results.assignTo('tube'))
-                .then(results.expected)
-                .fail(results.unexpected);
-            });
-            waitsFor(results.hasFinished);
+        describe("and the tube IS on the system,", function () {
+
+          beforeEach(function (done) {
+
+            var self = this;
+
+            config.loadTestData(rootTestJson);
+            config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
+
+            Root.load({user:"username"})
+              .then(function (root) {
+                results.assignTo('root')(root);
+                s2 = results.get('root');
+                return root.tubes.findByEan13Barcode('2345678901234');
+              })
+              .then(function(res) {
+                self.tube = res
+              })
+              .then(results.expected)
+              .fail(results.unexpected)
+              .always(done);
 
           });
 
           it("takes an EAN13 barcode and returns the corresponding resource.", function () {
-            runs(function () {
-              expect(results.get('tube').rawJson).toBeDefined()
-            });
+            
+            expect(this.tube.rawJson).to.be.defined;
+          
           });
         });
 
+
         describe("and tube IS NOT on the system,", function () {
-          beforeEach(function () {
-            runs(function () {
+
+          var tubePromise;
+
+          beforeEach(function (done) {
+
               config.loadTestData(rootTestJson);
+
               Root.load({user:"username"})
                 .then(function (root) {
                   results.assignTo('root')(root);
@@ -61,77 +72,78 @@ define([ 'resource_test_helper'
                   return tubePromise;
                 })
                 .then(results.unexpected)
-                .fail(results.expected);
-            });
-            waitsFor(results.hasFinished);
+                .fail(results.expected)
+                .always(function(err) {
+                  done();
+                });
+
           });
 
           it("takes an EAN13 barcode but the returned promise is rejected.", function () {
-            runs(function () {
-              expect(tubePromise.state()).toBe('rejected')
-            });
+            expect(tubePromise.state()).to.equal('rejected')
           })
+
         })
       });
 
       describe("once a tube has been loaded", function () {
-        beforeEach(function () {
-          runs(function () {
-            config.loadTestData(rootTestJson);
-            Root.load({user:"username"})
-              .then(function (root) {
-                results.assignTo('root')(root);
-                s2 = results.get('root');
-                config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
-                return root.tubes.findByEan13Barcode('2345678901234');
-              })
-              .then(results.assignTo('tube'))
-              .then(results.expected)
-              .fail(results.unexpected);
-          });
-          waitsFor(results.hasFinished);
+        beforeEach(function (done) {
+
+          var self = this;
+
+          config.loadTestData(rootTestJson);
+
+          Root.load({user:"username"})
+            .then(function (root) {
+              results.assignTo('root')(root);
+              s2 = results.get('root');
+              config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
+              return root.tubes.findByEan13Barcode('2345678901234');
+            })
+            .then(function(res) {
+              self.tube = res;
+            })
+            .fail(results.unexpected)
+            .always(done);
         });
 
         describe(".order()", function () {
-          it("resolves to an order resource.", function () {
-            runs(function () {
-              results.resetFinishedFlag();
-              results.get('tube').order()
-                .then(results.assignTo('order'))
-                .then(results.expected)
-                .fail(results.unexpected)
-            });
+          
+          it("resolves to an order resource.", function (done) {
 
-            waitsFor(results.hasFinished);
+            this.tube.order()
+              .then(function(order) {
+                expect(order.resourceType).to.equal('order');
+              })
+              .fail(results.unexpected)
+              .always(done);
 
-            runs(function () {
-              expect(results.get('order').resourceType).toBe('order');
-            })
           })
         })
       });
 
       describe("When the server fails to respond to a search creation",function(){
-          it("the findByEan13Barcode promise fails.", function () {
-            runs(function () {
-              results.resetFinishedFlag();
-              config.loadTestData(rootTestJson);
-              Root.load({user:"username"})
-                  .then(function (root) {
-                    // with this line, when findByEan13Barcode will be called,
-                    // we artificially prevent the creation of search, simulating a server failure.
-                    root.laboratorySearches.create = function(){ return $.Deferred().reject().promise();};
+          
+          it("the findByEan13Barcode promise fails.", function (done) {
+            
+            config.loadTestData(rootTestJson);
 
-                    results.assignTo('root')(root);
-                    s2 = results.get('root');
-                    config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
-                    return root.tubes.findByEan13Barcode('2345678901234');
-                  })
-                  .then(results.unexpected)
-                  .fail(results.expected);
-            });
-            waitsFor(results.hasFinished);
-          })
+            Root.load({user:"username"})
+              .then(function (root) {
+                // with this line, when findByEan13Barcode will be called,
+                // we artificially prevent the creation of search, simulating a server failure.
+                root.laboratorySearches.create = function(){ return $.Deferred().reject().promise();};
+
+                results.assignTo('root')(root);
+                s2 = results.get('root');
+                config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
+                return root.tubes.findByEan13Barcode('2345678901234');
+              })
+              .then(results.unexpected)
+              .fail(results.expected)
+              .always(done);
+
+        });
       });
     })
   })

@@ -17,32 +17,27 @@ define([
       describe("Loading an S2 root,", function () {
         var rootPromise;
 
-        beforeEach(function () {
+        beforeEach(function (done) {
           config.loadTestData(rootTestJson);
-          rawRootJson = config.testData[config.defaultStage]["calls"][0].response;
-          runs(function () {
-            rootPromise = S2Root.load({user:"username"})
-                .then(results.assignTo('root'))
-                .then(results.expected)
-                .fail(results.unexpected);
-          });
 
-          waitsFor(results.hasFinished);
+          rawRootJson = config.testData[config.defaultStage]["calls"][0].response;
+
+          rootPromise = S2Root.load({user:"username"})
+            .then(results.assignTo('root'))
+            .then(results.expected)
+            .fail(results.unexpected)
+            .always(done);
         });
 
         it("returns a promise.", function () {
-          runs(function () {
-            expect(rootPromise.hasOwnProperty("resolve")).toBeDefined();
-            expect(rootPromise.hasOwnProperty("reject")).toBeDefined();
-            expect(rootPromise.hasOwnProperty("promise")).toBeDefined();
-          });
+          expect(rootPromise.hasOwnProperty("resolve")).to.be.defined;
+          expect(rootPromise.hasOwnProperty("reject")).to.be.defined;
+          expect(rootPromise.hasOwnProperty("promise")).to.be.defined;
         });
 
         it("has a SearchesResource", function () {
-          runs(function () {
-            var resourceType = results.get('root')["laboratorySearches"].resourceType;
-            expect(resourceType).toBe('search');
-          });
+          var resourceType = results.get('root')["laboratorySearches"].resourceType;
+          expect(resourceType).to.equal('search');
         });
 
         // All of these are supposed to be actions, not root level resources.
@@ -71,22 +66,17 @@ define([
 
         it("has the appropriate root level resourcs", function () {
 
-
-          runs(function () {
-            expect(bidirectionalDifference(
-                _.chain(rawRootJson).keys().map(function(r){return r.removeHyphen()}).difference(resourcesThatAreDropped).difference(resourcesThatAreActions).union(['actions', 'user']).value(),
-                _.difference(_.keys(results.get('root'), oldResourcesOnTheRoot))
-            )).toEqual([]);
-          });
+          expect(bidirectionalDifference(
+            _.chain(rawRootJson).keys().map(function(r){return r.removeHyphen()}).difference(resourcesThatAreDropped).difference(resourcesThatAreActions).union(['actions', 'user']).value(),
+            _.difference(_.keys(results.get('root'), oldResourcesOnTheRoot))
+          )).to.deep.equal([]);
         });
 
         it("has the appropriate actions", function () {
-          runs(function () {
-            expect(bidirectionalDifference(
-                resourcesThatAreActions,
-                _.keys(results.get('root').actions)
-            )).toEqual([]);
-          });
+          expect(bidirectionalDifference(
+            resourcesThatAreActions,
+            _.keys(results.get('root').actions)
+          )).to.deep.equal([]);
         });
       });
 
@@ -102,34 +92,30 @@ define([
           describe(resourceTest.resourceType + " resource", function () {
             var expectedResponse;
 
-            beforeEach(function () {
+            beforeEach(function (done) {
               config.cummulativeLoadingTestDataInFirstStage(resourceTest.data);
+              
               expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
-              runs(function () {
-                S2Root.load({user:"username"})
-                    .then(results.assignTo('root'))
-                    .then(function () {
-                      return results.get('root').find(resourceTest.uuid);
-                    })
-                    .then(results.assignTo('resource'))
-                    .then(results.expected)
-                    .fail(results.unexpected);
-              });
-
-              waitsFor(results.hasFinished);
+              
+              S2Root.load({user:"username"})
+                .then(results.assignTo('root'))
+                .then(function () {
+                  return results.get('root').find(resourceTest.uuid);
+                })
+                .then(results.assignTo('resource'))
+                .then(results.expected)
+                .fail(results.unexpected)
+                .always(done)
             });
 
             it("is " + resourceTest.resourceType + " resource", function () {
-              runs(function () {
-                expect(results.get('resource').resourceType).toBe(resourceTest.resourceType);
-              });
+              expect(results.get('resource').resourceType).to.equal(resourceTest.resourceType);
             });
 
             it("sets the root", function () {
-              runs(function () {
-                expect(results.get('resource').root).toBeDefined();
-              });
+                expect(results.get('resource').root).to.be.defined;
             });
+
           });
         }
       });

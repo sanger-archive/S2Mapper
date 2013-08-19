@@ -20,49 +20,51 @@ define([
           };
         }
 
-        it("sequentialises to prepare -> start -> operate -> complete", function () {
+        it("sequentialises to prepare -> start -> operate -> complete", function (done) {
+          
           Operations.operation({
             prepare:trackState('prepare'),
             start:trackState('start'),
             operate:trackState('operate'),
             complete:trackState('complete')
-          }).done(results.assignTo('result'));
-
-          expect(results.get('result')).toEqual({
-            prepare:true,
-            start:true,
-            operate:true,
-            complete:true
-          });
+          })
+            .then(results.assignTo('result'))
+            .then(function() {
+              expect(results.get('result')).to.deep.equal({
+                prepare:true,
+                start:true,
+                operate:true,
+                complete:true
+              });    
+            })
+            .always(done);
+          
         });
       });
 
       describe("registerLabware", function () {
         var root;
 
-        beforeEach(function () {
+        beforeEach(function (done) {
           config.loadTestData(testDataRoot);
 
-          runs(function () {
-            results.resetFinishedFlag();
-            Root.load({user:"username"})
-              .then(results.assignTo('root'))
-              .then(function () {
-                root = results.get('root');
-              })
-              .then(results.expected)
-              .fail(results.unexpected);
+          results.resetFinishedFlag();
 
-          });
-          waitsFor(results.hasFinished);
-
+          Root.load({user:"username"})
+            .then(results.assignTo('root'))
+            .then(function () {
+              root = results.get('root');
+            })
+            .then(results.expected)
+            .fail(results.unexpected)
+            .always(done);
 
           config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
         });
 
-        it("passes the attributes to the labware constructor", function () {
-          runs(function () {
+        it("passes the attributes to the labware constructor", function (done) {
             results.resetFinishedFlag();
+            
             Operations.registerLabware(
               root.tubes,
               'DNA',
@@ -70,84 +72,76 @@ define([
               { 'foo':'bar' }
             )
               .then(results.expected)
-              .fail(results.unexpected);
-          });
-          waitsFor(results.hasFinished);
+              .fail(results.unexpected)
+              .always(done)
         });
 
         describe("performs create labware -> create barcode -> label labware", function () {
           var state;
 
-          beforeEach(function () {
+          beforeEach(function (done) {
+            
             results.resetFinishedFlag();
-            runs(function () {
-              Operations.registerLabware(
-                root.tubes,
-                'DNA',
-                'stock'
-              )
-                .then(results.assignTo('state'))
-                .then(function () {
-                  state = results.get('state');
-                })
-                .then(results.expected)
-                .fail(results.unexpected);
-            })
-            waitsFor(results.hasFinished);
-
+            
+            Operations.registerLabware(
+              root.tubes,
+              'DNA',
+              'stock'
+            )
+              .then(results.assignTo('state'))
+              .then(function () {
+                state = results.get('state');
+              })
+              .then(results.expected)
+              .fail(results.unexpected)
+              .always(done);
           });
 
           it("outputs the labware", function () {
-            runs(function () {
-              expect(state.labware).toBeDefined();
-            })
+            expect(state.labware).to.be.defined;
           });
 
           it("outputs the barcode", function () {
-            runs(function () {
-              expect(state.barcode).toBeDefined();
-            });
+            expect(state.barcode).to.be.defined;
           });
         });
-
 
       });
 
       describe("betweenLabware", function () {
         var root;
 
-        beforeEach(function () {
+        beforeEach(function (done) {
           results.resetFinishedFlag();
 
-          runs(function () {
-            config.loadTestData(testDataRoot);
-            Root.load({user:"username"})
-              .then(results.assignTo('root'))
-              .then(function () {
-                root = results.get('root');
-                config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
-                return root.find('order-with-single-item');
-              })
-              .then(results.assignTo('order'))
-              .then(function () {
-                return root.find('input-tube-1');
-              })
-              .then(results.assignTo('inputTube'))
-              .then(function () {
-                return root.find('output-tube-1');
-              })
-              .then(results.assignTo('outputTube'))
-              .then(results.expected)
-              .fail(results.unexpected);
-          });
-          waitsFor(results.hasFinished);
-
+          config.loadTestData(testDataRoot);
+          
+          Root.load({user:"username"})
+            .then(results.assignTo('root'))
+            .then(function () {
+              root = results.get('root');
+              config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
+              return root.find('order-with-single-item');
+            })
+            .then(results.assignTo('order'))
+            .then(function () {
+              return root.find('input-tube-1');
+            })
+            .then(results.assignTo('inputTube'))
+            .then(function () {
+              return root.find('output-tube-1');
+            })
+            .then(results.assignTo('outputTube'))
+            .then(results.expected)
+            .fail(results.unexpected)
+            .always(done);
 
         });
 
-        it("handles simple tube-to-tube transfer", function () {
-          runs(function () {
+        it("handles simple tube-to-tube transfer", function (done) {
+            
             results.resetFinishedFlag();
+            
             Operations.betweenLabware(root.actions.transfer_tubes_to_tubes, [
               function (operations, state) {
                 operations.push({
@@ -158,18 +152,21 @@ define([
                 });
                 return $.Deferred().resolve('Woot!').promise();
               }
-            ]).operation().done(results.expected).fail(results.unexpected);
-          })
-          waitsFor(results.hasFinished);
+            ])
+              .operation()
+              .then(results.expected)
+              .fail(results.unexpected)
+              .always(done);
 
         });
+
       });
 
       describe("stateManagement", function () {
         var root;
 
         _.chain({
-          'single input-output pair':function () {
+          'single input-output pair':function (done) {
             root.find('order-with-single-item')
               .then(results.assignTo('order'))
               .then(function () {
@@ -192,11 +189,12 @@ define([
               })
               .then(results.assignTo('wholeUpdate'))
               .then(results.expected)
-              .fail(results.unexpected);
+              .fail(results.unexpected)
+              .always(done);
 
           },
 
-          'single input-output pair setting batch':function () {
+          'single input-output pair setting batch':function (done) {
             root.find('order-with-single-item')
               .then(results.assignTo('order'))
               .then(function () {
@@ -219,12 +217,12 @@ define([
               })
               .then(results.assignTo('wholeUpdate'))
               .then(results.expected)
-              .fail(results.unexpected);
-
+              .fail(results.unexpected)
+              .always(done);
 
           },
 
-          'single order with multiple input-output pairs':function () {
+          'single order with multiple input-output pairs':function (done) {
             root.find('order-with-two-items')
               .then(results.assignTo('order'))
               .then(function () {
@@ -259,10 +257,11 @@ define([
               })
               .then(results.assignTo('wholeUpdate'))
               .then(results.expected)
-              .fail(results.unexpected);
+              .fail(results.unexpected)
+              .always(done);
           },
 
-          'multiple orders with multiple input-output pairs':function () {
+          'multiple orders with multiple input-output pairs':function (done) {
             root.find('order-with-single-item')
               .then(results.assignTo('single-order'))
               .then(function () {
@@ -313,12 +312,12 @@ define([
               })
               .then(results.assignTo('wholeUpdate'))
               .then(results.expected)
-              .fail(results.unexpected);
-
+              .fail(results.unexpected)
+              .always(done);
 
           },
 
-          'multiple orders with duplicated input-output pairs uniques updates':function () {
+          'multiple orders with duplicated input-output pairs uniques updates':function (done) {
             //results.resetFinishedFlag();
             root.find('order-with-single-item')
               .then(results.assignTo('single-order'))
@@ -378,76 +377,73 @@ define([
               })
               .then(results.assignTo('wholeUpdate'))
               .then(results.expected)
-              .fail(results.unexpected);
+              .fail(results.unexpected)
+              .always(done)
           }
         }).each(function (setup, name) {
             describe(name, function () {
               var state;
 
-              beforeEach(function () {
-                runs(function () {
-                  results.reset();
-                  config.loadTestData(testDataRoot);
-                  Root.load({user:"username"})
-                    .then(results.assignTo('root'))
-                    .then(function () {
-                      root = results.get('root');
-                      config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
-                    })
-                    .then(results.expected)
-                    .fail(results.unexpected);
-                });
+              beforeEach(function (done) {
 
-                waitsFor(results.hasFinished);
+                results.reset();
 
-
-                runs(function () {
-                  results.resetFinishedFlag();
-                  setup();
-                });
-                waitsFor(results.hasFinished);
-                runs(function () {
-                  state = results.get('wholeUpdate');
-                });
-              });
-
-              it("adds the output items during start", function () {
-                runs(function () {
-                  results.resetFinishedFlag();
-                  Operations.stateManagement()
-                    .start(state)
-                    .then(results.expected)
-                    .fail(results.unexpected);
-                });
-
-                waitsFor(results.hasFinished);
-
-                runs(function () {
-                  results.expectToBeCalled();
-                })
-
+                config.loadTestData(testDataRoot);
+                
+                Root.load({user:"username"})
+                  .then(results.assignTo('root'))
+                  .then(function () {
+                    root = results.get('root');
+                    config.cummulativeLoadingTestDataInFirstStage(testDataOrders);
+                  })
+                  .then(results.expected)
+                  .fail(results.unexpected)
+                  .always(done);
 
               });
 
-              it("updates both items during complete", function () {
-                runs(function () {
+              // another beforeEach
+              beforeEach(function(done) {
+                results.resetFinishedFlag();
+                setup(done);
+              });
+
+              // final beforeEach
+              beforeEach(function() {
+                state = results.get('wholeUpdate');
+              });
+
+              it("adds the output items during start", function (done) {
+
+                results.resetFinishedFlag();
+
+                Operations.stateManagement()
+                  .start(state)
+                  .then(results.expected)
+                  .fail(results.unexpected)
+                  .always(function() {
+                    results.expectToBeCalled();
+                    done();
+                  })
+                
+              });
+
+              it("updates both items during complete", function (done) {
+
                   results.resetFinishedFlag();
+
                   Operations.stateManagement()
                     .complete(state)
                     .then(results.expected)
-                    .fail(results.unexpected);
-                });
-
-                waitsFor(results.hasFinished);
-
-                runs(function () {
-                  results.expectToBeCalled();
-                });
+                    .fail(results.unexpected)
+                    .always(function() {
+                      results.expectToBeCalled();
+                      done()
+                    });
               });
             });
           });
       });
     });
   });
-})
-;
+});

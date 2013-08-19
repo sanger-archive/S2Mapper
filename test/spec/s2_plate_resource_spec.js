@@ -5,15 +5,15 @@ define([
 ], function (TestHelper, config, PlateResource) {
   'use strict';
 
-  TestHelper(function (results) {
+  TestHelper(function (results) {;
     describe("Plate Resource:-", function () {
       results.lifeCycle();
       it("should be labellable", function () {
-        expect(PlateResource.instantiate({rawJson: {actions: {}}}).labelWith).toBeDefined()
+        expect(PlateResource.instantiate({rawJson: {actions: {}}}).labelWith).to.be.defined;
       });
 
       it("is 'batchable'.", function () {
-        expect(PlateResource.instantiate({rawJson: {actions: {}}}).order).toBeDefined();
+        expect(PlateResource.instantiate({rawJson: {actions: {}}}).order).to.be.defined;
       })
     });
   });
