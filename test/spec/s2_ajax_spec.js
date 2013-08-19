@@ -65,57 +65,45 @@ define([
 
         // We can only access the response object through a side effect.
         var s2root, expectedResponse;
-        it('returns an object', function () {
+        it('returns an object', function (done) {
           var s2root, expectedResponse;
 
-          runs(function () {
-            config.loadTestData(rootTestJson);
-            config.cummulativeLoadingTestDataInFirstStage(ajaxTestJson);
-            expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
-            config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
-            config.url = config.testData[config.defaultStage]["calls"][0].url;
-            config.params = config.testData[config.defaultStage]["calls"][0].request;
+          config.loadTestData(rootTestJson);
+          config.cummulativeLoadingTestDataInFirstStage(ajaxTestJson);
+          expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
+          config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
+          config.url = config.testData[config.defaultStage]["calls"][0].url;
+          config.params = config.testData[config.defaultStage]["calls"][0].request;
 
-            s2ajax.send(config.method, config.url, config.params)
-                .then(function (response) {
-                  s2root = response.responseText;
-                })
-                .then(results.expected)
-                .fail(results.unexpected);
-          });
-
-          waitsFor(results.hasFinished);
-
-          runs(function () {
-            expect(s2root).toBeDefined();
-          });
+          s2ajax.send(config.method, config.url, config.params)
+            .then(function (response) {
+              s2root = response.responseText;
+              expect(s2root).to.be.defined;
+            })
+            .fail(results.unexpected)
+            .always(done);
+            
         });
 
-        it('returns an object containing searches', function () {
+        it('returns an object containing searches', function (done) {
           var s2root, expectedResponse;
 
-          runs(function () {
-            config.loadTestData(rootTestJson);
-            config.cummulativeLoadingTestDataInFirstStage(ajaxTestJson);
-            results.resetFinishedFlag();
-            expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
-            config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
-            config.url = config.testData[config.defaultStage]["calls"][0].url;
-            config.params = config.testData[config.defaultStage]["calls"][0].request;
+          config.loadTestData(rootTestJson);
+          config.cummulativeLoadingTestDataInFirstStage(ajaxTestJson);
+          results.resetFinishedFlag();
+          expectedResponse = config.testData[config.defaultStage]["calls"][0].response;
+          config.method = getActionMethod(config.testData[config.defaultStage]["calls"][0]);
+          config.url = config.testData[config.defaultStage]["calls"][0].url;
+          config.params = config.testData[config.defaultStage]["calls"][0].request;
 
-            s2ajax.send(config.method, config.url, config.params)
-                .then(function (response) {
-                  s2root = response.responseText;
-                })
-                .then(results.expected)
-                .fail(results.unexpected);
-          });
+          s2ajax.send(config.method, config.url, config.params)
+              .then(function (response) {
+                s2root = response.responseText;
+                expect(s2root["laboratory-searches"]).to.be.defined;
+              })
+              .fail(results.unexpected)
+              .always(done);
 
-          waitsFor(results.hasFinished);
-
-          runs(function () {
-            expect(s2root["laboratory-searches"]).toBeDefined();
-          });
         });
       });
 

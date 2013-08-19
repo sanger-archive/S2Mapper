@@ -19,55 +19,51 @@ define([
       describe("orders & items : ", function () {
         var batch;
 
-        beforeEach(function () {
+        beforeEach(function (done) {
           config.loadTestData(dataForOrder);
-          runs(function () {
-            Root.load({user:"username"})
-                .then(results.assignTo('root'))
-                .then(function () {
-                  s2 = results.get('root');
-                })
-                .then(function () {
-                  return s2.find("batch_UUID");
-                })
-                .then(results.assignTo('batch'))
-                .then(function () {
-                  batch = results.get('batch');
-                })
-                .then(results.expected)
-                .fail(results.unexpected);
-          });
-          waitsFor(results.hasFinished);
+          
+          Root.load({user:"username"})
+            .then(results.assignTo('root'))
+            .then(function () {
+              s2 = results.get('root');
+            })
+            .then(function () {
+              return s2.find("batch_UUID");
+            })
+            .then(results.assignTo('batch'))
+            .then(function () {
+              batch = results.get('batch');
+            })
+            .then(results.expected)
+            .fail(results.unexpected)
+            .always(done);
+
         });
 
-        it("yields the orders found", function () {
+        it("yields the orders found", function (done) {
           results.resetFinishedFlag();
-          runs(function () {
-            batch.orders.then(results.assignTo('orders'))
-                .then(results.expected)
-                .fail(results.unexpected);
-          });
 
-          waitsFor(results.hasFinished);
+          batch.orders.then(results.assignTo('orders'))
+            .then(function() {
+              results.expected();
+              expect(results.get('orders').length).to.equal(2);
+            })
+            .fail(results.unexpected)
+            .always(done);
 
-          runs(function () {
-            expect(results.get('orders').length).toBe(2);
-          });
         });
 
-        it("yields all the items in the batch, from all the orders", function () {
+        it("yields all the items in the batch, from all the orders", function (done) {
           results.resetFinishedFlag();
-          runs(function () {
-            batch.items.then(results.assignTo('items'))
-                .then(results.expected)
-                .fail(results.unexpected);
-          });
 
-          waitsFor(results.hasFinished);
+          batch.items.then(results.assignTo('items'))
+            .then(function() {
+              results.expected();
+              expect(results.get('items').length).to.equal(3);
+            })
+            .fail(results.unexpected)
+            .always(done);
 
-          runs(function () {
-            expect(results.get('items').length).toBe(3);
-          });
         });
       });
 
@@ -77,16 +73,15 @@ define([
         });
 
         it("is new", function () {
-          expect(results.batch.isNew).toBe(true);
+          expect(results.batch.isNew).to.equal(true);
         });
 
         it("throws exception on save", function () {
-          spyOn(results.batch, "update");
-          expect(results.batch.save).toThrow();
+          expect(results.batch.save).to.throw();
         });
 
         it("has root element set", function () {
-          expect(results.batch.root).toBeDefined();
+          expect(results.batch.root).to.be.defined;
         });
       });
 
@@ -97,41 +92,44 @@ define([
         var tube1;
         var batch;
 
-        beforeEach(function () {
-          runs(function () {
-            config.loadTestData(dataForBatchOneTube);
-            Root.load({user:"username"})
-                .then(results.assignTo('root'))
-                .then(function () {
-                  s2 = results.get('root');
-                })
-                .then(function () {
-                  return s2.tubes.findByEan13Barcode('tube1_BC')
-                })
-                .then(function (tube) {
-                  tube1 = tube;
-                }).then(function () {
-                  return tube1.order();
-                })
-                .then(function (theOrder) {
-                  order = theOrder;
-                  // We need to make sure that the order we get is always the
-                  // one we are spying on
-//                  spyOn(tube1, "order").andReturn(order);
-                  batch = s2.batches.new({
-                    resources:[ tube1 ]
-                  });
-                  spyOn(order, "update").andCallThrough();
-                })
-                .then(results.expected)
-                .fail(results.unexpected);
+        beforeEach(function (done) {
+          config.loadTestData(dataForBatchOneTube);
 
-          });
-          waitsFor(results.hasFinished);
+          Root.load({user:"username"})
+              .then(results.assignTo('root'))
+              .then(function () {
+                s2 = results.get('root');
+              })
+              .then(function () {
+                return s2.tubes.findByEan13Barcode('tube1_BC')
+              })
+              .then(function (tube) {
+                tube1 = tube;
+              }).then(function () {
+                return tube1.order();
+              })
+              .then(function (theOrder) {
+                order = theOrder;
+                // We need to make sure that the order we get is always the
+                // one we are spying on
+//                  spyOn(tube1, "order").andReturn(order);
+                batch = s2.batches.new({
+                  resources:[ tube1 ]
+                });
+                sinon.spy(order, "update");
+              })
+              .then(results.expected)
+              .fail(results.unexpected)
+              .always(done);
+
+        });
+
+        afterEach(function() {
+          order.update.restore();
         });
 
         it("has one item", function () {
-          expect(batch.resources.length).toBe(1);
+          expect(batch.resources.length).to.equal(1);
         });
 
         describe("saving", function () {
@@ -140,34 +138,33 @@ define([
 
           var savingPromise;
 
-          beforeEach(function () {
+          beforeEach(function (done) {
             results.resetFinishedFlag();
-            runs(function () {
+          
+            sinon.spy(s2.batches, "create");
+            sinon.spy(config, "ajax");
 
-              spyOn(s2.batches, "create").andCallThrough();
-              spyOn(config, "ajax").andCallThrough();
-              batch.save().
-                  then(function (batch) {
-                    savedBatch = batch;
-                  })
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-            waitsFor(results.hasFinished);
+            batch.save().
+              then(function (batch) {
+                savedBatch = batch;
+              })
+              .then(results.expected)
+              .fail(results.unexpected)
+              .always(done);
+          });
 
+          afterEach(function() {
+            s2.batches.create.restore();
+            config.ajax.restore();
           });
 
           it("creates a new batch", function () {
-            runs(function () {
-              expect(s2.batches.create).toHaveBeenCalledWith({user:"username"});
-            });
+            expect(s2.batches.create).to.have.been.calledWith({user:"username"});
           });
 
           it("sets the uuid of the saved batch", function () {
-            runs(function () {
-              expect(savedBatch).toBeDefined();
-              expect(savedBatch.uuid).toBe(expectedBatchUuid);
-            });
+            expect(savedBatch).to.be.defined;
+            expect(savedBatch.uuid).to.equal(expectedBatchUuid);
           });
 
           it("calls update on each order correctly", function () {
@@ -177,9 +174,8 @@ define([
               headers:{"Content-Type":'application/json'},
               data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
             };
-            runs(function () {
-              expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
-            });
+
+            expect(config.ajax).to.have.been.calledWith(expectedOptions);
           });
 
         });
@@ -191,86 +187,92 @@ define([
             order1, order2,
             tube1, tube2;
 
-        beforeEach(function () {
+        beforeEach(function (done) {
 
-//          mockOrderPromise1 = $.Deferred();
-//          mockOrderPromise2 = $.Deferred();
+          results.resetFinishedFlag();
 
-          runs(function () {
-            results.resetFinishedFlag();
-            config.loadTestData(dataForBatchTwoTubes);
-            Root.load({user:"username"})
-                .then(results.assignTo('root'))
-                .then(function () {
-                  s2 = results.get('root');
-                  return s2.tubes.findByEan13Barcode('tube1_BC');
-                })
-                .then(function (tube) {
-                  tube1 = tube;
-                  return tube1.order();
-                })
-                .then(function (theOrder) {
-                  order1 = theOrder;
-                  return s2.tubes.findByEan13Barcode('tube2_BC');
-                })
-                .then(function (tube) {
-                  tube2 = tube;
-                  return tube2.order();
-                })
-                .then(function (theOrder2) {
-                  order2 = theOrder2;
+          config.loadTestData(dataForBatchTwoTubes);
 
-                  batch = s2.batches.new({
-                    resources:[tube1, tube2]
-                  });
+          Root.load({user:"username"})
+              .then(results.assignTo('root'))
+              .then(function () {
+                s2 = results.get('root');
+                return s2.tubes.findByEan13Barcode('tube1_BC');
+              })
+              .then(function (tube) {
+                tube1 = tube;
+                return tube1.order();
+              })
+              .then(function (theOrder) {
+                order1 = theOrder;
+                return s2.tubes.findByEan13Barcode('tube2_BC');
+              })
+              .then(function (tube) {
+                tube2 = tube;
+                return tube2.order();
+              })
+              .then(function (theOrder2) {
+                order2 = theOrder2;
 
-                  spyOn(order1, "update").andCallThrough();
-                  spyOn(order2, "update").andCallThrough();
+                batch = s2.batches.new({
+                  resources:[tube1, tube2]
+                });
 
-                })
-                .then(results.expected)
-                .fail(results.unexpected);
-          });
-          waitsFor(results.hasFinished);
+                sinon.spy(order1, "update");
+                sinon.spy(order2, "update");
+
+              })
+              .then(results.expected)
+              .fail(results.unexpected)
+              .always(done);
 
         });
 
+        afterEach(function() {
+          order1.update.restore();
+          order2.update.restore();
+        })
+
         it("can find first and second tubes", function () {
-          expect(tube1).toBeDefined();
-          expect(tube2).toBeDefined();
+          expect(tube1).to.be.defined;
+          expect(tube2).to.be.defined;
         });
 
         it("has two items", function () {
-          expect(batch.resources.length).toBe(2);
+          expect(batch.resources.length).to.equal(2);
         });
 
-        it(", both of the same order (making sure the test data are correct)", function () {
+        it(", both of the same order (making sure the test data are correct)", function (done) {
           $.when(order1, order2).then(function () {
-            expect(order1.uuid).toEqual(order2.uuid);
+            expect(order1.uuid).to.equal(order2.uuid);
+            done()
           });
-
         });
 
         describe("saving", function () {
           var expectedBatchUuid = "batch_UUID",
               savedBatch;
 
-          beforeEach(function () {
-            runs(function () {
-              results.resetFinishedFlag();
+          beforeEach(function (done) {
+            results.resetFinishedFlag();
 
-              spyOn(s2.batches, "create").andCallThrough();
-              spyOn(config, "ajax").andCallThrough();
-              batch.save().
-                  then(function (batch) {
-                    savedBatch = batch;
-                  })
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-            waitsFor(results.hasFinished);
+            sinon.spy(s2.batches, "create");
+            sinon.spy(config, "ajax");
+
+            batch.save().
+              then(function (batch) {
+                savedBatch = batch;
+              })
+              .then(results.expected)
+              .fail(results.unexpected)
+              .always(done);
 
           });
+
+          afterEach(function() {
+            s2.batches.create.restore();
+            config.ajax.restore();
+          })
 
           it("creates a new batch", function () {
             var expectedOptions = {type:"POST",
@@ -279,16 +281,13 @@ define([
               headers:{"Content-Type":'application/json'},
               data:'{"batch":{"user":"username"}}'
             };
-            runs(function () {
-              expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
-            });
+
+            expect(config.ajax).to.have.been.calledWith(expectedOptions);
           });
 
           it("sets the uuid of the saved batch", function () {
-            runs(function () {
-              expect(savedBatch).toBeDefined();
-              expect(savedBatch.uuid).toBe(expectedBatchUuid);
-            });
+            expect(savedBatch).to.be.defined;
+            expect(savedBatch.uuid).to.equal(expectedBatchUuid);
           });
 
           it("calls update on each order correctly (which means only one here)", function () {
@@ -298,9 +297,8 @@ define([
               headers:{"Content-Type":'application/json'},
               data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"},"tube2_UUID":{"batch_uuid":"batch_UUID"}}}}'
             };
-            runs(function () {
-              expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
-            });
+
+            expect(config.ajax).to.have.been.calledWith(expectedOptions);
           });
         });
 
@@ -312,81 +310,83 @@ define([
             order1, order2,
             tube1, tube2;
 
-        beforeEach(function () {
+        beforeEach(function (done) {
 
           config.loadTestData(dataForBatchOneTubeOneOrderWithTwoTubes);
-          runs(function () {
-            Root.load({user:"username"})
-                .then(results.assignTo('root'))
-                .then(function () {
-                  s2 = results.get('root');
-                  return s2.tubes.findByEan13Barcode('tube1_BC')
-                })
-                .then(function (tube) {
-                  tube1 = tube;
-                  return tube1.order();
-                })
-                .then(function (theOrder) {
-                  order1 = theOrder;
-                  return s2.tubes.findByEan13Barcode('tube2_BC');
-                })
-                .then(function (atube) {
-                  tube2 = atube;
-                  return tube2.order();
-                }).then(function (theOrder2) {
-                  order2 = theOrder2;
-                  // there's only one tube in the batch !
-                  batch = s2.batches.new({
-                    resources:[tube1]
-                  });
+          
+          Root.load({user:"username"})
+            .then(results.assignTo('root'))
+            .then(function () {
+              s2 = results.get('root');
+              return s2.tubes.findByEan13Barcode('tube1_BC')
+            })
+            .then(function (tube) {
+              tube1 = tube;
+              return tube1.order();
+            })
+            .then(function (theOrder) {
+              order1 = theOrder;
+              return s2.tubes.findByEan13Barcode('tube2_BC');
+            })
+            .then(function (atube) {
+              tube2 = atube;
+              return tube2.order();
+            }).then(function (theOrder2) {
+              order2 = theOrder2;
+              // there's only one tube in the batch !
+              batch = s2.batches.new({
+                resources:[tube1]
+              });
 
-                  spyOn(order1, "update").andCallThrough();
-                  spyOn(order2, "update").andCallThrough();
-                })
-                .then(results.expected)
-                .fail(results.unexpected);
-          });
-          waitsFor(results.hasFinished);
-
+              sinon.spy(order1, "update");
+              sinon.spy(order2, "update");
+            })
+            .then(results.expected)
+            .fail(results.unexpected)
+            .always(done);
         });
 
+        afterEach(function() {
+          order1.update.restore();
+          order2.update.restore();
+        })
+
         it("can find first and second tubes", function () {
-          runs(function () {
-            expect(tube1).toBeDefined();
-            expect(tube2).toBeDefined();
-          });
+          expect(tube1).to.be.defined;
+          expect(tube2).to.be.defined;
         });
 
         it("has one item", function () {
-          runs(function () {
-            expect(batch.resources.length).toBe(1);
-          });
+          expect(batch.resources.length).to.equal(1);
         });
 
         it(", both tube of the same order (making sure the test data are correct)", function () {
-          runs(function () {
-            expect(order1.uuid).toEqual(order2.uuid);
-          });
+          expect(order1.uuid).to.equal(order2.uuid);
         });
 
         describe("saving", function () {
           var expectedBatchUuid = "batch_UUID",
               savedBatch;
 
-          beforeEach(function () {
-            runs(function () {
-              results.resetFinishedFlag();
-              spyOn(s2.batches, "create").andCallThrough();
-              spyOn(config, "ajax").andCallThrough();
-              batch.save()
-                  .then(function (batch) {
-                    savedBatch = batch;
-                  })
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-            waitsFor(results.hasFinished);
+          beforeEach(function (done) {
+            results.resetFinishedFlag();
+            
+            sinon.spy(s2.batches, "create");
+            sinon.spy(config, "ajax");
+            
+            batch.save()
+              .then(function (batch) {
+                savedBatch = batch;
+              })
+              .then(results.expected)
+              .fail(results.unexpected)
+              .always(done);
           });
+
+          afterEach(function() {
+            s2.batches.create.restore();
+            config.ajax.restore();
+          }) 
 
           it("creates a new batch", function () {
             var expectedOptions = {type:"POST",
@@ -395,16 +395,13 @@ define([
               headers:{"Content-Type":'application/json'},
               data:'{"batch":{"user":"username"}}'
             };
-            runs(function () {
-              expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
-            });
+            
+            expect(config.ajax).to.have.been.calledWith(expectedOptions);
           });
 
           it("sets the uuid of the saved batch", function () {
-            runs(function () {
-              expect(savedBatch).toBeDefined();
-              expect(savedBatch.uuid).toBe(expectedBatchUuid);
-            });
+            expect(savedBatch).to.be.defined;
+            expect(savedBatch.uuid).to.equal(expectedBatchUuid);
           });
 
           it("calls update on one order correctly (which means only one call here, with only one tube)", function () {
@@ -414,9 +411,8 @@ define([
               headers:{"Content-Type":'application/json'},
               data:'{"user":"username","items":{"tube_to_be_extracted":{"tube1_UUID":{"batch_uuid":"batch_UUID"}}}}'
             };
-            runs(function () {
-              expect(config.ajax).toHaveBeenCalledWith(expectedOptions);
-            });
+
+            expect(config.ajax).to.have.been.calledWith(expectedOptions);
           });
 
         });
@@ -426,41 +422,45 @@ define([
               savedBatch,
               tubesByOrders;
 
-          beforeEach(function () {
-            runs(function () {
+          beforeEach(function (done) {
               results.resetFinishedFlag();
-              spyOn(s2.batches, "create").andCallThrough();
-              spyOn(config, "ajax").andCallThrough();
+              
+              sinon.spy(s2.batches, "create");
+              sinon.spy(config, "ajax");
+              
               batch.save()
-                  .then(function (resultbatch) {
-                    savedBatch = resultbatch;
-                    return savedBatch.items;
-                  })
-                  .then(function (items) {
-                    return savedBatch.getItemsGroupedByOrders();
-                  })
-                  .then(function (result) {
-                    tubesByOrders = result;
-                  })
-                  .then(results.expected)
-                  .fail(results.unexpected);
-            });
-            waitsFor(results.hasFinished);
+                .then(function (resultbatch) {
+                  savedBatch = resultbatch;
+                  return savedBatch.items;
+                })
+                .then(function (items) {
+                  return savedBatch.getItemsGroupedByOrders();
+                })
+                .then(function (result) {
+                  tubesByOrders = result;
+                })
+                .then(results.expected)
+                .fail(results.unexpected)
+                .always(done);
+
           });
 
-          it("finds the correct 'tubes by orders'", function () {
-            runs(function () {
-              expect(tubesByOrders["order1_UUID"]).toBeDefined();
-              expect(tubesByOrders["order1_UUID"].items.length).toEqual(2);
-              expect(tubesByOrders["order1_UUID"].items[0].uuid).toBeDefined();
+          afterEach(function() {
+            s2.batches.create.restore();
+            config.ajax.restore();
+          })
 
-              if (tubesByOrders["order1_UUID"].items[0].uuid == "tube1_UUID") {
-                expect(tubesByOrders["order1_UUID"].items[1].uuid).toEqual("tube2_UUID");
-              } else {
-                expect(tubesByOrders["order1_UUID"].items[0].uuid).toEqual("tube2_UUID");
-                expect(tubesByOrders["order1_UUID"].items[1].uuid).toEqual("tube1_UUID");
-              }
-            });
+          it("finds the correct 'tubes by orders'", function () {
+            expect(tubesByOrders["order1_UUID"]).to.be.defined;
+            expect(tubesByOrders["order1_UUID"].items.length).to.equal(2);
+            expect(tubesByOrders["order1_UUID"].items[0].uuid).to.be.defined;
+
+            if (tubesByOrders["order1_UUID"].items[0].uuid == "tube1_UUID") {
+              expect(tubesByOrders["order1_UUID"].items[1].uuid).to.equal("tube2_UUID");
+            } else {
+              expect(tubesByOrders["order1_UUID"].items[0].uuid).to.equal("tube2_UUID");
+              expect(tubesByOrders["order1_UUID"].items[1].uuid).to.equal("tube1_UUID");
+            }
           });
 
         });

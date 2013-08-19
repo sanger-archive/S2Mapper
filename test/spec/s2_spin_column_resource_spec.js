@@ -10,11 +10,11 @@ define([
       results.lifeCycle();
 
       it("should be labellable", function () {
-        expect(SpinColumnResource.instantiate({rawJson: {actions: {}}}).labelWith).toBeDefined()
+        expect(SpinColumnResource.instantiate({rawJson: {actions: {}}}).labelWith).to.be.defined
       });
 
       it("is 'batchable'.", function () {
-        expect(SpinColumnResource.instantiate({rawJson: {actions: {}}}).order).toBeDefined();
+        expect(SpinColumnResource.instantiate({rawJson: {actions: {}}}).order).to.be.defined;
       })
     });
   });
