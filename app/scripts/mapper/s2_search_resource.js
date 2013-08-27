@@ -25,6 +25,31 @@ define([
   }
 
   $.extend(SearchResource, {
+    labellableHandling: function(searchBody) {
+      var root    = this.root;
+      var search  = this;
+
+
+      function handler(resultDeferred) {
+        return function(response) {
+          if (response.responseText.size === 0){
+            return resultDeferred.reject(resultDeferred,'Barcode not found');
+          }
+
+          search
+          .root
+          .find(response.responseText.labellables[0].name)
+          .then(resultDeferred.resolve);
+
+          return resultDeferred;
+        };
+      };
+
+      return search.create(searchBody).then(function (searchResult) {
+        return searchResult.first(undefined, handler);
+      });
+    },
+
     handling: function(resultModel) {
       var root    = this.root;
       var search  = this;
@@ -80,3 +105,4 @@ define([
 
   return SearchResource;
 });
+

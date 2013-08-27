@@ -12,7 +12,11 @@ define([ 'resource_test_helper'
 
       var s2, samplePromise;
 
-      describe("Searching for a sample by EAN13 barcode,", function () {
+      // Pending: you can't search for a sample by EAN13 as it's not
+      // labware.
+      // find(UUID) should work it needs to be updated to use
+      // lims-management for searches not lims-laboratory.
+      xdescribe("Searching for a sample by EAN13 barcode,", function () {
 
         describe("and the sample IS on the system,", function () {
 
@@ -30,8 +34,7 @@ define([ 'resource_test_helper'
               })
               .then(function(result) {
                 self.sample = result;
-              })
-              .fail(results.unexpected)
+              },results.unexpected)
               .always(done);
 
           });

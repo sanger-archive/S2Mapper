@@ -153,7 +153,7 @@ define(['text!mapper_testjson/unit/empty_search.json'], function (emptySearch) {
     // commented out below is synchronous, sending immediately; the other is asynchronous, and so behaves
     // more like talking to a real system.
 //    sendResponse: function(callback) { callback(); },
-    sendResponse: function(callback) { setTimeout(callback, 100); },
+    sendResponse: function(callback) { setTimeout(callback, 1); },
 
     ajax:function (originalAjaxCall) {
       var fakeAjaxDeferred = $.Deferred();

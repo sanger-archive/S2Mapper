@@ -1,30 +1,28 @@
 define([
-       'config',
-       'mapper/s2_ajax',
-       'mapper/resources',
-       'mapper/support/pluralization'
+  "config",
+  "mapper/s2_ajax",
+  "mapper/resources",
+  "mapper/support/pluralization"
 ], function(config, S2Ajax, Resources) {
-  'use strict';
+  "use strict";
 
   // register resources with root.
-  var s2_ajax = new S2Ajax();
+  var s2ajax = new S2Ajax();
 
   var S2Root = Object.create(null);
 
   function resourceProcessor(rootInstance, resourceDeferred, resourceType) {
-    return function(response){
-      var resource = resourceClassFrom(resourceType,response, rootInstance).instantiate({ rawJson: response.responseText });
-      resourceDeferred.resolve(resource);
-    }
-  }
 
-  function resourceClassFrom(resourceType, response, rootInstance) {
-    var resource_type  = resourceType || Object.keys(response.responseText)[0];
-    return rootInstance[resource_type.pluralize()] || rootInstance.actions[resource_type.pluralize()];
+    return function(response){
+      var resourceClass = Object.keys(response.responseText)[0].pluralize();
+
+      var resource = rootInstance[resourceClass].instantiate({ rawJson: response.responseText });
+      return resourceDeferred.resolve(resource);
+    };
   }
 
   function ajaxErrorHandler(resourceDeferred){
-    return function(jqXHR, textStatus, errorThrown){
+    return function(jqXHR){
       return resourceDeferred.reject(jqXHR);
     };
 
@@ -34,24 +32,45 @@ define([
   function S2RootInstance() { }
   $.extend(S2RootInstance.prototype, {
     find: function(uuid){
-      return this.retrieve({ uuid: uuid });
+      return this.retrieve({
+        uuid: uuid,
+        s2AppUrl: 'lims-laboratory'
+      });
+    },
+
+    findByLabEan13: function(ean13){
+      var searchBody = {
+        "user":        this.user,
+        "description": "search for barcoded labellable",
+        "model":       "labellable",
+        "criteria": {
+          "type":        "resource",
+          "label": {
+            "position":  "barcode",
+            "type":      "ean13-barcode",
+            "value":     ean13
+          }
+        }
+      };
+
+      return this.laboratorySearches.labellableHandling(searchBody);
     },
 
     retrieve: function(options) {
       var resourceDeferred = $.Deferred();
-      var s2AppUrl         = options.s2AppUrl ?  config.apiUrl + '/' +options.s2AppUrl : config.apiUrl;
-      var url              = options.uuid? (s2AppUrl+'/'+options.uuid) : options.url;
+
+      var s2AppUrl         = options.s2AppUrl ?  config.apiUrl + options.s2AppUrl : config.apiUrl;
+      var url              = options.uuid? (s2AppUrl+"/"+options.uuid) : options.url;
       var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred, options.resourceType);
 
-      var ajax = s2_ajax.send(
-        options.sendAction || 'read',
+      var ajax = s2ajax.send(
+        options.sendAction || "read",
         url,
         options.data || null
       );
 
       ajax.done(ajaxProcessor).fail(ajaxErrorHandler(resourceDeferred));
 
-      // Calling promise makes the deferred object readonly
       return resourceDeferred.promise();
     }
   });
@@ -59,16 +78,11 @@ define([
   // Builds a root instance from the root JSON, ensuring that all of the resource types are
   // appropriately setup.
   function processRootJson(response){
-    return _.chain(response.responseText)
-            .pairs()
-            .map(buildResourceDetails)                // Build the details of resource types to create
-            .reduce(createResourceType, $.extend(new S2RootInstance(), {actions:{}})) // Create the individual resource types
-            .value();
-
     // Handles creating the appropriate resource type from the entry in the root JSON
     function createResourceType(root, details) {
-      if (typeof details.json === 'object') {
-        var json = {}; json[details.name] = details.json;
+      if (typeof details.json === "object") {
+        var json = {};
+        json[details.name] = details.json;
 
         details.nesting(root)[details.name] = $.extend(
           Resources.base.instantiate({ root: root, rawJson: json }),
@@ -93,6 +107,13 @@ define([
         nesting:nester
       };
     }
+
+    return _.chain(response.responseText)
+    .pairs()
+    .map(buildResourceDetails)                // Build the details of resource types to create
+    .reduce(createResourceType, $.extend(new S2RootInstance(), {actions:{}})) // Create the individual resource types
+    .value();
+
   }
 
   var classMethods = {
@@ -100,7 +121,7 @@ define([
       var rootDeferred = $.Deferred();
 
       // Make a call for the S2 root...
-      s2_ajax.send('read', config.apiUrl).done(function(response){
+      s2ajax.send("read", config.apiUrl).done(function(response){
         var rootInstance = processRootJson(response);
         rootInstance.user = options.user;
         rootDeferred.resolve(rootInstance);
