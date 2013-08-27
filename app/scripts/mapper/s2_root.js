@@ -12,15 +12,13 @@ define([
   var S2Root = Object.create(null);
 
   function resourceProcessor(rootInstance, resourceDeferred, resourceType) {
-    return function(response){
-      var resource = resourceClassFrom(resourceType,response, rootInstance).instantiate({ rawJson: response.responseText });
-      resourceDeferred.resolve(resource);
-    };
-  }
 
-  function resourceClassFrom(rType, response, rootInstance) {
-    var resourceType  = rType || Object.keys(response.responseText)[0];
-    return rootInstance[resourceType.pluralize()] || rootInstance.actions[resourceType.pluralize()];
+    return function(response){
+      var resourceClass = Object.keys(response.responseText)[0].pluralize();
+
+      var resource = rootInstance[resourceClass].instantiate({ rawJson: response.responseText });
+      return resourceDeferred.resolve(resource);
+    };
   }
 
   function ajaxErrorHandler(resourceDeferred){
@@ -34,12 +32,34 @@ define([
   function S2RootInstance() { }
   $.extend(S2RootInstance.prototype, {
     find: function(uuid){
-      return this.retrieve({ uuid: uuid });
+      return this.retrieve({
+        uuid: uuid,
+        s2AppUrl: 'lims-laboratory'
+      });
+    },
+
+    findByLabEan13: function(ean13){
+      var searchBody = {
+        "user":        this.user,
+        "description": "search for barcoded labellable",
+        "model":       "labellable",
+        "criteria": {
+          "type":        "resource",
+          "label": {
+            "position":  "barcode",
+            "type":      "ean13-barcode",
+            "value":     ean13
+          }
+        }
+      };
+
+      return this.laboratorySearches.labellableHandling(searchBody);
     },
 
     retrieve: function(options) {
       var resourceDeferred = $.Deferred();
-      var s2AppUrl         = options.s2AppUrl ?  config.apiUrl + "/" +options.s2AppUrl : config.apiUrl;
+
+      var s2AppUrl         = options.s2AppUrl ?  config.apiUrl + options.s2AppUrl : config.apiUrl;
       var url              = options.uuid? (s2AppUrl+"/"+options.uuid) : options.url;
       var ajaxProcessor    = options.resourceProcessor? options.resourceProcessor(resourceDeferred) : resourceProcessor(this, resourceDeferred, options.resourceType);
 
@@ -51,7 +71,6 @@ define([
 
       ajax.done(ajaxProcessor).fail(ajaxErrorHandler(resourceDeferred));
 
-      // Calling promise makes the deferred object readonly
       return resourceDeferred.promise();
     }
   });
