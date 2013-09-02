@@ -10,6 +10,7 @@ define([], function(){
       return options;
     });
   }
+
   function actionChangesState(name, dataHandler) {
     dataHandler = dataHandler || function(data) { return data; }
     return actionHelper(name, function(options, sendData) {
@@ -18,6 +19,7 @@ define([], function(){
       return options
     });
   }
+
   function actionHelper(name, setup) {
     return function(sendData, resourceProcessor, options) {
       var actionUrl = this.actions[name];
@@ -39,6 +41,8 @@ define([], function(){
         resourceType:       this.resourceType
       }, options || {});
 
+      $.extend(sendData, this.creationTemplate);
+
       return this.root.retrieve(setup.apply(this, [data, sendData]));
     };
   }
@@ -55,6 +59,7 @@ define([], function(){
       var d = {}; d[key] = data;
       return d;
     }),
+
     read:   actionIsIdempotent('read'),
     update: actionChangesState('update'),
     delete: actionChangesState('delete'),
