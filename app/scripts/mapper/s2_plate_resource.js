@@ -5,13 +5,25 @@ define([
 ], function(BaseResource, LabelingModule, BatchableModule){
   'use strict';
 
-  var Plate = BaseResource.extendAs('plate', function(gelInstance, options) {
-    $.extend(gelInstance, instanceMethods);
-    $.extend(gelInstance, LabelingModule);
-    return gelInstance;
+  var Plate = BaseResource.extendAs('plate', function(plateInstance, options) {
+    $.extend(plateInstance, batchableMethods);
+    $.extend(plateInstance, LabelingModule);
+    $.extend(plateInstance, instanceMethods);
+    return plateInstance;
   });
+
   Plate.resourceType = 'plate';
-  var instanceMethods = BatchableModule(Plate.resourceType);
+
+  // This makes the assumptions that plates are 96 well.  This will need to
+  // change as we add support for 384 wells, etc.
+  Plate.creationTemplate = {
+    "number_of_rows":    8,
+    "number_of_columns": 12
+  };
+
+  var batchableMethods = BatchableModule(Plate.resourceType);
+
+  var instanceMethods = { };
 
   return Plate;
 });
