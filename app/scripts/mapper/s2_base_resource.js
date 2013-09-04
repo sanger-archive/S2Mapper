@@ -119,10 +119,11 @@ define([], function(){
     constructor: function(instance) { return instance; },
 
     instantiate: function(opts){
-      var options           = $.extend({}, opts);
-      var rawJson           = options.rawJson;
-      var resourceInstance  = Object.create({ isNew: true });
-      resourceInstance.root = this.root || options.root;
+      var options                        = $.extend({}, opts);
+      var rawJson                        = options.rawJson;
+      var resourceInstance               = Object.create({ isNew: true });
+      resourceInstance.root              = this.root || options.root;
+      resourceInstance.transferBehaviour = this.transferBehaviour;
 
       if (rawJson !== undefined){
         resourceInstance.isNew        = false;
@@ -131,7 +132,6 @@ define([], function(){
       } else {
         resourceInstance.rawJson           = {};
         resourceInstance.resourceType      = this.resourceType;
-        resourceInstance.transferBehaviour = this.transferBehaviour;
         resourceInstance.rawJson[resourceInstance.resourceType] = {};
       }
 
