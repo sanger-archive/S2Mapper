@@ -1,19 +1,19 @@
-define(['mapper/s2_base_resource'], function(BaseResource) {
-  'use strict';
+define(["mapper/s2_base_resource"], function(BaseResource) {
+  "use strict";
 
   var transferModels = _.chain({
-    'transfer_plates_to_plates': function(details) {
+    "transfer_plates_to_plates": function(details) {
       return {
         fraction:        details.fraction,
         aliquot_type:    details.aliquot_type,
         source_uuid:     details.input.resource.uuid,
-        source_location: details.input.location,
+        source_location: details.source_location,
         target_uuid:     details.output.resource.uuid,
-        target_location: details.output.location,
-        transfer_map:    details.transfer_map
+        target_location: details.target_location
       };
     },
-    'transfer_tubes_to_tubes': function(details) {
+
+    "transfer_tubes_to_tubes": function(details) {
       return {
         fraction:     details.fraction,
         aliquot_type: details.aliquot_type,
@@ -21,7 +21,8 @@ define(['mapper/s2_base_resource'], function(BaseResource) {
         target_uuid:  details.output.resource.uuid
       };
     },
-    'transfer_wells_to_tubes': function(details) {
+
+    "transfer_wells_to_tubes": function(details) {
       return {
         fraction:        details.fraction,
         aliquot_type:    details.aliquot_type,
@@ -31,7 +32,7 @@ define(['mapper/s2_base_resource'], function(BaseResource) {
       };
     }
   }).pairs().map(function(pair) {
-    return $.extend(BaseResource.extendAs(pair[0], function(transferInstance, options) {
+    return $.extend(BaseResource.extendAs(pair[0], function(transferInstance) {
       return transferInstance;
     }), {
       extract: function(transfers) {

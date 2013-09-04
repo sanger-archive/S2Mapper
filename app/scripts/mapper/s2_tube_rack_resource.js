@@ -1,26 +1,28 @@
 define([
-       'mapper/s2_base_resource',
-       'mapper/s2_labeling_module',
-       'mapper/s2_batchable_module'
+  "mapper/s2_base_resource",
+  "mapper/s2_labeling_module",
+  "mapper/s2_batchable_module"
 ], function(BaseResource, LabelingModule, BatchableModule){
-  'use strict';
+  "use strict";
 
-  var TubeRack = BaseResource.extendAs('tube_rack', function(tubeRackInstance, options) {
+  var TubeRack = BaseResource.extendAs("tube_rack", function(tubeRackInstance, options) {
     $.extend(tubeRackInstance, batchableMethods);
     $.extend(tubeRackInstance, LabelingModule);
     $.extend(tubeRackInstance, instanceMethods);
     return tubeRackInstance;
   });
 
-  TubeRack.resourceType = 'tube_rack';
+  TubeRack.resourceType      = "tube_rack";
+  TubeRack.transferBehaviour = "plateLike";
+
   var batchableMethods   = BatchableModule(TubeRack.resourceType);
   var instanceMethods = {
     labelRole: function(){
       var aliquotTypes = _.chain(this.tubes).
         values().
-        pluck('aliquots').
+        pluck("aliquots").
         flatten().
-        pluck('type').
+        pluck("type").
         uniq().
         value();
 

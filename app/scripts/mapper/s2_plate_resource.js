@@ -1,18 +1,19 @@
 define([
-  'mapper/s2_base_resource',
-  'mapper/s2_labeling_module',
-  'mapper/s2_batchable_module'
+  "mapper/s2_base_resource",
+  "mapper/s2_labeling_module",
+  "mapper/s2_batchable_module"
 ], function(BaseResource, LabelingModule, BatchableModule){
   'use strict';
 
-  var Plate = BaseResource.extendAs('plate', function(plateInstance, options) {
+  var Plate = BaseResource.extendAs("plate", function(plateInstance, options) {
     $.extend(plateInstance, batchableMethods);
     $.extend(plateInstance, LabelingModule);
     $.extend(plateInstance, instanceMethods);
     return plateInstance;
   });
 
-  Plate.resourceType = 'plate';
+  Plate.resourceType      = "plate";
+  Plate.transferBehaviour = "plateLike";
 
   // This makes the assumptions that plates are 96 well.  This will need to
   // change as we add support for 384 wells, etc.
