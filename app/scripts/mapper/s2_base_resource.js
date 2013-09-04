@@ -1,5 +1,5 @@
 define([], function(){
-  'use strict';
+  "use strict";
 
   // BaseResource is intended to be an abstract class used by concrete
   // resource types such as tube, order and spin column.
@@ -15,7 +15,7 @@ define([], function(){
     dataHandler = dataHandler || function(data) { return data; }
     return actionHelper(name, function(options, sendData) {
       sendData = $.extend({user: this.root.user}, sendData || {});
-      options['data']  = dataHandler.apply(this, [sendData,options]);
+      options.data  = dataHandler.apply(this, [sendData,options]);
       return options
     });
   }
@@ -38,7 +38,8 @@ define([], function(){
         url:                actionUrl,
         sendAction:         name,
         resourceProcessor:  resourceProcessor,
-        resourceType:       this.resourceType
+        resourceType:       this.resourceType,
+        transferBehaviour:  this.transferBehaviour
       }, options || {});
 
       $.extend(sendData, this.creationTemplate);
@@ -49,24 +50,24 @@ define([], function(){
 
   var instanceMethods = {
     // Standard actions for all resources
-    create: actionChangesState('create', function(data, options) {
-      var key = (options || {})['resourceType'] || this.resourceType;
+    create: actionChangesState("create", function(data, options) {
+      var key = (options || {}).resourceType || this.resourceType;
 
-      if (this.resourceType === 'laboratorySearch' || this.resourceType === 'supportSearch' || this.resourceType === "managementSearch") {
-        key = 'search'
+      if (this.resourceType === "laboratorySearch" || this.resourceType === "supportSearch" || this.resourceType === "managementSearch") {
+        key = "search"
       }
 
       var d = {}; d[key] = data;
       return d;
     }),
 
-    read:   actionIsIdempotent('read'),
-    update: actionChangesState('update'),
-    delete: actionChangesState('delete'),
+    read:   actionIsIdempotent("read"),
+    update: actionChangesState("update"),
+    delete: actionChangesState("delete"),
 
     // Pagination and searching
-    first: actionIsIdempotent('first'),
-    last:  actionIsIdempotent('last')
+    first: actionIsIdempotent("first"),
+    last:  actionIsIdempotent("last")
   };
 
   // Proxy the raw JSON so that we can change that behind the scenes if required and it
