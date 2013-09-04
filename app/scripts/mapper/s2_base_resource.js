@@ -38,8 +38,7 @@ define([], function(){
         url:                actionUrl,
         sendAction:         name,
         resourceProcessor:  resourceProcessor,
-        resourceType:       this.resourceType,
-        transferBehaviour:  this.transferBehaviour
+        resourceType:       this.resourceType
       }, options || {});
 
       $.extend(sendData, this.creationTemplate);
@@ -130,8 +129,9 @@ define([], function(){
         resourceInstance.rawJson      = rawJson;
         resourceInstance.resourceType = Object.keys(rawJson)[0];
       } else {
-        resourceInstance.rawJson      = {};
-        resourceInstance.resourceType = this.resourceType;
+        resourceInstance.rawJson           = {};
+        resourceInstance.resourceType      = this.resourceType;
+        resourceInstance.transferBehaviour = this.transferBehaviour;
         resourceInstance.rawJson[resourceInstance.resourceType] = {};
       }
 
