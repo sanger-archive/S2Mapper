@@ -4,7 +4,7 @@ define(["mapper/s2_base_resource"], function(BaseResource) {
   var transferModels = _.chain({
     "transfer_plates_to_plates": function(details) {
       return {
-        fraction:        details.fraction,
+        amount:          details.amount,
         aliquot_type:    details.aliquot_type,
         source_uuid:     details.input.resource.uuid,
         source_location: details.source_location,
