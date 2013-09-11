@@ -20,7 +20,7 @@ define([
           return $.Deferred().resolve(thisResource._orders).promise();
         }
 
-        var deferred = root.laboratorySearches.handling(root.orders).firstPage({
+        var deferred = root.laboratorySearches.handling(root.orders).all({
           "user":       root.user,
           "description":"search for order",
           "model":      "order",
@@ -51,7 +51,7 @@ define([
           orderDeferred.resolve(thisResource._order);
         } else {
           // assuming that there is only one order for one resource...
-          // we use the "first" method, and not the "firstPage" one
+          // we use the "first" method, and not the "all" one
           root.laboratorySearches.handling(root.orders).first({
             "user":       root.user,
             "description":"search for order",
