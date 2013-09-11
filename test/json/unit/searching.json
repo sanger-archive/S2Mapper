@@ -2,8 +2,9 @@
   "default":{
     "description":"searching for pages",
     "calls":[
+
       {
-        "description":"Create the search order by batch",
+        "description":"Laboratory search",
         "method":"post",
         "url":"/lims-laboratory/searches",
         "request":{
@@ -23,17 +24,18 @@
         }
       },
       {
-        "description":"Get first page",
+        "description":"Laboratory searches first page",
         "method":"get",
         "url":"/laboratorysearches-result-url/page=1",
         "request":null,
         "response":{
           "actions":{
-            "read":"http://localhost:9292/orders/page=1",
-            "first":"http://localhost:9292/orders/page=1",
-            "last":"http://localhost:9292/orders/page=-1"
+            "read":"http://localhost:9292/laboratorysearches-result-url/page=1",
+            "first":"http://localhost:9292/laboratorysearches-result-url/page=1",
+            "last":"http://localhost:9292/laboratorysearches-result-url/page=-1",
+            "next":"http://localhost:9292/laboratorysearches-result-url/page=-1"
           },
-          "size":1,
+          "size":2,
           "batches":[
             {
               "name":"first page"
@@ -42,64 +44,33 @@
         }
       },
       {
-        "description":"Get last page",
+        "description":"Laboratory searches last page",
         "method":"get",
         "url":"/laboratorysearches-result-url/page=-1",
         "request":null,
         "response":{
           "actions":{
-            "read":"http://localhost:9292/orders/page=1",
-            "first":"http://localhost:9292/orders/page=1",
-            "last":"http://localhost:9292/orders/page=-1"
+            "read":"http://localhost:9292/laboratorysearches-result-url/page=-1",
+            "first":"http://localhost:9292/laboratorysearches-result-url/page=1",
+            "last":"http://localhost:9292/laboratorysearches-result-url/page=-1",
+            "previous":"http://localhost:9292/laboratorysearches-result-url/page=1"
           },
-          "size":10,
+          "size":2,
           "batches":[
             {
-              "name":"last page",
+              "name":"last page 1",
               "index":0
             },
             {
-              "name":"last page",
+              "name":"last page 2",
               "index":1
-            },
-            {
-              "name":"last page",
-              "index":2
-            },
-            {
-              "name":"last page",
-              "index":3
-            },
-            {
-              "name":"last page",
-              "index":4
-            },
-            {
-              "name":"last page",
-              "index":5
-            },
-            {
-              "name":"last page",
-              "index":6
-            },
-            {
-              "name":"last page",
-              "index":7
-            },
-            {
-              "name":"last page",
-              "index":8
-            },
-            {
-              "name":"last page",
-              "index":9
             }
           ]
         }
       },
 
       {
-        "description":"Create the search order by batch",
+        "description":"Support search",
         "method":"post",
         "url":"/lims-support/searches",
         "request":{
@@ -119,17 +90,18 @@
         }
       },
       {
-        "description":"Get first page",
+        "description":"Support searches first page",
         "method":"get",
         "url":"/supportsearches-result-url/page=1",
         "request":null,
         "response":{
           "actions":{
-            "read":"http://localhost:9292/orders/page=1",
-            "first":"http://localhost:9292/orders/page=1",
-            "last":"http://localhost:9292/orders/page=-1"
+            "read":"http://localhost:9292/supportsearches-result-url/page=1",
+            "first":"http://localhost:9292/supportsearches-result-url/page=1",
+            "last":"http://localhost:9292/supportsearches-result-url/page=-1",
+            "next":"http://localhost:9292/supportsearches-result-url/page=-1"
           },
-          "size":1,
+          "size":2,
           "batches":[
             {
               "name":"first page"
@@ -138,57 +110,26 @@
         }
       },
       {
-        "description":"Get last page",
+        "description":"Support searches last page",
         "method":"get",
         "url":"/supportsearches-result-url/page=-1",
         "request":null,
         "response":{
           "actions":{
-            "read":"http://localhost:9292/orders/page=1",
-            "first":"http://localhost:9292/orders/page=1",
-            "last":"http://localhost:9292/orders/page=-1"
+            "read":"http://localhost:9292/supportsearches-result-url/page=-1",
+            "first":"http://localhost:9292/supportsearches-result-url/page=1",
+            "last":"http://localhost:9292/supportsearches-result-url/page=-1",
+            "previous":"http://localhost:9292/supportsearches-result-url/page=1"
           },
-          "size":10,
+          "size":2,
           "batches":[
             {
-              "name":"last page",
+              "name":"last page 1",
               "index":0
             },
             {
-              "name":"last page",
+              "name":"last page 2",
               "index":1
-            },
-            {
-              "name":"last page",
-              "index":2
-            },
-            {
-              "name":"last page",
-              "index":3
-            },
-            {
-              "name":"last page",
-              "index":4
-            },
-            {
-              "name":"last page",
-              "index":5
-            },
-            {
-              "name":"last page",
-              "index":6
-            },
-            {
-              "name":"last page",
-              "index":7
-            },
-            {
-              "name":"last page",
-              "index":8
-            },
-            {
-              "name":"last page",
-              "index":9
             }
           ]
         }
