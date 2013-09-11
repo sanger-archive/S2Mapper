@@ -179,12 +179,9 @@ define([], function(){
           }
         }
       };
-      if (allResult) {
-        return root[baseResource.searchAddress].handling(baseResource).firstPage(searchBody);
-      } else {
-        // when we make a search, it is always on the laboratorySearches...
-        return root[baseResource.searchAddress].handling(baseResource).first(searchBody);
-      }
+
+      var searchFunction = allResult ? 'all' : 'first';
+      return root[baseResource.searchAddress].handling(baseResource)[searchFunction](searchBody);
     }
 
   });
