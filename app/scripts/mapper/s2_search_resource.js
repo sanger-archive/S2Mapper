@@ -36,12 +36,16 @@ define([
       var search  = this;
       var handler = processor(resultModel);
 
+      var forwardsHandler  = paged('first', 'next');
+      var backwardsHandler = paged('last', 'previous');
+
       return {
-        firstPage: searchHandler('first'),
-        lastPage:  searchHandler('last'),
-        first:     searchHandler('first', 0),
-        last:      searchHandler('last', -1),
-        all:       allHandler
+        paged:     forwardsHandler,
+        firstPage: firstPage(forwardsHandler),
+        lastPage:  firstPage(backwardsHandler),
+        first:     offsetResult(forwardsHandler, function(p) { return 0; }),
+        last:      offsetResult(backwardsHandler, function(p) { return p.entries.length-1; }),
+        all:       allHandler(forwardsHandler),
       };
 
       function indexError(deferred, indexOnPage,nbOfResult){
@@ -49,35 +53,79 @@ define([
             'result from page : Only '+nbOfResult+' elements')
       }
 
-      /*
-       * Handles the search for all entries by building an array containing all of the results
-       * as each of the pages is retrieved.
-       */
-      function allHandler(options) {
-        var deferred = $.Deferred();
-        processPagePromise([], search.create(options).then(function(results) {
-          return results.first(undefined, handler);
-        }));
-        return deferred.promise();
+      // Handles the result that returns a single entry at the given indexed offset.
+      function offsetResult(walker, indexer) {
+        return function(options) {
+          var result = undefined;
+          return walker(options, function(page) {
+            result = page.entries[indexer(page)];
+            return false;
+          }).then(function() {
+            return result;
+          });
+        };
+      }
 
-        function processPagePromise(results, promise) {
-          promise.then(_.partial(handlePageOfResults, results));
-        }
-        function handlePageOfResults(results, page) {
-          var results = results.concat(page.entries);
-          if (_.isUndefined(page.next)) {
-            deferred.resolve(results);
-          } else {
-            processPagePromise(
-              results,
-              root.retrieve({
-                url: page.next,
-                sendAction: 'read',
-                resourceProcessor: handler
-              })
+      // Handles a search that returns all of the entries on the "first" page
+      function firstPage(walker) {
+        return function(options) {
+          var results = [];
+          return walker(options, function(page) {
+            results = page.entries;
+            return false;
+          }).then(function() {
+            return results;
+          });
+        };
+      }
+
+      // Handles walking all of the pages, returning an array containing all entries.
+      function allHandler(walker) {
+        return function(options) {
+          var results = [];
+          return walker(options, function(page) {
+            results = results.concat(page.entries);
+          }).then(function() {
+            return results;
+          });
+        };
+      }
+
+      /*
+       * Handles each page of results, yielding the individual page to the callback function
+       * passed as they are received.  If the callback returns false (explicitly) then the
+       * paging will automatically break.
+       */
+      function paged(initial, direction) {
+        return function(options, callback) {
+          var deferred = $.Deferred();
+          processPagePromise(search.create(options).then(function(results) {
+            return results[initial](undefined, handler);
+          }));
+          return deferred.promise();
+
+          function processPagePromise(promise) {
+            promise.then(
+              handlePageOfResults,
+              _.bind(deferred.reject, deferred)
             );
           }
-        }
+          function handlePageOfResults(page) {
+            var rc = callback(page);
+            var url = page[direction];
+            if ((_.isBoolean(rc) && !rc) || _.isUndefined(url)) {
+              deferred.resolve();
+            } else {
+              processPagePromise(
+                root.retrieve({
+                  url: url,
+                  sendAction: 'read',
+                  resourceProcessor: handler
+                })
+              );
+            }
+          }
+        };
       }
 
       function searchHandler(actionName, indexOnPage){
