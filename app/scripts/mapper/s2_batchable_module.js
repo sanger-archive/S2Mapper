@@ -13,65 +13,37 @@ define([
         return $.Deferred();
       },
 
-      orders: function(){
-        var thisResource      = this;
-        var root = this.root;
-        if (thisResource._orders) {
-          return $.Deferred().resolve(thisResource._orders).promise();
-        }
-
-        var deferred = root.laboratorySearches.handling(root.orders).all({
-          "user":       root.user,
-          "description":"search for order",
-          "model":      "order",
-          "criteria":   {
-            "item":{
-              "uuid": thisResource.uuid
-            }
-          }
-        })
-        .then(function(orders){
-          thisResource._orders = orders;
-          return orders;
-        });
-
-        return deferred.promise();
-
-      },
-
-      // TODO: Refactor code to always used paged results returned as an array.
-      // Remove this method and use orders() instead.
-      // Search for Order from tube uuid.
-      order: function(){
-        var thisResource      = this;
-        var orderDeferred = $.Deferred();
-        var root = this.root;
-
-        if (thisResource._order) {
-          orderDeferred.resolve(thisResource._order);
-        } else {
-          // assuming that there is only one order for one resource...
-          // we use the "first" method, and not the "all" one
-          root.laboratorySearches.handling(root.orders).first({
-            "user":       root.user,
-            "description":"search for order",
-            "model":      "order",
-            "criteria":   {
-              "item":{
-                "uuid": thisResource.uuid
-              }
-            }
-          })
-          .fail(orderDeferred.reject)
-          .then(function(order){
-            order.root = root;
-            thisResource._order = order;
-            orderDeferred.resolve(order);
-          });
-        }
-
-        return orderDeferred.promise();
-      }
+      // These are simple lookups that can be cached
+      orders: cachingLookup('all',   'orders'),
+      order:  cachingLookup('first', 'order'),
     }
   };
+
+  /*
+   * This higher order function deals with searching for related order(s).  On the first call the function will do the
+   * actual search and return a promise that will be fulfilled.  When it is resolved the returned function replaces
+   * itself in the resource with a simple identity of the resolved promise so subsequent calls do nothing, effectively.
+   */
+  function cachingLookup(search, replaces) {
+    return function() {
+      var resource = this;
+      var deferred = $.Deferred();
+      resource.root.laboratorySearches.handling(resource.root.orders)[search]({
+        "user":       root.user,
+        "description":"search for order",
+        "model":      "order",
+        "criteria":   {
+          "item":{
+            "uuid": resource.uuid
+          }
+        }
+      })
+      .then(function(result){
+        // Resolve the deferred and then cache this as the function we are.
+        deferred.resolve(result);
+        resource[replaces] = _.identity(deferred);
+      });
+      return deferred;
+    };
+  }
 });
