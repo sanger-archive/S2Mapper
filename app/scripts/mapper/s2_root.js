@@ -39,7 +39,8 @@ define([
     },
 
     findByLabEan13: function(ean13){
-      return this.laboratorySearches.handling(this.labellable).first({
+      var root = this;
+      return this.laboratorySearches.handling(this.labellables).first({
         user:          this.user,
         description:   "search for barcoded labellable",
         model:         "labellable",
