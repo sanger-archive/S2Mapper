@@ -36,7 +36,7 @@ define([
           var result = undefined;
           walker(options, function(page) {
             var index = indexer(page);
-            result = ((index >= 0) && (index < page.entries.size)) ? page.entries[index] : undefined;
+            result = ((index >= 0) && (index < page.entries.length)) ? page.entries[index] : undefined;
             return false;
           }).done(function() {
             if (_.isUndefined(result)) {
