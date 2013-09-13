@@ -33,7 +33,7 @@ define([ 'resource_test_helper'
               .then(function (root) {
                 results.assignTo('root')(root);
                 s2 = results.get('root');
-                return root.labellables.findByEan13Barcode('2345678901234');
+                return root.labellables.searchByBarcode().ean13('2345678901234').first();
               })
               .then(results.assignTo('labellable'))
               .then(results.expected)
@@ -66,7 +66,7 @@ define([ 'resource_test_helper'
               .then(function (root) {
                 results.assignTo('root')(root);
                 s2 = results.get('root');
-                labellablePromise = root.labellables.findByEan13Barcode('NOT THERE');
+                labellablePromise = root.labellables.searchByBarcode().ean13('NOT THERE').first();
                 return labellablePromise;
               })
               .then(results.assignTo('labellable'))

@@ -101,7 +101,7 @@ define([
                 s2 = results.get('root');
               })
               .then(function () {
-                return s2.tubes.findByEan13Barcode('tube1_BC')
+                return s2.tubes.searchByBarcode().ean13('tube1_BC').first();
               })
               .then(function (tube) {
                 tube1 = tube;
@@ -197,7 +197,7 @@ define([
               .then(results.assignTo('root'))
               .then(function () {
                 s2 = results.get('root');
-                return s2.tubes.findByEan13Barcode('tube1_BC');
+                return s2.tubes.searchByBarcode().ean13('tube1_BC').first();
               })
               .then(function (tube) {
                 tube1 = tube;
@@ -205,7 +205,7 @@ define([
               })
               .then(function (theOrder) {
                 order1 = theOrder;
-                return s2.tubes.findByEan13Barcode('tube2_BC');
+                return s2.tubes.searchByBarcode().ean13('tube2_BC').first();
               })
               .then(function (tube) {
                 tube2 = tube;
@@ -318,7 +318,7 @@ define([
             .then(results.assignTo('root'))
             .then(function () {
               s2 = results.get('root');
-              return s2.tubes.findByEan13Barcode('tube1_BC')
+              return s2.tubes.searchByBarcode().ean13('tube1_BC').first();
             })
             .then(function (tube) {
               tube1 = tube;
@@ -326,7 +326,7 @@ define([
             })
             .then(function (theOrder) {
               order1 = theOrder;
-              return s2.tubes.findByEan13Barcode('tube2_BC');
+              return s2.tubes.searchByBarcode().ean13('tube2_BC').first();
             })
             .then(function (atube) {
               tube2 = atube;
