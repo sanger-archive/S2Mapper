@@ -31,13 +31,22 @@ define([
       // Handles the result that returns a single entry at the given indexed offset.
       function offsetResult(walker, indexer) {
         return function(options) {
+          var deferred = $.Deferred();
+
           var result = undefined;
-          return walker(options, function(page) {
-            result = page.entries[indexer(page)];
+          walker(options, function(page) {
+            var index = indexer(page);
+            result = ((index >= 0) && (index < page.entries.size)) ? page.entries[index] : undefined;
             return false;
-          }).then(function() {
-            return result;
+          }).done(function() {
+            if (_.isUndefined(result)) {
+              deferred.reject("Unable to find matching entry");
+            } else {
+              deferred.resolve(result);
+            }
           });
+
+          return deferred;
         };
       }
 
@@ -102,31 +111,6 @@ define([
           }
         };
       }
-
-      function searchHandler(actionName, indexOnPage){
-        var callback = !_.isUndefined(indexOnPage) ? _.partial(indexedEntry, indexOnPage) : allResults
-        return function(options) {
-          var deferred = $.Deferred();
-          search.create(options).then(function(search) {
-            return search[actionName](undefined, handler)
-          }).then(
-            _.partial(callback, deferred),
-            _.bind(deferred.reject, deferred)
-          );
-          return deferred;
-        };
-
-        function indexedEntry(index, deferred, page) {
-          var entryIndex = (index >= 0) ? index : index + page.entries.length;
-          if ((entryIndex < 0) || (entryIndex >= page.entries.length)) {
-            return indexError(deferred, index, page.entries.length);
-          }
-          return deferred.resolve(page.entries[entryIndex]);
-        }
-        function allResults(deferred, page) {
-          return deferred.resolve(page.entries);
-        }
-      }
     }
   });
 
@@ -135,10 +119,6 @@ define([
   function processor(resultModel) {
     return function (resultDeferred) {
       return function(response) {
-        if (response.responseText.size === 0){
-          return resultDeferred.reject(resultDeferred, "Failed to retrieve page of results");
-        }
-
         var entries = _.map(
           response.responseText[resultModel.resourceType.pluralize()],
           function(resourceJson) {
