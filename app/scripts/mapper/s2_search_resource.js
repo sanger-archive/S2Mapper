@@ -8,7 +8,7 @@ define([
     'laboratorySearch',
     'supportSearch',
     'managementSearch'
-  ], {
+  ]), {
     handling: function(resultModel, handler) {
       var handler          = handler || processor(resultModel);
       var forwardsHandler  = paged(this, handler, 'first', 'next');
@@ -23,7 +23,7 @@ define([
         all:       allHandler(forwardsHandler),
       };
     }
-  }));
+  });
 
   function processor(resultModel) {
     return function (resultDeferred) {
@@ -112,9 +112,11 @@ define([
         );
       }
       function handlePageOfResults(page) {
-        var rc = callback(page);
         var url = page[direction];
-        if ((_.isBoolean(rc) && !rc) || _.isUndefined(url)) {
+        var hasNext = !_.isUndefined(url);
+
+        var rc = callback(page, hasNext);
+        if ((_.isBoolean(rc) && !rc) || !hasNext) {
           deferred.resolve();
         } else {
           processPagePromise(
