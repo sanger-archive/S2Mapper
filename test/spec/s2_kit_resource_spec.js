@@ -45,7 +45,7 @@ define([
           
             results.resetFinishedFlag();
             
-            s2.kits.findByEan13Barcode("1234567890")
+            s2.kits.searchByBarcode().ean13("1234567890").first()
               .then(results.assignTo('kit'))
               .then(function() {
                 results.expected();
