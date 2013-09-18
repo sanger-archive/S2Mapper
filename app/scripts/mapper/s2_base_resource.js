@@ -1,6 +1,15 @@
 define([], function(){
   "use strict";
 
+  // Here are all of the different barcode types, which will be exposed as
+  // search functions (map from search function name to type).
+  var BarcodeTypes = {
+    ean13:   "ean13-barcode",
+    sanger:  "sanger_barcode",
+    two_d:   "barcode2_d",
+    code128: "code128-c-barcode"
+  };
+
   // BaseResource is intended to be an abstract class used by concrete
   // resource types such as tube, order and spin column.
   var BaseResource = Object.create(null);
@@ -147,41 +156,61 @@ define([], function(){
       return instance;
     },
 
-    findByEan13Barcode: function(ean13, allResult){
-      return this.findByBarcode("ean13-barcode",ean13, allResult);
-    },
+    /*
+     * This function returns an object that can be used to build barcoded
+     * searches.  The returned object supports all of the BarcodeTypes functions,
+     * and each of those supports all of the search related functions.
+     */
+    searchByBarcode: function(additionalCriteria) {
+      var resource = this;
+      var search   = resource.root[resource.searchAddress].handling(resource);
 
-    findBySangerBarcode: function(sangerBarcode, allResult){
-      return this.findByBarcode("sanger_barcode", sangerBarcode, allResult);
-    },
-
-    findBy2DBarcode: function(barcode2D, allResult){
-      return this.findByBarcode("barcode2_d", barcode2D, allResult);
-    },
-
-    findByCode128Barcode: function(barcode, allResult) {
-      return this.findByBarcode("code128-c-barcode", barcode, allResult);
-    },
-
-    findByBarcode: function (barcodetype, barcodeValue, allResult) {
-      var root = this.root;
-      var baseResource = this;
-
-      var searchBody = {
-        "user":        root.user,
-        "description": "search for barcoded " + baseResource.resourceType,
-        "model":       baseResource.resourceType,
-        "criteria":    {
-          "label": {
-            "position": "barcode",
-            "type":     barcodetype,
-            "value":    barcodeValue
-          }
-        }
+      var basicConditions = {
+        user:        resource.root.user,
+        description: "search for barcoded " + resource.resourceType,
+        model:       resource.resourceType,
+        criteria:    _.extend({}, additionalCriteria || {})
       };
 
-      var searchFunction = allResult ? 'all' : 'first';
-      return root[baseResource.searchAddress].handling(baseResource)[searchFunction](searchBody);
+      return _.chain(BarcodeTypes)
+              .map(function(t,n) { return [n, _.partial(Search,t)]; })
+              .object()
+              .value();
+
+      function deepClone(object) {
+        return _.chain(object)
+                .map(function(v,k) { return [k, clone(v)]; })
+                .object()
+                .value();
+
+        function clone(value) {
+          if (_.isObject(value)) {
+            return deepClone(value);
+          } else if (_.isArray(value)) {
+            return _.map(clone);
+          } else {
+            return value;
+          }
+        }
+      }
+
+      function Search(type, barcode) {
+        var conditions = deepClone(basicConditions);
+        _.extend(conditions.criteria, {
+          label: {
+            position: "barcode",
+            type:     type,
+            value:    barcode
+          }
+        });
+
+        // Every single search function provided should be exposed here but bound to the
+        // criteria that have been passed in.
+        return _.chain(search)
+                .map(function(f,n) { return [n, _.partial(f, conditions)]; })
+                .object()
+                .value();
+      }
     }
 
   });

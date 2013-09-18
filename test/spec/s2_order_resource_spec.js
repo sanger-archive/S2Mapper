@@ -37,7 +37,7 @@ define([
         describe("and the item IS NOT in a batch,", function () {
           beforeEach(function () {
             config.cummulativeLoadingTestDataInFirstStage(orderWithoutBatchJson);
-            s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'));
+            s2.tubes.searchByBarcode().ean13('2345678901234').first().done(results.assignTo('tube'));
             results.get('tube').order().done(results.assignTo('order'));
           });
 
@@ -49,7 +49,7 @@ define([
         describe("and the item IS in a batch,", function () {
           beforeEach(function () {
             config.cummulativeLoadingTestDataInFirstStage(orderWithBatchJson);
-            s2.tubes.findByEan13Barcode('2345678901234').done(results.assignTo('tube'));
+            s2.tubes.searchByBarcode().ean13('2345678901234').first().done(results.assignTo('tube'));
             results.get('tube').order().done(results.assignTo('order'));
           });
 
@@ -70,7 +70,7 @@ define([
           config.cummulativeLoadingTestDataInFirstStage(orderWithoutBatchJson);
           results.resetFinishedFlag();
           runs(function () {
-            s2.tubes.findByEan13Barcode('2345678901234')
+            s2.tubes.searchByBarcode().ean13('2345678901234').first()
                 .then(results.assignTo('tube'))
                 .then(function () {
                   return results.get('tube').order();

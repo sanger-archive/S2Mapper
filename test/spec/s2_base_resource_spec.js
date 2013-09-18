@@ -2,13 +2,15 @@ define(['mapper/s2_base_resource'], function(BaseResource){
   'use strict';
 
   describe('S2BaseResource', function(){
-    describe("findByEan13Barcode", function(){
-      var callFindByEan13Barcode = function(){
-        BaseResource.findByEan13Barcode('1234567890123');
-      };
+    describe("searchByBarcode", function() {
+      describe("ean13", function() {
+        var caller = function(){
+          BaseResource.searchByBarcode().ean13('1234567890123').first();
+        };
 
-      it("throws an exception if findByEan13Barcode is called on it directly", function(){
-        expect(callFindByEan13Barcode).to.throw();
+        it("throws an exception if called on directly", function(){
+          expect(caller).to.throw();
+        });
       });
     });
 

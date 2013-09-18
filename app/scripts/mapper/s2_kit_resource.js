@@ -4,45 +4,38 @@ define([
 ], function (BaseResource) {
   'use strict';
 
+  var instanceMethods = { };
+
   var Kit = BaseResource.extendAs('kit', function(kitInstance, options) {
     $.extend(kitInstance, instanceMethods);
     return kitInstance;
   });
 
-  Kit.resourceType = 'kit';
+  _.extend(Kit, {
+    resourceType: 'kit',
+    searchAddress: 'supportSearches',
 
-  Kit.findByBarcode = function(barcodetype,barcodeValue){
-    var root          = this.root;
-    var baseResource = this;
+    searchByBarcode: function() {
+      return BaseResource.searchByBarcode.call(this, {
+        comparison: {
+          expires: { ">=": today() },
+          amount:  { ">=": 1}
+        }
+      });
+    }
+  });
 
-    var today = new Date;
-    var todayFormatted = [
-          today.getFullYear(),
-          ("00" + (today.getMonth() + 1)).slice(-2), // for padding with zeros : 5 -> 05
-          ("00" + today.getDate()).slice(-2)         // for padding with zeros : 5 -> 05
-          ]
-        .join('-');
-
-    var comparison = {
-      "expires" : { ">=" : todayFormatted },
-      "amount" : { ">=" : 1}
-    };
-
-    // when we make a search for a kit, it is always on the supportSearches...
-    return root.supportSearches.handling(baseResource).first({
-      "user":         root.user,
-      "description":  "search for barcoded "+baseResource.resourceType,
-      "model":        baseResource.resourceType,
-      "criteria":     {
-        "label":  {
-          "position":  "barcode",
-          "type":      barcodetype,
-          "value":     barcodeValue
-        },
-        "comparison": comparison
-      }
-    });
-  };
-  var instanceMethods = { };
   return Kit;
+
+  function pad(value) {
+    return ("00" + value).slice(-2);
+  }
+  function today() {
+    var date = new Date;
+    return [
+      date.getFullYear(),
+      pad(date.getMonth() + 1),
+      pad(date.getDate())
+    ].join('-');
+  }
 });
