@@ -36,7 +36,7 @@ define([ 'resource_test_helper'
               .then(function (root) {
                 results.assignTo('root')(root);
                 s2 = results.get('root');
-                return root.tubes.findByEan13Barcode('2345678901234');
+                return root.tubes.searchByBarcode().ean13('2345678901234').first();
               })
               .then(function(res) {
                 self.tube = res
@@ -68,7 +68,7 @@ define([ 'resource_test_helper'
                   results.assignTo('root')(root);
                   s2 = results.get('root');
                   config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
-                  tubePromise = s2.tubes.findByEan13Barcode('6666666666666'); // we need to save the promise here !
+                  tubePromise = s2.tubes.searchByBarcode().ean13('6666666666666').first(); // we need to save the promise here !
                   return tubePromise;
                 })
                 .then(results.unexpected)
@@ -98,7 +98,7 @@ define([ 'resource_test_helper'
               results.assignTo('root')(root);
               s2 = results.get('root');
               config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
-              return root.tubes.findByEan13Barcode('2345678901234');
+              return root.tubes.searchByBarcode().ean13('2345678901234').first();
             })
             .then(function(res) {
               self.tube = res;
@@ -124,20 +124,19 @@ define([ 'resource_test_helper'
 
       describe("When the server fails to respond to a search creation",function(){
           
-          it("the findByEan13Barcode promise fails.", function (done) {
+          it("the searchByBarcode().ean13().first() promise fails.", function (done) {
             
             config.loadTestData(rootTestJson);
 
             Root.load({user:"username"})
               .then(function (root) {
-                // with this line, when findByEan13Barcode will be called,
                 // we artificially prevent the creation of search, simulating a server failure.
                 root.laboratorySearches.create = function(){ return $.Deferred().reject().promise();};
 
                 results.assignTo('root')(root);
                 s2 = results.get('root');
                 config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
-                return root.tubes.findByEan13Barcode('2345678901234');
+                return root.tubes.searchByBarcode().ean13('2345678901234').first();
               })
               .then(results.unexpected)
               .fail(results.expected)

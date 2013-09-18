@@ -39,21 +39,22 @@ define([
     },
 
     findByLabEan13: function(ean13){
-      var searchBody = {
-        "user":        this.user,
-        "description": "search for barcoded labellable",
-        "model":       "labellable",
-        "criteria": {
-          "type":        "resource",
-          "label": {
-            "position":  "barcode",
-            "type":      "ean13-barcode",
-            "value":     ean13
+      var root = this;
+      return this.laboratorySearches.handling(this.labellables).first({
+        user:          this.user,
+        description:   "search for barcoded labellable",
+        model:         "labellable",
+        criteria: {
+          type:       "resource",
+          label: {
+            position: "barcode",
+            type:     "ean13-barcode",
+            value:    ean13
           }
         }
-      };
-
-      return this.laboratorySearches.labellableHandling(searchBody);
+      }).then(function(labellable) {
+        return root.find(labellable.name);
+      });
     },
 
     retrieve: function(options) {
