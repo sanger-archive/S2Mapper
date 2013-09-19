@@ -2,7 +2,10 @@
     "author": "WTSI PSD",
     "name": "S2Mapper",
     "version": "0.0.1",
-    "dependencies": {},
+    "dependencies": {
+      "jquery": "~1.9.1",
+      "underscore": "latest"
+    },
     "devDependencies": {
         "grunt": "~0.4.1",
         "grunt-contrib-copy": "~0.4.1",
