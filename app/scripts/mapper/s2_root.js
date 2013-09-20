@@ -2,8 +2,9 @@ define([
   "config",
   "mapper/s2_ajax",
   "mapper/resources",
+  "mapper/s2_bulk_create_plates",
   "mapper/support/pluralization"
-], function(config, S2Ajax, Resources) {
+], function(config, S2Ajax, Resources, BulkPlateCreator) {
   "use strict";
 
   // register resources with root.
@@ -125,6 +126,7 @@ define([
       s2ajax.send("read", config.apiUrl).done(function(response){
         var rootInstance = processRootJson(response);
         rootInstance.user = options.user;
+        rootInstance.bulk_create_plates = BulkPlateCreator(rootInstance);
         rootDeferred.resolve(rootInstance);
       });
 
