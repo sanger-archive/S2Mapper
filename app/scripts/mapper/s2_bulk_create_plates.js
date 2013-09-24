@@ -25,7 +25,9 @@ define([], function() {
         }
 
         function combine(deferred, data) {
-          return deferred.then(_.partial(handle, data));
+          return deferred.then(function() {
+            return handle(root.plates.create(data));
+          });
         }
       }
     };
