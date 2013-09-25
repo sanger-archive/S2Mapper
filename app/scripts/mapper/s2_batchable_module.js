@@ -41,7 +41,7 @@ define([
       .then(function(result){
         // Resolve the deferred and then cache this as the function we are.
         deferred.resolve(result);
-        resource[replaces] = _.identity(deferred);
+        resource[replaces] = function() { return deferred; };
       });
       return deferred;
     };
