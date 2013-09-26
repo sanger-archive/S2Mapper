@@ -12,4 +12,5 @@ test/json/unit/#batch.json#
 test/json/unit/.#batch.json
 node_modules
 .tmp
+.project
 .sass-cache
