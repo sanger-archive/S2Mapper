@@ -3,119 +3,31 @@ define([
 ], function(BaseResource) {
   'use strict';
 
-  var SearchResource = BaseResource.extendAs(['search', 'laboratorySearch', 'supportSearch', 'managementSearch']);
-
-  $.extend(SearchResource, {
-    labellableHandling: function(searchBody) {
-      var root    = this.root;
-      var search  = this;
-
-
-      function handler(resultDeferred) {
-        return function(response) {
-          if (response.responseText.size === 0){
-            return resultDeferred.reject(resultDeferred,'Barcode not found');
-          }
-
-          search
-          .root
-          .find(response.responseText.labellables[0].name)
-          .then(resultDeferred.resolve);
-
-          return resultDeferred;
-        };
-      };
-
-      return search.create(searchBody).then(function (searchResult) {
-        return searchResult.first(undefined, handler);
-      });
-    },
-
-    handling: function(resultModel) {
-      var root    = this.root;
-      var search  = this;
-      var handler = processor(resultModel);
+  return _.extend(BaseResource.extendAs([
+    'search',
+    'laboratorySearch',
+    'supportSearch',
+    'managementSearch'
+  ]), {
+    handling: function(resultModel, handler) {
+      var handler          = handler || processor(resultModel);
+      var forwardsHandler  = paged(this, handler, 'first', 'next');
+      var backwardsHandler = paged(this, handler, 'last', 'previous');
 
       return {
-        firstPage: searchHandler('first'),
-        lastPage:  searchHandler('last'),
-        first:     searchHandler('first', 0),
-        last:      searchHandler('last', -1),
-        all:       allHandler
+        paged:     forwardsHandler,
+        firstPage: firstPage(forwardsHandler),
+        lastPage:  firstPage(backwardsHandler),
+        first:     offsetResult(forwardsHandler, function(p) { return 0; }),
+        last:      offsetResult(backwardsHandler, function(p) { return p.entries.length-1; }),
+        all:       allHandler(forwardsHandler),
       };
-
-      function indexError(deferred, indexOnPage,nbOfResult){
-        return deferred.reject('Index Error while retrieving '+indexOnPage+'th ' +
-            'result from page : Only '+nbOfResult+' elements')
-      }
-
-      /*
-       * Handles the search for all entries by building an array containing all of the results
-       * as each of the pages is retrieved.
-       */
-      function allHandler(options) {
-        var deferred = $.Deferred();
-        processPagePromise([], search.create(options).then(function(results) {
-          return results.first(undefined, handler);
-        }));
-        return deferred.promise();
-
-        function processPagePromise(results, promise) {
-          promise.then(_.partial(handlePageOfResults, results));
-        }
-        function handlePageOfResults(results, page) {
-          var results = results.concat(page.entries);
-          if (_.isUndefined(page.next)) {
-            deferred.resolve(results);
-          } else {
-            processPagePromise(
-              results,
-              root.retrieve({
-                url: page.next,
-                sendAction: 'read',
-                resourceProcessor: handler
-              })
-            );
-          }
-        }
-      }
-
-      function searchHandler(actionName, indexOnPage){
-        var callback = !_.isUndefined(indexOnPage) ? _.partial(indexedEntry, indexOnPage) : allResults
-        return function(options) {
-          var deferred = $.Deferred();
-          search.create(options).then(function(search) {
-            return search[actionName](undefined, handler)
-          }).then(
-            _.partial(callback, deferred),
-            _.bind(deferred.reject, deferred)
-          );
-          return deferred;
-        };
-
-        function indexedEntry(index, deferred, page) {
-          var entryIndex = (index >= 0) ? index : index + page.entries.length;
-          if ((entryIndex < 0) || (entryIndex >= page.entries.length)) {
-            return indexError(deferred, index, page.entries.length);
-          }
-          return deferred.resolve(page.entries[entryIndex]);
-        }
-        function allResults(deferred, page) {
-          return deferred.resolve(page.entries);
-        }
-      }
     }
   });
-
-  return SearchResource;
 
   function processor(resultModel) {
     return function (resultDeferred) {
       return function(response) {
-        if (response.responseText.size === 0){
-          return resultDeferred.reject(resultDeferred, "Failed to retrieve page of results");
-        }
-
         var entries = _.map(
           response.responseText[resultModel.resourceType.pluralize()],
           function(resourceJson) {
@@ -130,5 +42,92 @@ define([
       };
     }
   }
-});
 
+  // Handles the result that returns a single entry at the given indexed offset.
+  function offsetResult(walker, indexer) {
+    return function(options) {
+      var deferred = $.Deferred();
+
+      var result = undefined;
+      walker(options, function(page) {
+        var index = indexer(page);
+        result = ((index >= 0) && (index < page.entries.length)) ? page.entries[index] : undefined;
+        return false;
+      }).done(function() {
+        if (_.isUndefined(result)) {
+          deferred.reject("Unable to find matching entry");
+        } else {
+          deferred.resolve(result);
+        }
+      });
+
+      return deferred;
+    };
+  }
+
+  // Handles a search that returns all of the entries on the "first" page
+  function firstPage(walker) {
+    return function(options) {
+      var results = [];
+      return walker(options, function(page) {
+        results = page.entries;
+        return false;
+      }).then(function() {
+        return results;
+      });
+    };
+  }
+
+  // Handles walking all of the pages, returning an array containing all entries.
+  function allHandler(walker) {
+    return function(options) {
+      var results = [];
+      return walker(options, function(page) {
+        results = results.concat(page.entries);
+      }).then(function() {
+        return results;
+      });
+    };
+  }
+
+  /*
+   * Handles each page of results, yielding the individual page to the callback function
+   * passed as they are received.  If the callback returns false (explicitly) then the
+   * paging will automatically break.
+   */
+  function paged(search, handler, initial, direction) {
+    var root = search.root;
+
+    return function(options, callback) {
+      var deferred = $.Deferred();
+      processPagePromise(search.create(options).then(function(results) {
+        return results[initial](undefined, handler);
+      }));
+      return deferred.promise();
+
+      function processPagePromise(promise) {
+        promise.then(
+          handlePageOfResults,
+          _.bind(deferred.reject, deferred)
+        );
+      }
+      function handlePageOfResults(page) {
+        var url = page[direction];
+        var hasNext = !_.isUndefined(url);
+
+        var rc = callback(page, hasNext);
+        if ((_.isBoolean(rc) && !rc) || !hasNext) {
+          deferred.resolve();
+        } else {
+          processPagePromise(
+            root.retrieve({
+              url: url,
+              sendAction: 'read',
+              resourceProcessor: handler
+            })
+          );
+        }
+      }
+    };
+  }
+});

@@ -28,7 +28,7 @@ define(['config'
         expect(_.difference(Object.keys(rawRootJson), Object.keys(results.root)) ).
           toEqual([]);
 
-        results.root.tubes.findByEan13Barcode('2345678901234').done(assignResultTo('tube'));
+        results.root.tubes.searchByBarcode().ean13('2345678901234').first().done(assignResultTo('tube'));
         expect(results.tube).toBeDefined();
 
         results.tube.order().done(assignResultTo('order'));
