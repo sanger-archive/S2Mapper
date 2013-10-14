@@ -29,7 +29,7 @@ define([
       var resource = this;
       var deferred = $.Deferred();
       resource.root.laboratorySearches.handling(resource.root.orders)[search]({
-        "user":       root.user,
+        "user":       resource.root.user,
         "description":"search for order",
         "model":      "order",
         "criteria":   {
