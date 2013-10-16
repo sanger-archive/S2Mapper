@@ -161,59 +161,68 @@ define([], function(){
      * searches.  The returned object supports all of the BarcodeTypes functions,
      * and each of those supports all of the search related functions.
      */
-    searchByBarcode: function(additionalCriteria) {
-      var resource = this;
-      var search   = resource.root[resource.searchAddress].handling(resource);
+    searchByBarcode: _.partial(searchByLabel, "barcode", BarcodeTypes),
 
-      var basicConditions = {
-        user:        resource.root.user,
-        description: "search for barcoded " + resource.resourceType,
-        model:       resource.resourceType,
-        criteria:    _.extend({}, additionalCriteria || {})
-      };
-
-      return _.chain(BarcodeTypes)
-              .map(function(t,n) { return [n, _.partial(Search,t)]; })
-              .object()
-              .value();
-
-      function deepClone(object) {
-        return _.chain(object)
-                .map(function(v,k) { return [k, clone(v)]; })
-                .object()
-                .value();
-
-        function clone(value) {
-          if (_.isObject(value)) {
-            return deepClone(value);
-          } else if (_.isArray(value)) {
-            return _.map(clone);
-          } else {
-            return value;
-          }
-        }
-      }
-
-      function Search(type, barcode) {
-        var conditions = deepClone(basicConditions);
-        _.extend(conditions.criteria, {
-          label: {
-            position: "barcode",
-            type:     type,
-            value:    barcode
-          }
-        });
-
-        // Every single search function provided should be exposed here but bound to the
-        // criteria that have been passed in.
-        return _.chain(search)
-                .map(function(f,n) { return [n, _.partial(f, conditions)]; })
-                .object()
-                .value();
-      }
-    }
-
+    // Support the ability for search by any "identifier", although you then have to
+    // specify the type of this label in the search.
+    searchByIdentifier: _.partial(searchByLabel, "identifier", {labelled: undefined})
   });
 
   return BaseResource;
+
+  function searchByLabel(position, types, additionalCriteria) {
+    var resource = this;
+    var search   = resource.root[resource.searchAddress].handling(resource);
+
+    var basicConditions = {
+      user:        resource.root.user,
+      description: "search for " + resource.resourceType + " with label @ " + position,
+      model:       resource.resourceType,
+      criteria:    _.extend({}, additionalCriteria || {})
+    };
+
+    return _.chain(types)
+            .map(buildSearch)
+            .object()
+            .value();
+
+    function deepClone(object) {
+      return _.chain(object)
+              .map(function(v,k) { return [k, clone(v)]; })
+              .object()
+              .value();
+
+      function clone(value) {
+        if (_.isObject(value)) {
+          return deepClone(value);
+        } else if (_.isArray(value)) {
+          return _.map(clone);
+        } else {
+          return value;
+        }
+      }
+    }
+
+    function buildSearch(type, name) {
+      return [name, _.isUndefined(type) ? Search : _.partial(Search, type)];
+    }
+
+    function Search(type, barcode) {
+      var conditions = deepClone(basicConditions);
+      _.extend(conditions.criteria, {
+        label: {
+          position: position,
+          type:     type,
+          value:    barcode
+        }
+      });
+
+      // Every single search function provided should be exposed here but bound to the
+      // criteria that have been passed in.
+      return _.chain(search)
+              .map(function(f,n) { return [n, _.partial(f, conditions)]; })
+              .object()
+              .value();
+    }
+  }
 });

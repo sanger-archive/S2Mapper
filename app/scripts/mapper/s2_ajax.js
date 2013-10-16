@@ -25,12 +25,12 @@ define(['config'], function(config) {
         url:      actionPath,
         dataType: "json"
       };
+      options.headers     = { 'Content-Type': 'application/json' };
       if (data) {
         // When we send data we only ever send JSON data and we pre-process it
         // so that jQuery doesn't have to.  If you remove contentType & processData
         // here then sometimes you get very very odd behaviour (POST becomes GET!)
         options.contentType = 'application/json; charset=UTF-8';
-        options.headers     = { 'Content-Type': 'application/json' };
         options.data        = JSON.stringify(data);
         options.processData = false;
       }
