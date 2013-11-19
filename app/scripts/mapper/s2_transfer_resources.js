@@ -30,19 +30,7 @@ define(["mapper/s2_base_resource"], function(BaseResource) {
         source_location: details.input.location,
         target_uuid:     details.output.resource.uuid
       };
-    },
-
-    "transfer_multiple_filter_papers_to_tubes": function(details) {
-      return {
-        fraction:     details.fraction,
-        aliquot_type: details.aliquot_type,
-        source_uuid:  details.input.resource.uuid,
-        source_location: "A1",  // Hack! This forces the location to A1
-                                // Really this should be made "tube-like"
-        target_uuid:  details.output.resource.uuid
-      };
     }
-
   }).pairs().map(function(pair) {
     return $.extend(BaseResource.extendAs(pair[0], function(transferInstance) {
       return transferInstance;
