@@ -8,6 +8,7 @@ define([
   'mapper/s2_tube_rack_resource',
   'mapper/s2_gel_resource',
   'mapper/s2_plate_resource',
+  'mapper/s2_filter_paper_resource',
   'mapper/s2_kit_resource',
   'mapper/s2_spin_column_resource',
   'mapper/s2_order_resource',
