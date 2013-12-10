@@ -77,7 +77,7 @@ define([
         pluck(role).
         flatten().
         reject(function(resource) {return resource.status!=="done";}).
-        pluck("uuid").map(_.bind(root.find, root)).value());
+        pluck("uuid").uniq().map(_.bind(root.find, root)).value());
       });
     },
     
