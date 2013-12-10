@@ -12,14 +12,7 @@ define([
 
   GelImage.find = function(sangerUUID){
     return this.root.retrieve({uuid:sangerUUID, "resourceType":GelImage.resourceType, s2AppUrl:"lims-quality"});
-  };
-  
-  GelImage.findByGel = function(uuid) {
-    return this.root.retrieve({
-      //url
-    });
-  };
-  
+  };  
 
   return GelImage;
 });

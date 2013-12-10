@@ -81,6 +81,20 @@ define([
       });
     },
     
+    findGelImageByGel: function(uuid) {
+      var root = this;
+      return this.qualitySearches.handling(this.gel_images).first({
+        user:          this.user,
+        description:   "search for gel_images of gel",
+        model:         "gel_image",
+        criteria: {
+            gel: {
+              uuid: uuid
+            }
+        }
+      });      
+    },
+    
     
     retrieve: function(options) {
       var resourceDeferred = $.Deferred();
