@@ -62,7 +62,7 @@ define([], function(){
       var key = (options || {}).resourceType || this.resourceType;
 
       // Interesting... -.-'
-      if (this.resourceType === "laboratorySearch" || this.resourceType === "supportSearch" || this.resourceType === "managementSearch") {
+      if (this.resourceType === "laboratorySearch" || this.resourceType === "supportSearch" || this.resourceType === "managementSearch" || this.resourceType === "qualitySearch") {
         key = "search"
       }
 
