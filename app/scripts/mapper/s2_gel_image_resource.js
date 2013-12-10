@@ -20,7 +20,6 @@ define([
     });
   };
   
-  GelImage.
 
   return GelImage;
 });
