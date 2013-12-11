@@ -4,6 +4,7 @@ temp
 dist
 .sass-cache/**
 .editorconfig
+.settings
 app/components/**
 components/**
 *.orig
