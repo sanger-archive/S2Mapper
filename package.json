@@ -3,7 +3,7 @@
     "name": "S2Mapper",
     "version": "0.0.1",
     "dependencies": {
-      "jquery": "~1.9.1",
+      "jquery": "~1.8.3",
       "underscore": "latest"
     },
     "devDependencies": {

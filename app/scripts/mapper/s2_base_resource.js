@@ -61,7 +61,7 @@ define([], function(){
     create: actionChangesState("create", function(data, options) {
       var key = (options || {}).resourceType || this.resourceType;
 
-      if (this.resourceType === "laboratorySearch" || this.resourceType === "supportSearch" || this.resourceType === "managementSearch") {
+      if (this.resourceType === "laboratorySearch" || this.resourceType === "supportSearch" || this.resourceType === "managementSearch" || this.resourceType === "qualitySearch") {
         key = "search"
       }
 

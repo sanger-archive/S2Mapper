@@ -4,6 +4,7 @@ temp
 dist
 .sass-cache/**
 .editorconfig
+.settings
 app/components/**
 components/**
 *.orig
@@ -12,4 +13,5 @@ test/json/unit/#batch.json#
 test/json/unit/.#batch.json
 node_modules
 .tmp
+.project
 .sass-cache
