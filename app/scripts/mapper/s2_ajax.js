@@ -25,7 +25,13 @@ define(['config'], function(config) {
         url:      actionPath,
         dataType: "json"
       };
+
       options.headers     = { 'Content-Type': 'application/json' };
+
+      if (config.login !== undefined) {
+        options.headers['user-email'] = config.login;
+      }
+
       if (data) {
         // When we send data we only ever send JSON data and we pre-process it
         // so that jQuery doesn't have to.  If you remove contentType & processData
