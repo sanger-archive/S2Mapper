@@ -30,22 +30,30 @@ define(['config', 'mapper/s2_root'], function(config, root) {
           description: "Locating printer " + details.name,
           model: "label_printer",
           criteria: { name: details.name }
-        })
+        });
       }).then(function(printer) {
         deferred.resolve(printer);
         return printer;
       }).then(function(printer) {
-        return printer.print.apply(printer, printArguments);
+        if (config.disablePrinting) {
+          return deferred;
+        } else {
+          return printer.print.apply(printer, printArguments);
+        }
       });
-    };
+    }
 
     // On subsequent prints we go directly to the promise, because we've resolved the
     // printer.
     function subsequentPrints() {
       var printArguments = arguments;
       return deferred.then(function(printer) {
-        printer.print.apply(printer, printArguments);
+        if (config.disablePrinting) {
+          return deferred.promise();
+        } else {
+          printer.print.apply(printer, printArguments);
+        }
       });
     }
-  };
+  }
 });
