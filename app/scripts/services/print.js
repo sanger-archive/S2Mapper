@@ -48,13 +48,20 @@ define(['config', 'mapper/s2_root'], function(config, root) {
       var num=0;
       console.log("BEGIN LABELS PRINTING");
       _.each(labels, function(node) {
-        return _.chain(node).pairs().filter(function(list) {
-          if (list[1].ean13) {
-            return list;
+        return _.chain(node).pairs().each(function(list) {
+          function printObj(list) {
+            num += 1;          
+            console.log([num, list[0], list[1].ean13]);            
           }
-        }).each(function(list) {
-          num += 1;
-          console.log([num, list[0], list[1].ean13]);
+          if (_.isArray(list[1])) {
+            _.each(list[1], function(obj) {
+              printObj([obj.label_text.role, obj]);
+            });
+          } else {
+            if (list[1].ean13) {
+              printObj(list);
+            }
+          }
         });
       });
       console.log("END LABELS PRINTING");
