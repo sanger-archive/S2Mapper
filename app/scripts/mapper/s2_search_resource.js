@@ -7,8 +7,10 @@ define([
     'search',
     'laboratorySearch',
     'supportSearch',
-    'managementSearch'
+    'managementSearch',
+    'qualitySearch'
   ]), {
+    
     handling: function(resultModel, handler) {
       var handler          = handler || processor(resultModel);
       var forwardsHandler  = paged(this, handler, 'first', 'next');

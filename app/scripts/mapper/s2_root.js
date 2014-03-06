@@ -58,6 +58,44 @@ define([
       });
     },
 
+    findByRole: function(role) {
+      var root = this;
+      return this.laboratorySearches.handling(this.orders).all({
+        user:          this.user,
+        description:   "search for orders with role",
+        model:         "order",
+        criteria: {
+            item: {
+              role: role
+            }
+        }
+      }).then(function(orders) {
+        // Returns promise for a list of resources inside the orders with
+        // the requested role
+        return $.when.apply(this, _.chain(orders).
+        pluck("items").
+        pluck(role).
+        flatten().
+        reject(function(resource) {return resource.status!=="done";}).
+        pluck("uuid").uniq().map(_.bind(root.find, root)).value());
+      });
+    },
+    
+    findGelImageByGel: function(uuid) {
+      var root = this;
+      return this.qualitySearches.handling(this.gel_images).first({
+        user:          this.user,
+        description:   "search for gel_images of gel",
+        model:         "gel_image",
+        criteria: {
+            gel: {
+              uuid: uuid
+            }
+        }
+      });      
+    },
+    
+    
     retrieve: function(options) {
       var resourceDeferred = $.Deferred();
 
