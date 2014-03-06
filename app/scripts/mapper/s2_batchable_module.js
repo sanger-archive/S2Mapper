@@ -6,11 +6,15 @@ define([
   return function () {
     return {
       batch: function(){
+        return this.order().then(_.bind(function(order) {
+          return order.batchFor(_.bind(function (item) {
+            return item.uuid === this.uuid && item.status==="done";
+          }, this));
+        }, this));
         // find order from tube
         // locate tube in order
         // if order.item has a batch uuid return it
         // else create new batch object
-        return $.Deferred();
       },
 
       // These are simple lookups that can be cached
