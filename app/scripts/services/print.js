@@ -24,28 +24,61 @@ define(['config', 'mapper/s2_root'], function(config, root) {
     function firstPrint() {
       var printArguments = arguments;
       this.print = subsequentPrints;
-      return root.load({user:"username"}).then(function(root) {
+      return root.load({user:config.login}).then(function(root) {
         return root.supportSearches.handling(root.label_printers).first({
           user: root.user,
           description: "Locating printer " + details.name,
           model: "label_printer",
           criteria: { name: details.name }
-        })
+        });
       }).then(function(printer) {
         deferred.resolve(printer);
         return printer;
       }).then(function(printer) {
-        return printer.print.apply(printer, printArguments);
+        if (config.disablePrinting) {
+          printLabelsToConsole(printArguments[0]);
+          return deferred;
+        } else {
+          return printer.print.apply(printer, printArguments);
+        }
       });
-    };
+    }
 
+    function printLabelsToConsole(labels) {
+      var num=0;
+      console.log("BEGIN LABELS PRINTING");
+      _.each(labels, function(node) {
+        return _.chain(node).pairs().each(function(list) {
+          function printObj(list) {
+            num += 1;          
+            console.log([num, list[0], list[1].ean13]);            
+          }
+          if (_.isArray(list[1])) {
+            _.each(list[1], function(obj) {
+              printObj([obj.label_text.role, obj]);
+            });
+          } else {
+            if (list[1].ean13) {
+              printObj(list);
+            }
+          }
+        });
+      });
+      console.log("END LABELS PRINTING");
+    }
+    
     // On subsequent prints we go directly to the promise, because we've resolved the
     // printer.
     function subsequentPrints() {
       var printArguments = arguments;
       return deferred.then(function(printer) {
-        printer.print.apply(printer, printArguments);
+        if (config.disablePrinting) {
+          printLabelsToConsole(printArguments[0]);
+          return deferred.promise();
+        } else {
+          printer.print.apply(printer, printArguments);
+        }
       });
     }
-  };
+  }
 });
