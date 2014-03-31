@@ -19,7 +19,7 @@ define([
 
       // These are simple lookups that can be cached
       orders: cachingLookup('all',   'orders'),
-      order:  cachingLookup('first', 'order'),
+      order:  cachingLookup('first', 'order')
     }
   };
 
@@ -31,8 +31,8 @@ define([
   function cachingLookup(search, replaces) {
     return function() {
       var resource = this;
-      var deferred = $.Deferred();
-      return resource.root.laboratorySearches.handling(resource.root.orders)[search]({
+      var deferred = new $.Deferred();
+      resource.root.laboratorySearches.handling(resource.root.orders)[search]({
         "user":       resource.root.user,
         "description":"search for order",
         "model":      "order",
@@ -46,6 +46,8 @@ define([
         // Resolve the deferred and then cache this as the function we are.
         deferred.resolve(result);
         resource[replaces] = function() { return deferred; };
+      }, function() {
+        deferred.reject(null);
       });
       return deferred;
     };
