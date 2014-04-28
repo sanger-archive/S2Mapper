@@ -3,7 +3,47 @@
   {
     "description":"tube_racks",
     "calls":[
-      {
+             {
+               "description": "get order",
+               "method": "get",
+               "url": "http://localhost:9292/lims-laboratory/search-adcb-0131-e384-005056a81d80/page=1",
+               "response": {"orders":[{"actions":{"read":"http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/2d649090-aeae-0131-e383-005056a81d80",
+                   "create":"http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/2d649090-aeae-0131-e383-005056a81d80",
+                   "update":"http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/2d649090-aeae-0131-e383-005056a81d80",
+                   "delete":"http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/2d649090-aeae-0131-e383-005056a81d80"},
+                   "uuid":"2d649090-aeae-0131-e383-005056a81d80","pipeline":"Samples","status":"draft","parameters":{},"state":{},
+                   "cost_code":"cost code","creator":{"actions":{"read":
+                     "http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/fc7b3e60-aeae-0131-e383-005056a81d80",
+                     "create":"http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/fc7b3e60-aeae-0131-e383-005056a81d80",
+                     "update":"http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/fc7b3e60-aeae-0131-e383-005056a81d80",
+                     "delete":"http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/fc7b3e60-aeae-0131-e383-005056a81d80"},
+                     "uuid":"149e2650-adca-0131-e384-005056a81d80","email":"s2-order-management-app"},"study":{"actions":{"read":
+                       "http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/00000000-0000-0000-0000-000000000002",
+                       "create":"http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/00000000-0000-0000-0000-000000000002",
+                       "update":"http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/00000000-0000-0000-0000-000000000002",
+                       "delete":"http://psd2g.internal.sanger.ac.uk:8000/lims-laboratory/00000000-0000-0000-0000-000000000002"},
+                       "uuid":"00000000-0000-0000-0000-000000000002"},
+                       "items":{"samples.extraction.qiacube_dna_and_rna.input_tube_nap.awaiting_reception":
+                         [{"uuid":"f1226300-aead-0131-e384-005056a81d80","status":"done","batch":null}]}}],
+                         "size": 1
+               }
+             },
+    {
+      "description": "search for order of tube",
+      "method": "post",
+      "url": "/lims-laboratory/searches",
+      "request": { "search": {
+          "user":"username",
+          "description":"search for order",
+          "model":"order",
+          "criteria":{"item":{"uuid":"149e2650-adca-0131-e384-005056a81d80"}}}},
+      "response": {"search":{"actions":{
+        "read":"http://localhost:9292/lims-laboratory/search-adcb-0131-e384-005056a81d80",
+        "first":"http://localhost:9292/lims-laboratory/search-adcb-0131-e384-005056a81d80/page=1",
+        "last":"http://localhost:9292/lims-laboratory/search-adcb-0131-e384-005056a81d80/page=-1"},
+        "uuid":"search-adcb-0131-e384-005056a81d80"}
+    }},
+    {
         "description":"search for tube_rack with label @ barcode",
         "method":"post",
         "url":"http://localhost:9292/lims-laboratory/searches",

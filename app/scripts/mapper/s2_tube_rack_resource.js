@@ -42,7 +42,7 @@ define([
         return this.root.find(tube.uuid).then(function(labware) {
           return labware.orders();
         });
-      }, this)).flatten().value();
+      }, this)).flatten().uniq().value();
     }
 
   };

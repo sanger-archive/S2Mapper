@@ -47,12 +47,12 @@ define([
         }).then(function(rack) {
           var ordersPromises = rack.allOrdersFromTubes();
           expect(ordersPromises.length).to.equal(1);
-          ordersPromises[0].then(function(order) {
-            debugger;
-            done(); 
-            });
+          $.when.apply(this, ordersPromises).then(function() {
+            var orders = arguments;
+            expect(orders.length).to.equal(1);
+            done();
+          })
         });
-        //expect(TubeRackResource.instantiate({rawJson: {actions: {}}}).allOrdersFromTubes).to.be.defined;
       });
     });
   });
