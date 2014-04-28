@@ -26,7 +26,6 @@ define([ 'resource_test_helper'
         describe("and the tube IS on the system,", function () {
 
           beforeEach(function (done) {
-
             var self = this;
 
             config.loadTestData(rootTestJson);
@@ -138,10 +137,8 @@ define([ 'resource_test_helper'
                 config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
                 return root.tubes.searchByBarcode().ean13('2345678901234').first();
               })
-              .then(results.unexpected)
-              .fail(results.expected)
+              .then(results.unexpected, function() { expect(true).to.be.true; })
               .always(done);
-
         });
       });
     })

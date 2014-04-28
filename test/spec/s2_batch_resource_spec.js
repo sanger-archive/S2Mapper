@@ -10,13 +10,13 @@ define([
   'use strict';
 
   TestHelper(function (results) {
-    describe("Batch Resource:-", function () {
+    xdescribe("Batch Resource:-", function () {
 
       results.lifeCycle();
 
       var s2;
 
-      describe("orders & items : ", function () {
+      xdescribe("orders & items : ", function () {
         var batch;
 
         beforeEach(function (done) {

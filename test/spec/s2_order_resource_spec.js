@@ -115,13 +115,13 @@ define([
       });
     });
 
-    describe("Order update", function () {
+    xdescribe("Order update", function () {
       results.lifeCycle();
 
       var order;
 
       beforeEach(function (done) {
-
+        debugger;
         config.loadTestData(rootTestJson);
 
         this.spy = sinon.spy(config, "ajax");

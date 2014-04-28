@@ -11,7 +11,7 @@
         "request":{
           "search":{
             "user":"username",
-            "description":"search for barcoded tube",
+            "description":"search for tube with label @ barcode",
             "model":"tube",
             "criteria":{
               "label":{

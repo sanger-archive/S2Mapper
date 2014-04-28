@@ -35,6 +35,14 @@ define([
         case "RNA": return "RNA Stock";
         default:    return aliquotType;
       }
+    },
+    
+    allOrdersFromTubes: function() {
+      return _.chain(this.tubes).map(_.bind(function(tube) {
+        return this.root.find(tube.uuid).then(function(labware) {
+          return labware.orders();
+        });
+      }, this)).flatten().value();
     }
 
   };
