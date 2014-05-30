@@ -11,7 +11,7 @@ define([
   var rawRootJson;
 
   TestHelper(function (results) {
-    describe("S2Root:-", function () {
+    xdescribe("S2Root:-", function () {
       results.lifeCycle();
 
       describe("Loading an S2 root,", function () {

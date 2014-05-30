@@ -9,7 +9,7 @@ define([
   'use strict';
 
   TestHelper(function (results) {
-    describe("Operations", function () {
+    xdescribe("Operations", function () {
       results.lifeCycle();
 
       describe("operation", function () {
