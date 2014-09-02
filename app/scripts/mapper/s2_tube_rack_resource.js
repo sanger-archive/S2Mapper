@@ -43,8 +43,29 @@ define([
           return labware.orders();
         });
       }, this)).flatten().uniq().value();
+    },
+    processItemOrderUpdate: function(order, itemOrderUpdate) {
+      return _.every(_.pairs(itemOrderUpdate.items, function(roleName, updateObj) {
+        // If my rack is going to be marked as "unused" in a role for the order
+        if ((!_.isUndefined(updateObj[this.uuid])) && (updateObj[this.uuid].event === "unuse")) {
+          // Check that there isn't any tubes remaining inside my rack that belongs to this order that are
+          // identified inside this order as an enabled item (status==done) because in that case they would be still in use.
+          // If this is the case, I mustn't execute the "unuse" event on this rack for this order, as I 
+          // am still having tubes awaiting to be processed among my contents.
+          var uuidForRemainingTubes = _.chain(this.tubes).values().pluck("uuid").value();
+          var uuidForEnabledItemsOnOrder = _.chain(order.items).values().flatten().
+          filter(function(item) {
+            return item.status=='done';
+          }).pluck("uuid").value();
+          var allowUpdate =  (_.difference(uuidForRemainingTubes, uuidForEnabledItemsOnOrder).length === 0);
+          if (!allowUpdate) {
+            delete updateObj[this.uuid];
+          }
+          return allowUpdate;
+        }
+        return true;
+      }));
     }
-
   };
 
   return TubeRack;
