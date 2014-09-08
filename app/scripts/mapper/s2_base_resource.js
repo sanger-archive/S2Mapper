@@ -165,7 +165,10 @@ define([], function(){
 
     // Support the ability for search by any "identifier", although you then have to
     // specify the type of this label in the search.
-    searchByIdentifier: _.partial(searchByLabel, "identifier", {labelled: undefined})
+    searchByIdentifier: _.partial(searchByLabel, "identifier", {labelled: undefined}),
+    
+    // Delegated to the specific type
+    processItemOrderUpdate: _.identity
   });
 
   return BaseResource;
