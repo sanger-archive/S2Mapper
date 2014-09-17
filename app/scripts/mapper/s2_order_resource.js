@@ -6,8 +6,8 @@ define([
   var Order = BaseResource.extendAs('order', function (orderInstance, options) {
     extendItemBehaviour(orderInstance);
     $.extend(orderInstance, instanceMethods);
-    
-    // Establish a new validation on orderUpdate. 
+
+    // Establish a new validation on orderUpdate.
     orderInstance.update = _.wrap(orderInstance.update, validateUpdate);
     return orderInstance;
   });
@@ -16,19 +16,22 @@ define([
     var uuidList = _.chain(itemOrderUpdate).values()
         .map(_.values).flatten()
         .map(_.keys).flatten().value();
-    
+
     var order = this;
     return $.when.apply(order, _.map(uuidList, function(uuid) {
       return order.root.find(uuid).then(function(resource) {
         // Do something using the resource over the updateArgument
+        if (typeof resource.processItemOrderUpdate == 'undefined') {
+          return true;
+        }
         return resource.processItemOrderUpdate(order, itemOrderUpdate);
       });
     })).then(function() {
-      return previousUpdate.call(order, itemOrderUpdate);      
+      return previousUpdate.call(order, itemOrderUpdate);
     });
   }
-  
-  
+
+
   var instanceMethods = {
     /*
      * Asynchronously find the batch based on the given predicate.  The predicate takes two arguments:
