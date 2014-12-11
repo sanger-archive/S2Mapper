@@ -133,6 +133,7 @@ define([], function(){
       var resourceInstance               = Object.create({ isNew: true });
       resourceInstance.root              = this.root || options.root;
       resourceInstance.transferBehaviour = this.transferBehaviour;
+      resourceInstance.processItemOrderUpdate = _.identity;
 
       if (rawJson !== undefined){
         resourceInstance.isNew        = false;
@@ -166,7 +167,7 @@ define([], function(){
     // Support the ability for search by any "identifier", although you then have to
     // specify the type of this label in the search.
     searchByIdentifier: _.partial(searchByLabel, "identifier", {labelled: undefined}),
-    
+
     // Delegated to the specific type
     processItemOrderUpdate: _.identity
   });

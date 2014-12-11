@@ -79,10 +79,13 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       resourceUUIDs.push(rsc.uuid);
       var promise = $.Deferred();
       listOfPromisesForOrders.push(promise);
-      rsc.order().then(function (order) {
-            ordersHashedByUUID[order.uuid] = order;
-            promise.resolve();
-          }
+
+      rsc.orders().then(function (orders) {
+        _.each(orders, function(order) {
+          ordersHashedByUUID[order.uuid] = order;
+        });
+        promise.resolve();
+       }
       ).fail(function () {
             promise.reject();
             deferred.reject();
@@ -131,12 +134,16 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       var defferedForGroupedResources = $.Deferred();
       var ordersHashedByUUID = {};
 
-      batch.items.then(function (items) {
-        _.each(items, function (item) {
-          if (!ordersHashedByUUID[item.order.uuid]) {
-            ordersHashedByUUID[item.order.uuid] = {order:item.order, items:[]};
-          }
-          ordersHashedByUUID[item.order.uuid].items.push(item);
+      batch.orders.then(function(orders) {
+        _.each(orders, function(order) {
+          _.each(order.itemsByBatch(batch), function (items) {
+            _.each(items, function (item) {
+              if (!ordersHashedByUUID[order.uuid]) {
+                ordersHashedByUUID[order.uuid] = {order:order, items:[]};
+              }
+              ordersHashedByUUID[order.uuid].items.push(item);
+            });
+          });
         });
         defferedForGroupedResources.resolve(ordersHashedByUUID);
       });

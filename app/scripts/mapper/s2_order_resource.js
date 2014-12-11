@@ -132,13 +132,23 @@ define([
             }
           }), _.chain(order.rawJson.order.items).pairs().reduce(function (items, pair) {
             items[pair[0]] = _.map(pair[1], function (item) {
-              return $.extend({ order:order, role:pair[0] }, item);
+              return $.extend({ order:order,role:pair[0] }, item);
             });
             return items;
           }, {}).value());
         }
-      }
+      },
     });
+    order.itemsByBatch = function(batch) {
+      return _.chain(this.items).pairs().map(function(pair) {
+        return [pair[0], _.filter(pair[1], function(item) {
+          return ((item.batch !== null) && (item.batch.uuid===batch.uuid));
+        })];
+      }).filter(function(pair) {
+        return (pair[1].length>0);
+      }).object().value();
+    };
+
   }
 
   function generateJsonEventForResourcesAndRole(order, event, resourceUUIDs, filteringRole, filteringStatus) {
