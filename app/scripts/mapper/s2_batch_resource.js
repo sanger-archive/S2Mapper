@@ -79,10 +79,13 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
       resourceUUIDs.push(rsc.uuid);
       var promise = $.Deferred();
       listOfPromisesForOrders.push(promise);
-      rsc.order().then(function (order) {
-            ordersHashedByUUID[order.uuid] = order;
-            promise.resolve();
-          }
+
+      rsc.orders().then(function (orders) {
+        _.each(orders, function(order) {
+          ordersHashedByUUID[order.uuid] = order;
+        });
+        promise.resolve();
+       }
       ).fail(function () {
             promise.reject();
             deferred.reject();
@@ -140,9 +143,9 @@ define(['mapper/s2_base_resource'], function (BaseResource) {
               }
               ordersHashedByUUID[order.uuid].items.push(item);
             });
-            defferedForGroupedResources.resolve(ordersHashedByUUID);
           });
         });
+        defferedForGroupedResources.resolve(ordersHashedByUUID);
       });
 
       return defferedForGroupedResources.promise();
