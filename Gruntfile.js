@@ -1,3 +1,6 @@
+//This file is part of S2 and is distributed under the terms of GNU General Public License version 1 or later;
+//Please refer to the LICENSE and README files for information on licensing and authorship of this file.
+//Copyright (C) 2013-2015 Genome Research Ltd.
 // Generated on 2013-08-15 using generator-webapp 0.2.6
 'use strict';
 var LIVERELOAD_PORT = 35730;
