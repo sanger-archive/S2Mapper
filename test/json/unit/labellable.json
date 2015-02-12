@@ -34,7 +34,7 @@
       {
         "description":"Get first page",
         "method":"get",
-        "url":"/4816f830-68ac-0130-7ac8-282066132de2/page=1",
+        "url":"/EMPTY_SEARCH_RESULT_UUID/page=1",
         "request":null,
         "response":{
           "actions":{

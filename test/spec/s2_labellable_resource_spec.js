@@ -1,3 +1,6 @@
+//This file is part of S2 and is distributed under the terms of GNU General Public License version 1 or later;
+//Please refer to the LICENSE and README files for information on licensing and authorship of this file.
+//Copyright (C) 2013,2014 Genome Research Ltd.
 define([ 'resource_test_helper'
   , 'config'
   , 'mapper/s2_root'
@@ -55,7 +58,7 @@ define([ 'resource_test_helper'
           });
         });
 
-        describe("with the tube NOT in the system,", function () {
+        xdescribe("with the tube NOT in the system,", function () {
           var labellablePromise;
 
           beforeEach(function (done) {

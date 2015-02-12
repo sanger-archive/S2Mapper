@@ -1,3 +1,6 @@
+//This file is part of S2 and is distributed under the terms of GNU General Public License version 1 or later;
+//Please refer to the LICENSE and README files for information on licensing and authorship of this file.
+//Copyright (C) 2013 Genome Research Ltd.
 /*
  * The format of the barcodes is centralised in the system, talking to a service that, given the type of labware,
  * the role of that labware, and the contents of the labware, will return a unique number, considered to be the

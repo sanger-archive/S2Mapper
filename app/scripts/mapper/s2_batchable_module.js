@@ -1,3 +1,6 @@
+//This file is part of S2 and is distributed under the terms of GNU General Public License version 1 or later;
+//Please refer to the LICENSE and README files for information on licensing and authorship of this file.
+//Copyright (C) 2013,2014 Genome Research Ltd.
 define([
   "mapper/support/deferred"
 ], function(Deferred) {
@@ -19,7 +22,7 @@ define([
 
       // These are simple lookups that can be cached
       orders: cachingLookup('all',   'orders'),
-      order:  cachingLookup('first', 'order'),
+      order:  cachingLookup('first', 'order')
     }
   };
 
@@ -31,8 +34,8 @@ define([
   function cachingLookup(search, replaces) {
     return function() {
       var resource = this;
-      var deferred = $.Deferred();
-      return resource.root.laboratorySearches.handling(resource.root.orders)[search]({
+      var deferred = new $.Deferred();
+      resource.root.laboratorySearches.handling(resource.root.orders)[search]({
         "user":       resource.root.user,
         "description":"search for order",
         "model":      "order",
@@ -46,6 +49,8 @@ define([
         // Resolve the deferred and then cache this as the function we are.
         deferred.resolve(result);
         resource[replaces] = function() { return deferred; };
+      }, function() {
+        deferred.reject(null);
       });
       return deferred;
     };

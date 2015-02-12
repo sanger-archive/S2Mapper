@@ -1,3 +1,6 @@
+//This file is part of S2 and is distributed under the terms of GNU General Public License version 1 or later;
+//Please refer to the LICENSE and README files for information on licensing and authorship of this file.
+//Copyright (C) 2013 Genome Research Ltd.
 /*
  * Provides a utility function for setting up tests that use the S2 API.  Use to wrap the actual Jasmine specs
  * as in the following example:

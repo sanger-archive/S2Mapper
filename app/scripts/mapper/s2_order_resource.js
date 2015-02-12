@@ -1,3 +1,6 @@
+//This file is part of S2 and is distributed under the terms of GNU General Public License version 1 or later;
+//Please refer to the LICENSE and README files for information on licensing and authorship of this file.
+//Copyright (C) 2013,2014 Genome Research Ltd.
 define([
   'mapper/s2_base_resource'
 ], function (BaseResource) {
@@ -6,8 +9,31 @@ define([
   var Order = BaseResource.extendAs('order', function (orderInstance, options) {
     extendItemBehaviour(orderInstance);
     $.extend(orderInstance, instanceMethods);
+
+    // Establish a new validation on orderUpdate.
+    orderInstance.update = _.wrap(orderInstance.update, validateUpdate);
     return orderInstance;
   });
+
+  function validateUpdate(previousUpdate, itemOrderUpdate) {
+    var uuidList = _.chain(itemOrderUpdate).values()
+        .map(_.values).flatten()
+        .map(_.keys).flatten().value();
+
+    var order = this;
+    return $.when.apply(order, _.map(uuidList, function(uuid) {
+      return order.root.find(uuid).then(function(resource) {
+        // Do something using the resource over the updateArgument
+        if (typeof resource.processItemOrderUpdate == 'undefined') {
+          return true;
+        }
+        return resource.processItemOrderUpdate(order, itemOrderUpdate);
+      });
+    })).then(function() {
+      return previousUpdate.call(order, itemOrderUpdate);
+    });
+  }
+
 
   var instanceMethods = {
     /*
@@ -109,13 +135,23 @@ define([
             }
           }), _.chain(order.rawJson.order.items).pairs().reduce(function (items, pair) {
             items[pair[0]] = _.map(pair[1], function (item) {
-              return $.extend({ order:order, role:pair[0] }, item);
+              return $.extend({ order:order,role:pair[0] }, item);
             });
             return items;
           }, {}).value());
         }
-      }
+      },
     });
+    order.itemsByBatch = function(batch) {
+      return _.chain(this.items).pairs().map(function(pair) {
+        return [pair[0], _.filter(pair[1], function(item) {
+          return ((item.batch !== null) && (item.batch.uuid===batch.uuid));
+        })];
+      }).filter(function(pair) {
+        return (pair[1].length>0);
+      }).object().value();
+    };
+
   }
 
   function generateJsonEventForResourcesAndRole(order, event, resourceUUIDs, filteringRole, filteringStatus) {

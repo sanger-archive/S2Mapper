@@ -1,3 +1,6 @@
+//This file is part of S2 and is distributed under the terms of GNU General Public License version 1 or later;
+//Please refer to the LICENSE and README files for information on licensing and authorship of this file.
+//Copyright (C) 2013,2014 Genome Research Ltd.
 define([], function(){
   "use strict";
 
@@ -133,6 +136,7 @@ define([], function(){
       var resourceInstance               = Object.create({ isNew: true });
       resourceInstance.root              = this.root || options.root;
       resourceInstance.transferBehaviour = this.transferBehaviour;
+      resourceInstance.processItemOrderUpdate = _.identity;
 
       if (rawJson !== undefined){
         resourceInstance.isNew        = false;
@@ -165,7 +169,10 @@ define([], function(){
 
     // Support the ability for search by any "identifier", although you then have to
     // specify the type of this label in the search.
-    searchByIdentifier: _.partial(searchByLabel, "identifier", {labelled: undefined})
+    searchByIdentifier: _.partial(searchByLabel, "identifier", {labelled: undefined}),
+
+    // Delegated to the specific type
+    processItemOrderUpdate: _.identity
   });
 
   return BaseResource;

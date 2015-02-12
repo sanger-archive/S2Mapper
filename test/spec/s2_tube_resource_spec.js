@@ -1,3 +1,6 @@
+//This file is part of S2 and is distributed under the terms of GNU General Public License version 1 or later;
+//Please refer to the LICENSE and README files for information on licensing and authorship of this file.
+//Copyright (C) 2013,2014 Genome Research Ltd.
 define([ 'resource_test_helper'
   , 'config'
   , 'mapper/s2_root'
@@ -26,7 +29,6 @@ define([ 'resource_test_helper'
         describe("and the tube IS on the system,", function () {
 
           beforeEach(function (done) {
-
             var self = this;
 
             config.loadTestData(rootTestJson);
@@ -138,10 +140,8 @@ define([ 'resource_test_helper'
                 config.cummulativeLoadingTestDataInFirstStage(tubeByBarcodeJson);
                 return root.tubes.searchByBarcode().ean13('2345678901234').first();
               })
-              .then(results.unexpected)
-              .fail(results.expected)
+              .then(results.unexpected, function() { expect(true).to.be.true; })
               .always(done);
-
         });
       });
     })

@@ -1,3 +1,6 @@
+//This file is part of S2 and is distributed under the terms of GNU General Public License version 1 or later;
+//Please refer to the LICENSE and README files for information on licensing and authorship of this file.
+//Copyright (C) 2013,2014 Genome Research Ltd.
 define(['text!mapper_testjson/unit/empty_search.json'], function (emptySearch) {
   'use strict';
 
@@ -45,7 +48,7 @@ define(['text!mapper_testjson/unit/empty_search.json'], function (emptySearch) {
     apiUrl:'', // NOT USED IN TESTING
     logToConsole:true,
     defaultStage:"default",
-    logLevel:2, // 0..2 (0->everything, 2->only errors)
+    logLevel:0, // 0..2 (0->everything, 2->only errors)
     printServiceUrl:'http://localhost:9292/services/print',
     printers:[
       {name:'Tube printer', type:2, uuid:'printer_uuid'}
